@@ -1,0 +1,76 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Hoja</h1>
+
+    <table class="record_properties">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ entity.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Canonical</th>
+                <td>{{ entity.canonical }}</td>
+            </tr>
+            <tr>
+                <th>Descripcion</th>
+                <td>{{ entity.descripcion }}</td>
+            </tr>
+            <tr>
+                <th>Fechacreado</th>
+                <td>{{ entity.fechaCreado|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Orientacion</th>
+                <td>{{ entity.orientacion }}</td>
+            </tr>
+            <tr>
+                <th>Ancho</th>
+                <td>{{ entity.ancho }}</td>
+            </tr>
+            <tr>
+                <th>Alto</th>
+                <td>{{ entity.alto }}</td>
+            </tr>
+            <tr>
+                <th>Unidad</th>
+                <td>{{ entity.unidad }}</td>
+            </tr>
+            <tr>
+                <th>Margen_sup</th>
+                <td>{{ entity.margensup }}</td>
+            </tr>
+            <tr>
+                <th>Margen_inf</th>
+                <td>{{ entity.margeninf }}</td>
+            </tr>
+            <tr>
+                <th>Margen_izq</th>
+                <td>{{ entity.margenizq }}</td>
+            </tr>
+            <tr>
+                <th>Margen_der</th>
+                <td>{{ entity.margender }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <ul class="record_actions">
+    <li>
+        <a href="{{ path('hoja_') }}">
+            Back to the list
+        </a>
+    </li>
+    <li>
+        <a href="{{ path('hoja__edit', { 'id': entity.id }) }}">
+            Edit
+        </a>
+    </li>
+    <li>{{ form(delete_form) }}</li>
+</ul>
+{% endblock %}

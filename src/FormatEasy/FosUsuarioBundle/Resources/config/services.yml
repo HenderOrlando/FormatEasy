@@ -1,0 +1,7 @@
+parameters:
+#    format_easy_fos_usuario.example.class: FormatEasy\FosUsuarioBundle\Example
+
+services:
+#    format_easy_fos_usuario.example:
+#        class: %format_easy_fos_usuario.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

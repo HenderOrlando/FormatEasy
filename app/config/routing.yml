@@ -1,0 +1,24 @@
+format_easy_fos_usuario:
+    resource: "@FormatEasyFosUsuarioBundle/Resources/config/routing.yml"
+    prefix:   /
+
+format_easy_plantillas:
+    resource: "@FormatEasyPlantillasBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+format_easy_usuarios:
+    resource: "@FormatEasyUsuariosBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+format_easy_formatos:
+    resource: "@FormatEasyFormatosBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+format_easy_common:
+    resource: "@FormatEasyCommonBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
