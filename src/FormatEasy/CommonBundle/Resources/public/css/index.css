@@ -68,15 +68,14 @@ html.mm-bottom nav.mm-front{
 {
     opacity: 1;
 }
-html.mm-bottom.mm-front #mmenu-bottom .mm-inner,
-html.mm-bottom.mm-back #mmenu-bottom .mm-inner
+
+.mm-opening nav.mmenu.mm-menu#mmenu-bottom .mm-inner
 {
     padding-bottom: 70px;
 }
-html.mm-top.mm-front #mmenu-top .mm-inner,
-html.mm-top.mm-back #mmenu-top .mm-inner
+.mm-opening nav.mmenu.mm-menu#mmenu-top .mm-inner
 {
-    padding-top: 70px;
+    padding-top: 40px;
 }
 html.mm-right.mm-opening #mmenu-right .mm-inner,
 html.mm-left.mm-opening #mmenu-left .mm-inner,
@@ -92,12 +91,13 @@ html.mm-opening .mm-inner .mmenu-header{
     position: fixed;
     z-index: 999999999;
     display: block;
+    text-align: center;
 }
 .mmenu-header{
     display: none;
     width: 100%;
     left: 0;
-    top: 64px;
+    top: 0px;
     margin-bottom: 0px;
     height: 30px;
     font-size: 20px;
@@ -106,7 +106,11 @@ html.mm-opening .mm-inner .mmenu-header{
     background: rgba(0, 0, 0, 0.1);
     background: #EEE;
 }
+/*********** Mmenu ***********/
 
-/*.btn.cerrar{
-    font-size: 24px;
-}*/
+/*********** Table ***********/
+table.table thead th{
+    text-align: center;
+    vertical-align: middle;
+}
+/*********** Table ***********/

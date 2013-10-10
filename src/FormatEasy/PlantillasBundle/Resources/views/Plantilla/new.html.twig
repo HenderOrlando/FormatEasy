@@ -1,15 +1,5 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Plantilla creation</h1>
-
-    {{ form(form) }}
-
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('plantilla_') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    {% include "FormatEasyPlantillasBundle:Plantilla:_new.html.twig" %}
 {% endblock %}

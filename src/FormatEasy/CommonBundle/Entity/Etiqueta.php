@@ -14,6 +14,11 @@ class Etiqueta extends \FormatEasy\CommonBundle\Entity\Objeto
      */
     private $objetos;
     
+    /** 
+     * @ORM\ManyToMany(targetEntity="FormatEasy\PlantillasBundle\Entity\Plantilla", mappedBy="etiquetas")
+     */
+    private $plantillas;
+    
     /**
      * Constructor
      */
@@ -52,6 +57,39 @@ class Etiqueta extends \FormatEasy\CommonBundle\Entity\Objeto
      * @return \Doctrine\Common\Collections\Collection 
      */
     public function getObjetos()
+    {
+        return $this->objetos;
+    }
+    
+    /**
+     * Add objetos
+     *
+     * @param \FormatEasy\PlantillasBundle\Entity\Plantilla $objetos
+     * @return Etiqueta
+     */
+    public function addPlantilla(\FormatEasy\PlantillasBundle\Entity\Plantilla $objetos)
+    {
+        $this->objetos[] = $objetos;
+    
+        return $this;
+    }
+
+    /**
+     * Remove objetos
+     *
+     * @param \FormatEasy\PlantillasBundle\Entity\Plantilla $objetos
+     */
+    public function removePlantilla(\FormatEasy\PlantillasBundle\Entity\Plantilla $objetos)
+    {
+        $this->objetos->removeElement($objetos);
+    }
+
+    /**
+     * Get objetos
+     *
+     * @return \Doctrine\Plantillas\Collections\Collection 
+     */
+    public function getPlantillas()
     {
         return $this->objetos;
     }

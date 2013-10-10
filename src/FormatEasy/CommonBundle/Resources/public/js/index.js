@@ -67,7 +67,6 @@ $(document).ready(function(){
             var opts = opts_mmenu[menu_open];
             opts.modal = este.attr('data-modal') === 'true' || este.attr('data-modal') === 'false'?eval(este.attr('data-modal')):true;
             opts.zposition = este.attr('data-zposition')?este.attr('data-zposition'):'back';
-            console.log(opts)
             if(este.attr('data-configuration')){
                 opts.configuration = {};
                 /* true, false */
@@ -85,25 +84,29 @@ $(document).ready(function(){
             
         });
     });
-//    $('a.link-ajax').on('click',function(e){
-//        e.preventDefault();
-//        e.stopPropagation();
-//        var este = $(this);
-//        $.ajax({
-//          url: este.prop('href')  
-//        }).done(function(data) {
-//            var menu_open = '#mmenu-'+este.attr('data-menu-position');
-//            if(menu_open.length < 1){
-//                menu_open = '#mmenu-right';
-//            }
-//            //$(menu_open).find('.mm-inner').html(data);
-//            $(menu_open).trigger('open.mm');
-//        }).fail(function( jqXHR, textStatus ) {
-//            console.log("Request failed: "+textStatus);
-//        }).always(function() {
-//        });
-//    });
     /********* Link Mmenu *********/
+    
+    /********* Link Modal *********/
+    $('a.link-modal').on('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var este = $(this);
+        $.ajax({
+          url: este.prop('href')  
+        }).done(function(data) {
+            
+            var menu_open = '#mmenu-'+este.attr('data-menu-position');
+            if(menu_open.length < 1){
+                menu_open = '#mmenu-right';
+            }
+            
+        }).fail(function( jqXHR, textStatus ) {
+            console.log("Request failed: "+textStatus);
+        }).always(function() {
+            
+        });
+    });
+    /********* Link Modal *********/
     
     /********* Mmenu *********/
     $('.mmenu').each(function(){
@@ -256,6 +259,9 @@ $(document).ready(function(){
     });
     /********* Mmenu *********/
     
+    /********* Modal *********/
+    
+    /********* Modal *********/
 });
 /********* Functions *********/
 /********* Functions *********/

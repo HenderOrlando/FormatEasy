@@ -1,0 +1,54 @@
+<div class="show-grid">
+    <div class="col-xs-6 col-sm-6 col-md-6">
+        <h1>Plantilla list</h1>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6">
+        <div class="btn-group">
+            <a href="{{ path('plantilla__new') }}" data-toggle="modal" href="#modal-link" class="link-modal btn btn-primary btn-lg">Crear Hoja</a>
+            <a href="{{ path('plantilla__new') }}" data-toggle="modal" href="#modal-link" class="link-modal btn btn-primary btn-lg">Buscar</a>
+        </div>
+    </div>
+</div>
+
+<table class="records_list table table-responsive table-striped table-hover">
+    <thead>
+        <tr>
+            {#<th>Id</th> #}
+            <th>Nombre</th>
+            <th>Canonical</th>
+            <th>Descripcion</th>
+            <th>Codigo</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entity in entities %}
+        <tr>
+            {# <td><a href="{{ path('plantilla__show', { 'id': entity.id }) }}">{{ entity.id }}</a></td> #}
+            <td>{{ entity.nombre }}</td>
+            <td>{{ entity.canonical }}</td>
+            <td>{{ entity.descripcion }}</td>
+            {# <td>{% if entity.fechaCreado %}{{ entity.fechaCreado|date('Y-m-d H:i:s') }}{% endif %}</td> #}
+            <td>{{ entity.codigo }}</td>
+            <td>
+            <ul>
+                <li>
+                    <a href="{{ path('plantilla__show', { 'id': entity.id }) }}">show</a>
+                </li>
+                <li>
+                    <a href="{{ path('plantilla__edit', { 'id': entity.id }) }}">edit</a>
+                </li>
+            </ul>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<ul>
+    <li>
+        <a href="{{ path('plantilla__new') }}">
+            Create a new entry
+        </a>
+    </li>
+</ul>

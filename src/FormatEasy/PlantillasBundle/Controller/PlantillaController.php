@@ -13,7 +13,7 @@ use FormatEasy\PlantillasBundle\Form\PlantillaType;
 /**
  * Plantilla controller.
  *
- * @Route("/plantilla_")
+ * @Route("/Plantilla")
  */
 class PlantillaController extends Controller
 {
@@ -25,15 +25,20 @@ class PlantillaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('FormatEasyPlantillasBundle:Plantilla')->findAll();
 
-        return array(
+        $datos = array(
             'entities' => $entities,
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyPlantillasBundle:Plantilla:_index.html.twig', $datos);
+        }
+        
+        return $datos;
     }
     /**
      * Creates a new Plantilla entity.
@@ -52,14 +57,17 @@ class PlantillaController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
-
-            return $this->redirect($this->generateUrl('plantilla__show', array('id' => $entity->getId())));
+            $datos = array('id' => $entity->getId());
+            if($request->isXmlHttpRequest()){
+                return $this->render('FormatEasyPlantillasBundle:Plantilla:_show.html.twig', $datos);
+            }
+            return $this->redirect($this->generateUrl('hoja__show', $datos));
+        }
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyPlantillasBundle:Plantilla:_new.html.twig', $datos);
         }
 
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
+        return $datos;
     }
 
     /**
@@ -88,15 +96,21 @@ class PlantillaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
         $entity = new Plantilla();
         $form   = $this->createCreateForm($entity);
 
-        return array(
+        $datos = array(
             'entity' => $entity,
             'form'   => $form->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyPlantillasBundle:Plantilla:_new.html.twig', $datos);
+        }
+
+        return $datos;
     }
 
     /**
@@ -106,7 +120,7 @@ class PlantillaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
+    public function showAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -118,10 +132,16 @@ class PlantillaController extends Controller
 
         $deleteForm = $this->createDeleteForm($id);
 
-        return array(
+        $datos = array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyPlantillasBundle:Plantilla:_show.html.twig', $datos);
+        }
+        
+        return $datos;
     }
 
     /**
@@ -131,7 +151,7 @@ class PlantillaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -144,11 +164,16 @@ class PlantillaController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
-        return array(
+        $datos = array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyPlantillasBundle:Plantilla:_show.html.twig', $datos);
+        }
+        
+        return $datos;
     }
 
     /**
@@ -193,14 +218,26 @@ class PlantillaController extends Controller
         if ($editForm->isValid()) {
             $em->flush();
 
-            return $this->redirect($this->generateUrl('plantilla__edit', array('id' => $id)));
-        }
+            $datos = array('id' => $id);
+            
+            if($request->isXmlHttpRequest()){
+                return $this->render('FormatEasyPlantillasBundle:Plantilla:_edit.html.twig', $datos);
+            }
 
-        return array(
+            return $this->redirect($this->generateUrl('hoja__edit', $datos));
+        }
+        
+        $datos = array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyPlantillasBundle:Plantilla:_edit.html.twig', $datos);
+        }
+
+        return $datos;
     }
     /**
      * Deletes a Plantilla entity.
@@ -225,7 +262,7 @@ class PlantillaController extends Controller
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('plantilla_'));
+        return $this->redirect($request->headers->get('referer'));
     }
 
     /**
