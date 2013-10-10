@@ -3,17 +3,16 @@ namespace FormatEasy\PlantillasBundle\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /** 
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="FormatEasy\PlantillasBundle\Repository\PlantillaRepository")
  * @ORM\Table(name="plantilla")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="_aplicable_a", fieldName="_aplicableA", length=50, type="string")
+ * @ORM\DiscriminatorColumn(name="plantilla_tipo", length=50, type="string")
  * @ORM\DiscriminatorMap(
  *     {
- *     "Plantilla"="FormatEasy\PlantillasBundle\Entity\Plantilla",
+ *     "Plantilla"="Plantilla",
  *     "Pregunta"="FormatEasy\PlantillasBundle\Entity\PlantillaPregunta",
  *     "Respuesta"="FormatEasy\PlantillasBundle\Entity\PlantillaRespuesta"
  * })
- * @ORM\Entity(repositoryClass="FormatEasy\PlantillasBundle\Repository\PlantillaRepository")
  */
 class Plantilla extends \FormatEasy\CommonBundle\Entity\Objeto
 {

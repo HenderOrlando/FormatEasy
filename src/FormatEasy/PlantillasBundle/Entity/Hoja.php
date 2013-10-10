@@ -3,9 +3,8 @@ namespace FormatEasy\PlantillasBundle\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /** 
- * @ORM\Entity
- * @ORM\Table(name="hoja")
  * @ORM\Entity(repositoryClass="FormatEasy\PlantillasBundle\Repository\HojaRepository")
+ * @ORM\Table(name="hoja")
  */
 class Hoja extends \FormatEasy\CommonBundle\Entity\Objeto
 {

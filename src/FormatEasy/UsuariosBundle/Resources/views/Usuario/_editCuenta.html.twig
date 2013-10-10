@@ -1,0 +1,18 @@
+
+<div class="row show-grid">
+    <div class="col-xs-6 col-sm-4 col-md-4">
+        {% render(controller('FormatEasyFosUsuarioBundle:ChangePassword:changePassword', {'ajax': 1})) %}
+    </div>
+    <div class="col-xs-6 col-sm-4 col-md-4">
+        {% if(new) %}
+            {% render(controller('FormatEasyUsuariosBundle:Usuario:new', {'ajax': 1 })) %}
+        {% else %}
+            {% render(controller('FormatEasyUsuariosBundle:Usuario:edit', {'ajax': 1, 'id': app.user.usuario.id})) %}
+        {% endif %}
+    </div>
+    {# Optional: clear the XS cols if their content doesn't match in height #}
+    <div class="clearfix visible-xs"></div>
+    <div class="col-xs-6 col-sm-4 col-md-4">
+        {% render(controller('FormatEasyFosUsuarioBundle:Profile:edit', {'ajax': 1})) %}
+    </div>
+</div>

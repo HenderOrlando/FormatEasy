@@ -5,8 +5,108 @@
     Description:
         Purpose of the stylesheet follows.
 */
-
+.mm-opened #content,
 body { 
     padding-top: 70px; 
 }
 
+.navbar-form .form-control {
+    width: auto;
+}
+.navbar-inverse .form-group label:not(.btn) {
+    color: #999;
+}
+
+/*********** Mmenu ***********/
+nav.mmenu.mm-menu#mmenu-bottom .mm-inner,
+nav.mmenu.mm-menu#mmenu-top .mm-inner,
+nav.mmenu.mm-menu#mmenu-left .mm-inner,
+nav.mmenu.mm-menu#mmenu-right .mm-inner
+{
+    opacity: 0;
+    position: relative;
+    -webkit-transition-property: top, right, bottom, left, margin, border, opacity , -webkit-transform;
+    -webkit-transition-duration: 0.35s;
+    -webkit-transition-timing-function: ease-out;
+    -moz-transition-property: top, right, bottom, left, margin, border, opacity , -moz-transform;
+    -moz-transition-duration: 0.35s;
+    -moz-transition-timing-function: ease-out;
+    -ms-transition-property: top, right, bottom, left, margin, border, opacity , -ms-transform;
+    -ms-transition-duration: 0.35s;
+    -ms-transition-timing-function: ease-out;
+    -o-transition-property: top, right, bottom, left, margin, border, opacity , -o-transform;
+    -o-transition-duration: 0.35s;
+    -o-transition-timing-function: ease-out;
+    transition-property: top, right, bottom, left, margin, border, opacity , transform;
+    transition-duration: 0.35s;
+    transition-timing-function: ease-out;
+}
+html.mm-top .mm-inner{
+    -webkit-transition-duration: 0.4s;
+    -moz-transition-duration: 0.4s;
+    -ms-transition-duration: 0.4s;
+    -o-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+nav.mmenu.mm-menu#mmenu-bottom .mm-inner,
+nav.mmenu.mm-menu#mmenu-top .mm-inner,
+nav.mmenu.mm-menu#mmenu-left .mm-inner,
+nav.mmenu.mm-menu#mmenu-right .mm-inner
+{
+    opacity: 0;
+    position: relative;
+    padding: 20px 20px 20px 20px;
+}
+html.mm-top nav.mm-front,
+html.mm-bottom nav.mm-front{
+    height: 50%;
+}
+.mm-opening nav.mmenu.mm-menu#mmenu-bottom .mm-inner,
+.mm-opening nav.mmenu.mm-menu#mmenu-top .mm-inner,
+.mm-opening nav.mmenu.mm-menu#mmenu-left .mm-inner,
+.mm-opening nav.mmenu.mm-menu#mmenu-right .mm-inner
+{
+    opacity: 1;
+}
+html.mm-bottom.mm-front #mmenu-bottom .mm-inner,
+html.mm-bottom.mm-back #mmenu-bottom .mm-inner
+{
+    padding-bottom: 70px;
+}
+html.mm-top.mm-front #mmenu-top .mm-inner,
+html.mm-top.mm-back #mmenu-top .mm-inner
+{
+    padding-top: 70px;
+}
+html.mm-right.mm-opening #mmenu-right .mm-inner,
+html.mm-left.mm-opening #mmenu-left .mm-inner,
+html.mm-bottom.mm-opening #mmenu-bottom .mm-inner,
+html.mm-top.mm-opening #mmenu-top .mm-inner{
+    opacity: 1;
+}
+div#mm-blocker{
+    background: rgba(235,235,235,0.75);
+}
+
+html.mm-opening .mm-inner .mmenu-header{
+    position: fixed;
+    z-index: 999999999;
+    display: block;
+}
+.mmenu-header{
+    display: none;
+    width: 100%;
+    left: 0;
+    top: 64px;
+    margin-bottom: 0px;
+    height: 30px;
+    font-size: 20px;
+    font-weight: bolder;
+    line-height: 26px;
+    background: rgba(0, 0, 0, 0.1);
+    background: #EEE;
+}
+
+/*.btn.cerrar{
+    font-size: 24px;
+}*/

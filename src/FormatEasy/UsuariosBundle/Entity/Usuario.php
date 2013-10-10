@@ -3,9 +3,8 @@ namespace FormatEasy\UsuariosBundle\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /** 
- * @ORM\Entity
- * @ORM\Table(name="usuario")
  * @ORM\Entity(repositoryClass="FormatEasy\UsuariosBundle\Repository\UsuarioRepository")
+ * @ORM\Table(name="usuario")
  */
 class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
 {

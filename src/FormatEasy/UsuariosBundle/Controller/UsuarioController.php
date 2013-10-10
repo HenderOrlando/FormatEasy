@@ -13,11 +13,28 @@ use FormatEasy\UsuariosBundle\Form\UsuarioType;
 /**
  * Usuario controller.
  *
- * @Route("/usuario_")
+ * @Route("/Usuario/")
  */
 class UsuarioController extends Controller
 {
 
+    /**
+     * Lists all Usuario entities.
+     *
+     * @Route("/Editar-Cuenta/", name="usuario_edit_datos_de_usuario")
+     * @Method("GET")
+     * @Template("FormatEasyUsuariosBundle:Usuario:_editCuenta.html.twig")
+     */
+    public function editCuentaUsuarioAction(Request $request)
+    {
+        if(!$request->isXmlHttpRequest()){
+            throw $this->createNotFoundException('The product does not exist');
+        }
+        if(is_null($this->getUser()->getUsuario())){
+            return array('new' => true);
+        }
+        return array('new' => false);
+    }
     /**
      * Lists all Usuario entities.
      *
@@ -51,6 +68,9 @@ class UsuarioController extends Controller
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
+            $em->flush();
+            $this->getUser()->setUsuario($entity);
+            $em->persist($this->getUser());
             $em->flush();
 
             return $this->redirect($this->generateUrl('usuario__show', array('id' => $entity->getId())));
@@ -144,6 +164,17 @@ class UsuarioController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
+        if($request->isXmlHttpRequest()){
+            $c = $this->render(
+                'FormatEasyUsuariosBundle:Usuario:_edit.html.twig',
+                array(
+                    'entity'      => $entity,
+                    'edit_form'   => $editForm->createView(),
+                    'delete_form' => $deleteForm->createView(),
+                )
+            );
+            return new \Symfony\Component\HttpFoundation\Response($c);
+        }
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),

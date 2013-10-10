@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping AS ORM;
  * @ORM\Entity
  * @ORM\Table(name="objeto")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="aplicable_a", fieldName="aplicableA", length=50, type="string")
+ * @ORM\DiscriminatorColumn(name="aplicable_a", length=50, type="string")
  * @ORM\DiscriminatorMap(
  *     {
  *     "Etiqueta"="FormatEasy\CommonBundle\Entity\Etiqueta",

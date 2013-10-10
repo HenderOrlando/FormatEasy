@@ -1,0 +1,9 @@
+{% extends "FormatEasyFosUsuarioBundle::layout.html.twig" %}
+
+{% trans_default_domain 'FosUsuarioBundle' %}
+
+{% block fos_user_content %}
+<p>
+{{ 'resetting.check_email'|trans({'%email%': email}) }}
+</p>
+{% endblock %}

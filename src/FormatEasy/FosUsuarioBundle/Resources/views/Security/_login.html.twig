@@ -1,0 +1,70 @@
+{% trans_default_domain 'FosUsuarioBundle' %}
+
+{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+    <ul class="nav navbar-nav">
+        {# <li class="active"><a href="#">Regular link</a></li> #}
+        <li>
+            <a id="menu-usuario" role="button" data-toggle="dropdown" class="link-mmenu" href="{{ path('usuario_edit_datos_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
+                Formatos
+                {#<b class="caret"></b>#}
+            </a>
+        </li>
+        <li>
+            <a id="menu-usuario" role="button" data-toggle="dropdown" class="link-mmenu" href="{{ path('plantillas_menu_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
+                Plantillas
+                {#<b class="caret"></b>#}
+            </a>
+        </li>
+        <li>
+            <a id="menu-usuario" role="button" data-toggle="dropdown" class="link-mmenu" href="{{ path('usuario_edit_datos_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
+                {{ app.user.username | title }}
+                {#<b class="caret"></b>#}
+            </a>
+            {#<ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="menu-usuario">
+                <li>
+                  <a href="{{ path('fos_user_change_password') }}" class="link-mmenu" data-preventTabbing="false" data-menu-position="top" role="menuitem" tabindex="-1">
+                      {{ 'change_password.submit'|trans }}
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('fos_user_profile_edit') }}"  class="link-mmenu" data-preventTabbing="false" data-menu-position="top" role="menuitem" tabindex="-1">
+                      {{ 'profile.edit.submit'|trans }}
+                  </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="{{ path('fos_user_security_logout') }}" role="menuitem" tabindex="-1">
+                      {{ 'layout.logout'|trans }}
+                  </a>
+                </li>
+            </ul>#}
+        </li>
+    </ul>    
+{% else %}
+    {% if error %}
+        <div>{{ error|trans }}</div>
+    {% endif %}
+
+    <form class="navbar-form" action="{{ path("fos_user_security_check") }}" method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+        <div class="form-group">
+            <label for="username">{{ 'security.login.username'|trans }}</label>
+            <input type="text" id="username" placeholder="{{ 'security.login.username'|trans }}" class="form-control" name="_username" value="{{ last_username }}" required="required" />
+        </div>
+
+        <div class="form-group">
+            <label for="password">{{ 'security.login.password'|trans }}</label>
+            <input type="password" id="password" placeholder="{{ 'security.login.password'|trans }}" class="form-control" name="_password" required="required" />
+        </div>
+
+        <div class="form-group">
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary">
+                    <input type="checkbox" checked="checked" id="remember_me" name="_remember_me" value="on" />{{ 'security.login.remember_me'|trans }}
+                </label>
+            </div>
+        </div>
+
+        <input type="submit" id="_submit" class="btn btn-success" name="_submit" value="{{ 'security.login.submit'|trans }}" />
+    </form>
+{% endif %}
