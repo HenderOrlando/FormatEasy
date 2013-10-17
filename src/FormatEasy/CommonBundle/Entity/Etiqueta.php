@@ -6,6 +6,15 @@ use Doctrine\ORM\Mapping AS ORM;
  * @ORM\Entity
  * @ORM\Table(name="etiqueta")
  * @ORM\Entity(repositoryClass="FormatEasy\CommonBundle\Repository\EtiquetaRepository")
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="etiquetas",
+ *          joinTable=@ORM\JoinTable(
+ *              name="etiqueta_etiqueta", 
+ *              joinColumns={@ORM\JoinColumn(name="id_objeto_etiqueta", referencedColumnName="id", nullable=false)}, 
+ *              inverseJoinColumns={@ORM\JoinColumn(name="id_etiqueta", referencedColumnName="id", nullable=false)}
+ *          )
+ *      )
+ * })
  */
 class Etiqueta extends \FormatEasy\CommonBundle\Entity\Objeto
 {
@@ -13,11 +22,6 @@ class Etiqueta extends \FormatEasy\CommonBundle\Entity\Objeto
      * @ORM\ManyToMany(targetEntity="FormatEasy\CommonBundle\Entity\Objeto", mappedBy="etiquetas")
      */
     private $objetos;
-    
-    /** 
-     * @ORM\ManyToMany(targetEntity="FormatEasy\PlantillasBundle\Entity\Plantilla", mappedBy="etiquetas")
-     */
-    private $plantillas;
     
     /**
      * Constructor
@@ -57,39 +61,6 @@ class Etiqueta extends \FormatEasy\CommonBundle\Entity\Objeto
      * @return \Doctrine\Common\Collections\Collection 
      */
     public function getObjetos()
-    {
-        return $this->objetos;
-    }
-    
-    /**
-     * Add objetos
-     *
-     * @param \FormatEasy\PlantillasBundle\Entity\Plantilla $objetos
-     * @return Etiqueta
-     */
-    public function addPlantilla(\FormatEasy\PlantillasBundle\Entity\Plantilla $objetos)
-    {
-        $this->objetos[] = $objetos;
-    
-        return $this;
-    }
-
-    /**
-     * Remove objetos
-     *
-     * @param \FormatEasy\PlantillasBundle\Entity\Plantilla $objetos
-     */
-    public function removePlantilla(\FormatEasy\PlantillasBundle\Entity\Plantilla $objetos)
-    {
-        $this->objetos->removeElement($objetos);
-    }
-
-    /**
-     * Get objetos
-     *
-     * @return \Doctrine\Plantillas\Collections\Collection 
-     */
-    public function getPlantillas()
     {
         return $this->objetos;
     }

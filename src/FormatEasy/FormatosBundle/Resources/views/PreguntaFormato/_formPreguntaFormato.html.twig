@@ -1,0 +1,66 @@
+
+<div class="enunciado">
+    <form method="post" action="{{ url('preguntaFormato__update', {'id' : f.id}) }}" class="edit-inline">
+        <div>Pregunta tipo "{{ pr.nombre }}"</div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    {% if form.pregunta.nombre is defined %}
+                        {{ form_label(form.pregunta.nombre, 'Enunciado', { 'attr': {'class': 'control-label'} }) }}
+                        {{ form_errors(form.pregunta.nombre) }}
+                        {{ form_widget(form.pregunta.nombre, { 'attr': {'class': 'form-control'} }) }}
+                    {% else %}
+                        {{ form_label(form.nombre, 'Enunciado', { 'attr': {'class': 'control-label'} }) }}
+                        {{ form_errors(form.nombre) }}
+                        {{ form_widget(form.nombre, { 'attr': {'class': 'form-control'} }) }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {% if form.pregunta.descripcion is defined %}
+                        {{ form_label(form.pregunta.descripcion, 'Ayuda', { 'attr': {'class': 'control-label'} }) }}
+                        {{ form_errors(form.pregunta.descripcion) }}
+                        {{ form_widget(form.pregunta.descripcion, { 'attr': {'class': 'form-control'} }) }}
+                    {% else %}
+                        {{ form_label(form.descripcion, 'Ayuda', { 'attr': {'class': 'control-label'} }) }}
+                        {{ form_errors(form.descripcion) }}
+                        {{ form_widget(form.descripcion, { 'attr': {'class': 'form-control'} }) }}
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    {% if form.pregunta.etiquetas is defined %}
+                        {{ form_label(form.pregunta.etiquetas, 'Etiquetas', { 'attr': {'class': 'control-label'} }) }}
+                        {{ form_errors(form.pregunta.etiquetas) }}
+                        {{ form_widget(form.pregunta.etiquetas, { 'attr': {'class': 'form-control'} }) }}
+                    {% else %}
+                        {{ form_label(form.etiquetas, 'Etiquetas', { 'attr': {'class': 'control-label'} }) }}
+                        {{ form_errors(form.etiquetas) }}
+                        {{ form_widget(form.etiquetas, { 'attr': {'class': 'form-control'} }) }}
+                    {% endif %}
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="col-md-6">
+                        <div class="btn-group-vertical">
+                            <input type="submit" class="btn btn-sm btn-default" value="Guardar"/>
+                            <a href="#" class="btn btn-sm btn-default">Duplicar</a>
+                            <a href="#" class="btn btn-sm btn-default">Borrar</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="btn-group-vertical">
+                        <a href="#" class="btn btn-sm btn-default">Opciones</a>
+                        <a href="#" class="btn btn-sm btn-default"></a>
+                        <a href="#" class="btn btn-sm btn-default">Respuestas</a>
+                        </div>
+                    </div>
+                </div>
+                <span class="hide">
+                    {{ form_rest(form) }}
+                </span>
+            </div>
+        </div>
+    </form>
+</div>
+
+{{ pp.codigo | replace({'%respuesta%': ''}) | raw}}

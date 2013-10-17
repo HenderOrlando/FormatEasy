@@ -13,7 +13,7 @@ use FormatEasy\FormatosBundle\Form\RespuestaType;
 /**
  * Respuesta controller.
  *
- * @Route("/respuesta_")
+ * @Route("/Respuesta")
  */
 class RespuestaController extends Controller
 {
@@ -25,15 +25,20 @@ class RespuestaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('FormatEasyFormatosBundle:Respuesta')->findAll();
 
-        return array(
+        $datos = array(
             'entities' => $entities,
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_index.html.twig', $datos);
+        }
+        
+        return $datos;
     }
     /**
      * Creates a new Respuesta entity.
@@ -48,18 +53,25 @@ class RespuestaController extends Controller
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
+        $datos = array(
+            'entity' => $entity,
+            'form'   => $form->createView(),
+        );
+
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
-
+            if($request->isXmlHttpRequest()){
+                return $this->render('FormatEasyFormatosBundle:Respuesta:_show.html.twig', $datos);
+            }
             return $this->redirect($this->generateUrl('respuesta__show', array('id' => $entity->getId())));
         }
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_new.html.twig', $datos);
+        }
 
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
+        return $datos;
     }
 
     /**
@@ -88,15 +100,21 @@ class RespuestaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
         $entity = new Respuesta();
         $form   = $this->createCreateForm($entity);
 
-        return array(
+        $datos = array(
             'entity' => $entity,
             'form'   => $form->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_new.html.twig', $datos);
+        }
+
+        return $datos;
     }
 
     /**
@@ -106,7 +124,7 @@ class RespuestaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
+    public function showAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -118,10 +136,16 @@ class RespuestaController extends Controller
 
         $deleteForm = $this->createDeleteForm($id);
 
-        return array(
+        $datos = array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_show.html.twig', $datos);
+        }
+        
+        return $datos;
     }
 
     /**
@@ -131,7 +155,7 @@ class RespuestaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -144,11 +168,16 @@ class RespuestaController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
-        return array(
+        $datos = array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_edit.html.twig', $datos);
+        }
+        
+        return $datos;
     }
 
     /**
@@ -192,15 +221,26 @@ class RespuestaController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
+            $datos = array('id' => $id);
+            
+            if($request->isXmlHttpRequest()){
+                return $this->render('FormatEasyFormatosBundle:Respuesta:_edit.html.twig', $datos);
+            }
 
-            return $this->redirect($this->generateUrl('respuesta__edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('respuesta__edit', $datos));
         }
-
-        return array(
+        
+        $datos = array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_edit.html.twig', $datos);
+        }
+
+        return $datos;
     }
     /**
      * Deletes a Respuesta entity.
@@ -225,7 +265,7 @@ class RespuestaController extends Controller
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('respuesta_'));
+        return $this->redirect($request->headers->get('referer'));
     }
 
     /**

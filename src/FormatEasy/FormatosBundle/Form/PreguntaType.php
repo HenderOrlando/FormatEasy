@@ -5,9 +5,15 @@ namespace FormatEasy\FormatosBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use FormatEasy\PlantillasBundle\Form\DataTransformer\PlantillaRespuestaToIdTransformer;
 
 class PreguntaType extends AbstractType
 {
+    private $opciones = array();
+    public function __construct(array $options)
+    {
+        $this->opciones = $options;
+    }
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -16,12 +22,27 @@ class PreguntaType extends AbstractType
     {
         $builder
             ->add('nombre')
-            ->add('canonical')
             ->add('descripcion')
-            ->add('fechaCreado')
             ->add('etiquetas')
-            ->add('plantilla')
         ;
+        $plantilla = null;
+        if(isset($options['plantilla'])){
+            $plantilla = $options['plantilla'];
+        }elseif(isset($this->opciones['plantilla'])){
+            $plantilla = $this->opciones['plantilla'];
+        }
+        if(isset($options['em'])){
+            $entityManager = $options['em'];
+        }elseif(isset($this->opciones['em'])){
+            $entityManager = $this->opciones['em'];
+        }
+        $transformer_plantillaRespuesta = new PlantillaRespuestaToIdTransformer($entityManager);
+        $builder
+            ->add($builder->create('plantilla', 'hidden', array(
+                'data' => $plantilla,
+                'data_class' => null
+            ))
+            ->addModelTransformer($transformer_plantillaRespuesta));
     }
     
     /**
@@ -30,7 +51,7 @@ class PreguntaType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'FormatEasy\FormatosBundle\Entity\Pregunta'
+            'data_class' => 'FormatEasy\FormatosBundle\Entity\Pregunta',
         ));
     }
 

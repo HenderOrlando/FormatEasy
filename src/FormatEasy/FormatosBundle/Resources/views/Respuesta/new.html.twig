@@ -1,15 +1,5 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Respuesta creation</h1>
-
-    {{ form(form) }}
-
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('respuesta_') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    {% include "FormatEasyFormatosBundle:Respuesta:_new.html.twig" %}
 {% endblock %}

@@ -3,9 +3,17 @@ namespace FormatEasy\FormatosBundle\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /** 
- * @ORM\Entity
  * @ORM\Table(name="pregunta")
  * @ORM\Entity(repositoryClass="FormatEasy\FormatosBundle\Repository\PreguntaRepository")
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="etiquetas",
+ *          joinTable=@ORM\JoinTable(
+ *              name="etiqueta_pregunta", 
+ *              joinColumns={@ORM\JoinColumn(name="id_objeto_pregunta", referencedColumnName="id", nullable=false)}, 
+ *              inverseJoinColumns={@ORM\JoinColumn(name="id_etiqueta", referencedColumnName="id", nullable=false)}
+ *          )
+ *      )
+ * })
  */
 class Pregunta extends \FormatEasy\CommonBundle\Entity\Objeto
 {
@@ -16,10 +24,6 @@ class Pregunta extends \FormatEasy\CommonBundle\Entity\Objeto
      * )
      */
     private $preguntasUsuario;
-    /** 
-     * 
-     */
-    private $UsuarioRespuestaPreguntas;
 
     /** 
      * @ORM\OneToMany(
@@ -157,6 +161,21 @@ class Pregunta extends \FormatEasy\CommonBundle\Entity\Objeto
     {
         return $this->respuestas;
     }
+    /**
+     * Get respuestas
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getRespuestasJson($json = true)
+    {
+        $datos = array();
+        foreach ($this->respuestas as $rta){
+            $datos[$rta->getId()] = $rta->json(false);
+        }
+        if($json)
+            return json_encode($datos);
+        return $datos;
+    }
 
     /**
      * Set plantilla
@@ -179,5 +198,22 @@ class Pregunta extends \FormatEasy\CommonBundle\Entity\Objeto
     public function getPlantilla()
     {
         return $this->plantilla;
+    }
+    
+    public function __toString() {
+        return $this->getNombre();
+    }
+    
+    public function json($json = true){
+        $datos = array(
+            'id'                => $this->getId(),
+            'nombre'            => $this->getNombre(),
+            'descripcion'       => $this->getDescripcion(),
+            'plantilla'         => $this->getPlantilla(),
+            'respuestas'        => $this->getRespuestasJson(false),
+        );
+        if($json)
+            return json_encode($datos);
+        return $datos;
     }
 }

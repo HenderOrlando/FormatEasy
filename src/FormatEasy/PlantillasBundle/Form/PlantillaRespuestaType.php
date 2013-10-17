@@ -14,15 +14,43 @@ class PlantillaRespuestaType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $choices = array(
+            'Texto' => array(
+                'text'      => 'Texto Corto',
+                'textarea'  => 'Texto Largo',
+                'email'     => 'Email',
+                'integer'   => 'Número Entero',
+                'money'     => 'Dinero',
+                'number'    => 'Numero',
+                'password'  => 'Clave',
+                'percent'   => 'Porcentaje',
+                'search'    => 'Búsqueda',
+                'url'       => 'Url',
+            ),
+            'Selección' => array(
+                'choice'    =>  'Seleccionar uno',
+                'choice-multiple'    =>  'Seleccionar varios',
+                'radio'     =>  'Selector Radio',
+                'checkbox'  =>  'Selector Checkbox',
+            ),
+            'Fechas y Horas' => array(
+                'date'      =>  'Fecha',
+                'time'      =>  'Hora',
+                'datetime'  =>  'Fecha y hora',
+            ),
+            'Otros' => array(
+                
+            ),
+        );
         $builder
             ->add('nombre')
-            ->add('canonical')
             ->add('descripcion')
-            ->add('fechaCreado')
             ->add('codigo')
-            ->add('widget')
+            ->add('widget', 'choice', array(
+                    'choices'   => $choices,
+                )
+            )
             ->add('etiquetas')
-            ->add('Hoja')
         ;
     }
     

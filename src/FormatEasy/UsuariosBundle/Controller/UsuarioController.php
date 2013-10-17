@@ -13,7 +13,7 @@ use FormatEasy\UsuariosBundle\Form\UsuarioType;
 /**
  * Usuario controller.
  *
- * @Route("/Usuario/")
+ * @Route("/Usuario")
  */
 class UsuarioController extends Controller
 {
@@ -27,7 +27,7 @@ class UsuarioController extends Controller
      */
     public function editCuentaUsuarioAction(Request $request)
     {
-        if(!$request->isXmlHttpRequest()){
+        if(!$request->isXmlHttpRequest() || !$this->getUser()){
             throw $this->createNotFoundException('The product does not exist');
         }
         if(is_null($this->getUser()->getUsuario())){

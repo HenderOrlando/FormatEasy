@@ -6,6 +6,15 @@ use Doctrine\ORM\Mapping AS ORM;
  * @ORM\Entity
  * @ORM\Table(name="rol")
  * @ORM\Entity(repositoryClass="FormatEasy\CommonBundle\Repository\RolRepository")
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="etiquetas",
+ *          joinTable=@ORM\JoinTable(
+ *              name="etiqueta_rol", 
+ *              joinColumns={@ORM\JoinColumn(name="id_objeto_rol", referencedColumnName="id", nullable=false)}, 
+ *              inverseJoinColumns={@ORM\JoinColumn(name="id_etiqueta", referencedColumnName="id", nullable=false)}
+ *          )
+ *      )
+ * })
  */
 class Rol extends \FormatEasy\CommonBundle\Entity\Objeto
 {

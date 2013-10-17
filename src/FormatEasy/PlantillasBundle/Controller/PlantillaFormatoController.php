@@ -7,15 +7,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use FormatEasy\PlantillasBundle\Entity\Plantilla;
-use FormatEasy\PlantillasBundle\Form\PlantillaType;
+use FormatEasy\PlantillasBundle\Entity\PlantillaFormato;
+use FormatEasy\PlantillasBundle\Form\PlantillaFormatoType;
 
 /**
  * Plantilla controller.
  *
- * @Route("/Plantilla")
+ * @Route("/Plantilla-Formato")
  */
-class PlantillaController extends Controller
+class PlantillaFormatoController extends Controller
 {
 
     /**
@@ -23,33 +23,33 @@ class PlantillaController extends Controller
      *
      * @Route("/", name="plantilla_")
      * @Method("GET")
-     * @Template()
+     * @Template("FormatEasyPlantillasBundle:PlantillaFormato:index.html.twig")
      */
     public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('FormatEasyPlantillasBundle:Plantilla')->findAll();
+        $entities = $em->getRepository('FormatEasyPlantillasBundle:PlantillaFormato')->findAll();
 
         $datos = array(
             'entities' => $entities,
         );
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyPlantillasBundle:Plantilla:_index.html.twig', $datos);
+            return $this->render('FormatEasyPlantillasBundle:PlantillaFormato:_index.html.twig', $datos);
         }
         
         return $datos;
     }
     /**
-     * Creates a new Plantilla entity.
+     * Creates a new PlantillaFormato entity.
      *
      * @Route("/", name="plantilla__create")
      * @Method("POST")
-     * @Template("FormatEasyPlantillasBundle:Plantilla:new.html.twig")
+     * @Template("FormatEasyPlantillasBundle:PlantillaFormato:new.html.twig")
      */
     public function createAction(Request $request)
     {
-        $entity = new Plantilla();
+        $entity = new PlantillaFormato();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
@@ -59,27 +59,27 @@ class PlantillaController extends Controller
             $em->flush();
             $datos = array('id' => $entity->getId());
             if($request->isXmlHttpRequest()){
-                return $this->render('FormatEasyPlantillasBundle:Plantilla:_show.html.twig', $datos);
+                return $this->render('FormatEasyPlantillasBundle:PlantillaFormato:_show.html.twig', $datos);
             }
-            return $this->redirect($this->generateUrl('hoja__show', $datos));
+            return $this->redirect($this->generateUrl('plantilla__show', $datos));
         }
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyPlantillasBundle:Plantilla:_new.html.twig', $datos);
+            return $this->render('FormatEasyPlantillasBundle:PlantillaFormato:_new.html.twig', $datos);
         }
 
         return $datos;
     }
 
     /**
-    * Creates a form to create a Plantilla entity.
+    * Creates a form to create a Plantilla Formato entity.
     *
-    * @param Plantilla $entity The entity
+    * @param PlantillaFormato $entity The entity
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Plantilla $entity)
+    private function createCreateForm(PlantillaFormato $entity)
     {
-        $form = $this->createForm(new PlantillaType(), $entity, array(
+        $form = $this->createForm(new PlantillaFormatoType(), $entity, array(
             'action' => $this->generateUrl('plantilla__create'),
             'method' => 'POST',
         ));
@@ -90,15 +90,15 @@ class PlantillaController extends Controller
     }
 
     /**
-     * Displays a form to create a new Plantilla entity.
+     * Displays a form to create a new Plantilla Formato entity.
      *
      * @Route("/new", name="plantilla__new")
      * @Method("GET")
-     * @Template()
+     * @Template("FormatEasyPlantillasBundle:PlantillaFormato:new.html.twig")
      */
     public function newAction(Request $request)
     {
-        $entity = new Plantilla();
+        $entity = new PlantillaFormato();
         $form   = $this->createCreateForm($entity);
 
         $datos = array(
@@ -107,27 +107,27 @@ class PlantillaController extends Controller
         );
         
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyPlantillasBundle:Plantilla:_new.html.twig', $datos);
+            return $this->render('FormatEasyPlantillasBundle:PlantillaFormato:_new.html.twig', $datos);
         }
 
         return $datos;
     }
 
     /**
-     * Finds and displays a Plantilla entity.
+     * Finds and displays a Plantilla Formato entity.
      *
      * @Route("/{id}", name="plantilla__show")
      * @Method("GET")
-     * @Template()
+     * @Template("FormatEasyPlantillasBundle:PlantillaFormato:show.html.twig")
      */
     public function showAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('FormatEasyPlantillasBundle:Plantilla')->find($id);
+        $entity = $em->getRepository('FormatEasyPlantillasBundle:PlantillaFormato')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Plantilla entity.');
+            throw $this->createNotFoundException('Unable to find Plantilla Formato entity.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -138,14 +138,14 @@ class PlantillaController extends Controller
         );
         
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyPlantillasBundle:Plantilla:_show.html.twig', $datos);
+            return $this->render('FormatEasyPlantillasBundle:PlantillaFormato:_show.html.twig', $datos);
         }
         
         return $datos;
     }
 
     /**
-     * Displays a form to edit an existing Plantilla entity.
+     * Displays a form to edit an existing Plantilla Formato entity.
      *
      * @Route("/{id}/edit", name="plantilla__edit")
      * @Method("GET")
@@ -155,10 +155,10 @@ class PlantillaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('FormatEasyPlantillasBundle:Plantilla')->find($id);
+        $entity = $em->getRepository('FormatEasyPlantillasBundle:PlantillaFormato')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Plantilla entity.');
+            throw $this->createNotFoundException('Unable to find Plantilla Formato entity.');
         }
 
         $editForm = $this->createEditForm($entity);
@@ -170,22 +170,22 @@ class PlantillaController extends Controller
             'delete_form' => $deleteForm->createView(),
         );
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyPlantillasBundle:Plantilla:_show.html.twig', $datos);
+            return $this->render('FormatEasyPlantillasBundle:PlantillaFormato:_edit.html.twig', $datos);
         }
         
         return $datos;
     }
 
     /**
-    * Creates a form to edit a Plantilla entity.
+    * Creates a form to edit a Plantilla Formato entity.
     *
-    * @param Plantilla $entity The entity
+    * @param PlantillaFormato $entity The entity
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createEditForm(Plantilla $entity)
+    private function createEditForm(PlantillaFormato $entity)
     {
-        $form = $this->createForm(new PlantillaType(), $entity, array(
+        $form = $this->createForm(new PlantillaFormatoType(), $entity, array(
             'action' => $this->generateUrl('plantilla__update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -195,20 +195,20 @@ class PlantillaController extends Controller
         return $form;
     }
     /**
-     * Edits an existing Plantilla entity.
+     * Edits an existing Plantilla Formato entity.
      *
      * @Route("/{id}", name="plantilla__update")
      * @Method("PUT")
-     * @Template("FormatEasyPlantillasBundle:Plantilla:edit.html.twig")
+     * @Template("FormatEasyPlantillasBundle:PlantillaFormato:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('FormatEasyPlantillasBundle:Plantilla')->find($id);
+        $entity = $em->getRepository('FormatEasyPlantillasBundle:PlantillaFormato')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Plantilla entity.');
+            throw $this->createNotFoundException('Unable to find Plantilla Formato entity.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -221,10 +221,10 @@ class PlantillaController extends Controller
             $datos = array('id' => $id);
             
             if($request->isXmlHttpRequest()){
-                return $this->render('FormatEasyPlantillasBundle:Plantilla:_edit.html.twig', $datos);
+                return $this->render('FormatEasyPlantillasBundle:PlantillaFormato:_edit.html.twig', $datos);
             }
 
-            return $this->redirect($this->generateUrl('hoja__edit', $datos));
+            return $this->redirect($this->generateUrl('plantilla__edit', $datos));
         }
         
         $datos = array(
@@ -234,13 +234,13 @@ class PlantillaController extends Controller
         );
         
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyPlantillasBundle:Plantilla:_edit.html.twig', $datos);
+            return $this->render('FormatEasyPlantillasBundle:PlantillaFormato:_edit.html.twig', $datos);
         }
 
         return $datos;
     }
     /**
-     * Deletes a Plantilla entity.
+     * Deletes a Plantilla Formato entity.
      *
      * @Route("/{id}", name="plantilla__delete")
      * @Method("DELETE")
@@ -252,10 +252,10 @@ class PlantillaController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('FormatEasyPlantillasBundle:Plantilla')->find($id);
+            $entity = $em->getRepository('FormatEasyPlantillasBundle:PlantillaFormato')->find($id);
 
             if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Plantilla entity.');
+                throw $this->createNotFoundException('Unable to find Plantilla Formato entity.');
             }
 
             $em->remove($entity);
@@ -266,7 +266,7 @@ class PlantillaController extends Controller
     }
 
     /**
-     * Creates a form to delete a Plantilla entity by id.
+     * Creates a form to delete a Plantilla Formato entity by id.
      *
      * @param mixed $id The entity id
      *

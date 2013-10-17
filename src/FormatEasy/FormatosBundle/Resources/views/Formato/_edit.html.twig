@@ -1,0 +1,92 @@
+<div class="form-hide delete" id="delete-{{entity.canonical}}">
+    {{ form(delete_form) }}
+</div>
+<form method="post" action="{{ url('formato__update', {'id' : entity.id}) }}" class="edit-inline">
+    <div class="hoja-config">
+        <div class="btn btn-lg btn-success config">Configurar</div>
+        <div class="btn btn-lg btn-primary construct">Construir</div>
+        <div class="btn btn-lg btn-info design">Diseñar</div>
+        <div class="form-hide">
+            <div>
+                <h3>
+                    Configurar Plantillas
+                </h3>
+            </div>
+            <div class="form-group">
+                {{ form_label(edit_form.PlantillaFormato, 'Plantilla Base') }}
+                {{ form_errors(edit_form.PlantillaFormato) }}
+                {{ form_widget(edit_form.PlantillaFormato, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(edit_form.plantillaPreguntas, 'Plantilla para las Preguntas?') }}
+                {{ form_errors(edit_form.plantillaPreguntas) }}
+                {{ form_widget(edit_form.plantillaPreguntas, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div>
+                <h3>
+                    Configurar Formato
+                </h3>
+            </div>
+            <div class="form-group">
+                {{ form_label(edit_form.nombre, 'Título del formato') }}
+                {{ form_errors(edit_form.nombre) }}
+                {{ form_widget(edit_form.nombre, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(edit_form.descripcion, 'Descripción del Formato') }}
+                {{ form_errors(edit_form.descripcion) }}
+                {{ form_widget(edit_form.descripcion, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="text-center">
+                <input type="submit" value="Guardar" class="btn btn-lg btn-primary"/>
+                <input type="button" value="Borrar" class="btn btn-lg btn-danger delete"/>
+            </div>
+        </div>
+    </div>
+    <div class="hoja-sup">
+        <div class="margen">
+            {{ form_label(edit_form.margen_sup, 'Márgen Superior') }}
+            {{ form_errors(edit_form.margen_sup) }}
+            {{ form_widget(edit_form.margen_sup) }}
+        </div>
+    </div>
+    <div class="hoja-izq">
+        <div class="margen">
+            {{ form_label(edit_form.margen_izq, 'Márgen Izquierdo') }}
+            {{ form_errors(edit_form.margen_izq) }}
+            {{ form_widget(edit_form.margen_izq) }}
+        </div>
+    </div>
+    <div class="hoja-der">
+        <div class="margen">
+            {{ form_label(edit_form.margen_der, 'Márgen derecho') }}
+            {{ form_errors(edit_form.margen_der) }}
+            {{ form_widget(edit_form.margen_der) }}
+        </div>
+    </div>
+    <div class="hoja-inf">
+        <div class="margen">
+            {{ form_label(edit_form.margen_inf, 'Márgen Inferior') }}
+            {{ form_errors(edit_form.margen_inf) }}
+            {{ form_widget(edit_form.margen_inf) }}
+        </div>
+    </div>
+    <div id="unidad">
+        {{ form_label(edit_form.unidadMargen, 'Unidad del Márgen (mm, cm)') }}
+        {{ form_errors(edit_form.unidadMargen) }}
+        {{ form_widget(edit_form.unidadMargen) }}
+    </div>
+    {#<div>
+        {{ form_label(edit_form.etiquetas) }}
+        {{ form_errors(edit_form.etiquetas) }}
+        {{ form_widget(edit_form.etiquetas) }}
+    </div>#}
+    <div>
+        {{ form_label(edit_form._token) }}
+        {{ form_errors(edit_form._token) }}
+        {{ form_widget(edit_form._token) }}
+    </div>
+</form>
+<div class="hoja-cont">
+    {{ entity.PlantillaFormato.codigo | raw }}
+</div>

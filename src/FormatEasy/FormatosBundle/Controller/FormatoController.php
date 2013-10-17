@@ -13,7 +13,7 @@ use FormatEasy\FormatosBundle\Form\FormatoType;
 /**
  * Formato controller.
  *
- * @Route("/formato_")
+ * @Route("/Formato")
  */
 class FormatoController extends Controller
 {
@@ -25,15 +25,20 @@ class FormatoController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('FormatEasyFormatosBundle:Formato')->findAll();
 
-        return array(
+        $datos = array(
             'entities' => $entities,
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Formato:_index.html.twig', $datos);
+        }
+        
+        return $datos;
     }
     /**
      * Creates a new Formato entity.
@@ -47,19 +52,34 @@ class FormatoController extends Controller
         $entity = new Formato();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
+        
+        $em = $this->getDoctrine()->getManager();
+        $pf = $em->getRepository('FormatEasyPlantillasBundle:PlantillaFormato')->findFirst();
+        $pp = $em->getRepository('FormatEasyPlantillasBundle:PlantillaPregunta')->findFirst();
+
+        $datos = array(
+            'plantillaFormato' => $pf,
+            'plantillaPregunta' => $pp,
+            'entity' => $entity,
+            'form'   => $form->createView(),
+        );
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
-
+            $datos['plantillaFormato'] = $entity->getPlantillaFormato();
+            $datos['plantillaPregunta'] = $entity->getPlantillaPreguntas();
+            if($request->isXmlHttpRequest()){
+                return $this->render('FormatEasyFormatosBundle:Formato:_show.html.twig', $datos);
+            }
             return $this->redirect($this->generateUrl('formato__show', array('id' => $entity->getId())));
         }
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Formato:_new.html.twig', $datos);
+        }
 
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
+        return $datos;
     }
 
     /**
@@ -88,15 +108,28 @@ class FormatoController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
         $entity = new Formato();
-        $form   = $this->createCreateForm($entity);
-
-        return array(
+        $em = $this->getDoctrine()->getManager();
+        $pf = $em->getRepository('FormatEasyPlantillasBundle:PlantillaFormato')->findFirst();
+        $pp = $em->getRepository('FormatEasyPlantillasBundle:PlantillaPregunta')->findFirst();
+        $entity->setPlantillaFormato($pf)
+               ->setPlantillaPreguntas($pp);
+        $form = $this->createCreateForm($entity);
+        
+        $datos = array(
+            'plantillaFormato' => $pf,
+            'plantillaPregunta' => $pp,
             'entity' => $entity,
             'form'   => $form->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Formato:_new.html.twig', $datos);
+        }
+
+        return $datos;
     }
 
     /**
@@ -106,7 +139,7 @@ class FormatoController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
+    public function showAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -118,10 +151,16 @@ class FormatoController extends Controller
 
         $deleteForm = $this->createDeleteForm($id);
 
-        return array(
+        $datos = array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Formato:_show.html.twig', $datos);
+        }
+        
+        return $datos;
     }
 
     /**
@@ -131,7 +170,7 @@ class FormatoController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -144,11 +183,18 @@ class FormatoController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
-        return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+        $datos = array(
+            'entity'            => $entity,
+            'plantillaFormato'  => $entity->getPlantillaFormato(),
+            'plantillaPregunta' => $entity->getPlantillaPreguntas(),
+            'edit_form'         => $editForm->createView(),
+            'delete_form'       => $deleteForm->createView(),
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Formato:_edit.html.twig', $datos);
+        }
+        
+        return $datos;
     }
 
     /**
@@ -192,15 +238,26 @@ class FormatoController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
+            $datos = array('id' => $id);
+            
+            if($request->isXmlHttpRequest()){
+                return $this->render('FormatEasyFormatosBundle:Formato:_edit.html.twig', $datos);
+            }
 
-            return $this->redirect($this->generateUrl('formato__edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('formato__edit', $datos));
         }
-
-        return array(
+        
+        $datos = array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
+        
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Formato:_edit.html.twig', $datos);
+        }
+
+        return $datos;
     }
     /**
      * Deletes a Formato entity.
@@ -225,7 +282,7 @@ class FormatoController extends Controller
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('formato_'));
+        return $this->redirect($request->headers->get('referer'));
     }
 
     /**

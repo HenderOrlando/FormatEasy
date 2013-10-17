@@ -1,0 +1,75 @@
+
+<h1>Formato</h1>
+
+<table class="record_properties">
+    <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ entity.id }}</td>
+        </tr>
+        <tr>
+            <th>Nombre</th>
+            <td>{{ entity.nombre }}</td>
+        </tr>
+        </tr>
+        <tr>
+            <th>Descripcion</th>
+            <td>{{ entity.descripcion }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<ul class="record_actions">
+    <li>
+        <a href="{{ path('formato_') }}">
+            Back to the list
+        </a>
+    </li>
+    <li>
+        <a href="{{ path('formato__edit', { 'id': entity.id }) }}">
+            Edit
+        </a>
+    </li>
+    <li>{{ form(delete_form) }}</li>
+</ul>
+
+<hr/>
+
+<table class="records_list table table-responsive table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Respuesta(s)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for pregunta in entity.preguntas %}
+        <tr>
+            <td><a href="{{ path('pregunta__show', { 'id': pregunta.id }) }}">{{ pregunta.id }}</a></td>
+            <td>{{ pregunta.nombre }}</td>
+            <td>{{ pregunta.descripcion }}</td>
+            {# <td>{% if pregunta.fechaCreado %}{{ pregunta.fechaCreado|date('Y-m-d H:i:s') }}{% endif %}</td> #}
+            <td>
+                <ul>
+                    {% for respuesta in pregunta.respuestas %}
+                        <li>{{ respuesta.nombre }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>
+                        <a href="{{ path('pregunta__show', { 'id': pregunta.id }) }}">show</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('pregunta__edit', { 'id': pregunta.id }) }}">edit</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

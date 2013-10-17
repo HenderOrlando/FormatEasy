@@ -16,30 +16,39 @@ body {
 .navbar-inverse .form-group label:not(.btn) {
     color: #999;
 }
+:focus, :active, :hover{
+    outline: none;
+}
 
 /*********** Mmenu ***********/
-nav.mmenu.mm-menu#mmenu-bottom .mm-inner,
-nav.mmenu.mm-menu#mmenu-top .mm-inner,
-nav.mmenu.mm-menu#mmenu-left .mm-inner,
-nav.mmenu.mm-menu#mmenu-right .mm-inner
-{
-    opacity: 0;
-    position: relative;
-    -webkit-transition-property: top, right, bottom, left, margin, border, opacity , -webkit-transform;
+html #mm-blocker,
+.mm-inner{
+    -webkit-transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , -webkit-transform;
     -webkit-transition-duration: 0.35s;
     -webkit-transition-timing-function: ease-out;
-    -moz-transition-property: top, right, bottom, left, margin, border, opacity , -moz-transform;
+    -moz-transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , -moz-transform;
     -moz-transition-duration: 0.35s;
     -moz-transition-timing-function: ease-out;
-    -ms-transition-property: top, right, bottom, left, margin, border, opacity , -ms-transform;
+    -ms-transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , -ms-transform;
     -ms-transition-duration: 0.35s;
     -ms-transition-timing-function: ease-out;
-    -o-transition-property: top, right, bottom, left, margin, border, opacity , -o-transform;
+    -o-transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , -o-transform;
     -o-transition-duration: 0.35s;
     -o-transition-timing-function: ease-out;
-    transition-property: top, right, bottom, left, margin, border, opacity , transform;
+    transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , transform;
     transition-duration: 0.35s;
     transition-timing-function: ease-out;
+}
+#mm-blocker,
+.mm-inner {
+    opacity: 0;
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+html.mm-top #mm-blocker,
+html.mm-top .mm-inner{
+    margin-top: -20%;
 }
 html.mm-top .mm-inner{
     -webkit-transition-duration: 0.4s;
@@ -47,24 +56,28 @@ html.mm-top .mm-inner{
     -ms-transition-duration: 0.4s;
     -o-transition-duration: 0.4s;
     transition-duration: 0.4s;
-}
-nav.mmenu.mm-menu#mmenu-bottom .mm-inner,
-nav.mmenu.mm-menu#mmenu-top .mm-inner,
-nav.mmenu.mm-menu#mmenu-left .mm-inner,
-nav.mmenu.mm-menu#mmenu-right .mm-inner
-{
     opacity: 0;
     position: relative;
     padding: 20px 20px 20px 20px;
+}
+nav.mmenu.mm-menu.mm-top
+{
+    height: 40%;
+    top: 0px;
+}
+html.mm-opening.mm-modal #mm-blocker{
+    opacity: 0.5;
+    margin-top: -50px;
 }
 html.mm-top nav.mm-front,
 html.mm-bottom nav.mm-front{
     height: 50%;
 }
-.mm-opening nav.mmenu.mm-menu#mmenu-bottom .mm-inner,
-.mm-opening nav.mmenu.mm-menu#mmenu-top .mm-inner,
-.mm-opening nav.mmenu.mm-menu#mmenu-left .mm-inner,
-.mm-opening nav.mmenu.mm-menu#mmenu-right .mm-inner
+html.mm-opening.mm-modal #mmenu-left.mm-opened ~ #mm-blocker{
+    height: 112%;
+    margin-top: -70px;
+}
+html.mm-opening nav.mmenu.mm-menu .mm-inner
 {
     opacity: 1;
 }
@@ -73,15 +86,10 @@ html.mm-bottom nav.mm-front{
 {
     padding-bottom: 70px;
 }
-.mm-opening nav.mmenu.mm-menu#mmenu-top .mm-inner
+.mm-opening nav.mmenu.mm-menu.mm-top .mm-inner
 {
-    padding-top: 40px;
-}
-html.mm-right.mm-opening #mmenu-right .mm-inner,
-html.mm-left.mm-opening #mmenu-left .mm-inner,
-html.mm-bottom.mm-opening #mmenu-bottom .mm-inner,
-html.mm-top.mm-opening #mmenu-top .mm-inner{
-    opacity: 1;
+    padding: 30px 60px 0px 60px;
+    margin-top: 0;
 }
 div#mm-blocker{
     background: rgba(235,235,235,0.75);
@@ -106,6 +114,32 @@ html.mm-opening .mm-inner .mmenu-header{
     background: rgba(0, 0, 0, 0.1);
     background: #EEE;
 }
+html.mm-opened .mm-menu.mm-right.mm-front{
+    right: -15%;
+    width: 215px;
+    padding-top: 30px;
+    margin: 0px;
+    overflow: visible;
+}
+html.mm-opening.mm-opened .mm-menu.mm-right.mm-front{
+    right: 0px;
+    width: 215px;
+    padding-top: 30px;
+    margin: 0px;
+}
+html.mm-opening .mm-menu.mm-right.mm-front .btn-group-vertical{
+    width: 100%;
+}
+html.mm-opened .mm-menu.mm-right.mm-front .mm-inner{
+    padding: 0;
+    overflow: auto;
+}
+html.mm-opening.mm-right.mm-front #mm-blocker{
+    display: none;
+}
+html.mm-opened.mm-right.mm-front .mm-page{
+    overflow: auto;
+}
 /*********** Mmenu ***********/
 
 /*********** Table ***********/
@@ -114,3 +148,246 @@ table.table thead th{
     vertical-align: middle;
 }
 /*********** Table ***********/
+
+/*********** Form ***********/
+.btn-group.form-buscar{
+    width: 190px;
+    position: relative;
+}
+.form-buscar > input.form-control.buscar{
+    padding: 0;
+    margin: 0;
+    width: 0%;
+    border: none;
+    margin-left: -20%;
+    opacity: 0;
+    right: 50%;
+}
+
+form.edit-inline + .hoja-cont,
+.form-buscar a.btn.btn-lg:first-child:not(:last-child):not(.dropdown-toggle),
+.form-buscar input.form-control.buscar{
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+.form-buscar > a.btn.btn-lg:first-child:not(:last-child):not(.dropdown-toggle){
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    display: inline-block;
+    z-index: 1;
+    position: relative;
+}
+.form-buscar.active > a.btn.btn-lg:first-child:not(:last-child):not(.dropdown-toggle){
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.form-buscar.active > input.form-control.buscar{
+    opacity: 1;
+    margin-left: -5px;
+    padding-left: 10px;
+    border: 1px solid #CCC;
+    width: 100px;
+    left: 90px;
+}
+
+/*********** Form Formato ***********/
+form.edit-inline .titulo input,
+form.edit-inline .titulo textarea,
+form.edit-inline .titulo{
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+}
+form.edit-inline .desccripcion input,
+form.edit-inline .desccripcion textarea,
+form.edit-inline .desccripcion{
+    font-size: 12px;
+    text-align: justify;
+    width: 100%;
+}
+form.edit-inline textarea,
+form.edit-inline input:not([type="submit"]){
+    border: 1px solid #fff;
+    outline: none;
+    padding: 5px;
+    margin: 5px;
+    font-size: 14px;
+    border-radius: 5px;
+    width: 100%;
+    height: 90%;
+}
+form.edit-inline .margen{
+    text-align: center;
+    height: 40px;
+    width: 100px;
+}
+form.edit-inline .margen,
+form.edit-inline .margen *{
+    opacity: 0;
+}
+form.edit-inline .margen.mouseenter,
+form.edit-inline .margen:focus,
+form.edit-inline .margen:hover,
+form.edit-inline .margen.mouseenter *,
+form.edit-inline .margen:focus *,
+form.edit-inline .margen:hover *{
+    opacity: 1;
+}
+form.edit-inline .margen input{
+    text-align: center;
+}
+form.edit-inline .margen.focused input,
+form.edit-inline .margen input:hover,
+form.edit-inline .margen input:focus{
+    text-align: left;
+}
+form.edit-inline .hoja-inf .margen,
+form.edit-inline .hoja-sup .margen,
+form.edit-inline .hoja-izq .margen,
+form.edit-inline .hoja-der .margen{
+    position: fixed;
+    width: 90%;
+}
+form.edit-inline .hoja-inf .margen,
+form.edit-inline .hoja-sup .margen{
+    left: 5%;
+}
+form.edit-inline .hoja-izq .margen input,
+form.edit-inline .hoja-der .margen input,
+form.edit-inline .hoja-inf .margen input,
+form.edit-inline .hoja-sup .margen input{
+    height: 30px;
+    width: 100px;
+}
+form.edit-inline .hoja-sup .margen{
+    top: 120px;
+}
+form.edit-inline .hoja-inf .margen{
+    bottom: 20px;
+}
+form.edit-inline .hoja-izq .margen,
+form.edit-inline .hoja-der .margen{
+    top: 60px;
+    width: 100px;
+    height: 90%
+}
+form.edit-inline .hoja-izq .margen input,
+form.edit-inline .hoja-der .margen input{
+    top: 50%;
+    position: relative;
+}
+form.edit-inline .hoja-izq .margen{
+    left: 0;
+}
+form.edit-inline .hoja-der .margen{
+    right: 15px;
+}
+form.edit-inline .focused textarea,
+form.edit-inline .focused input,
+form.edit-inline textarea:hover,
+form.edit-inline textarea:focus,
+form.edit-inline input:not([type="submit"]):hover,
+form.edit-inline input:not([type="submit"]):focus{
+    border: 1px solid #ccc;
+    box-shadow: 0 0px 5px 1px rgba(0, 0, 0, 0.3);
+    margin-top: 7px;
+    border-top: none;
+    border-bottom: none;
+    z-index: 9999999;
+    position: relative;
+}
+form.edit-inline #unidad{
+    opacity: 0;
+    position: absolute;
+    display: block;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    z-index: 99999999999;
+}
+form.edit-inline #unidad.focused{
+    opacity: 1;
+}
+form.edit-inline #unidad input{
+    position: relative;
+    text-align: center;
+    width: 80%;
+    height: 60%;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+form.edit-inline #unidad.focused input,
+form.edit-inline #unidad input:focus,
+form.edit-inline #unidad input:hover{
+    border: 1px solid #ccc;
+    border-left: none;
+    box-shadow: 0 0px 5px 1px rgba(0, 0, 0, 0.3);
+}
+form.edit-inline + .hoja-cont{
+    border: 1px solid #DDD;
+    box-shadow: 0 0 10px 5px #EEE;
+    border-radius: 5px;
+    margin: 0 auto;
+    margin-bottom: 40px;
+    -webkit-transition-duration: 300ms;
+    -moz-transition-duration: 300ms;
+    -ms-transition-duration: 300ms;
+    -o-transition-duration: 300ms;
+    transition-duration: 300ms;
+}
+form.edit-inline + .hoja-cont:focus,
+form.edit-inline + .hoja-cont:hover,
+form.edit-inline + .hoja-cont.focused{
+    border: 1px solid #AAA;
+    box-shadow: 0 0 15px 1px #AAA;
+}
+form.edit-inline .hoja-config{
+    margin-bottom: 50px;
+    text-align: center;
+}
+nav.mm-menu.mm-front .mm-inner{
+    padding: 20px 10px 20px 80px;
+}
+.form-hide{
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+form.edit-inline .drop_pregunta{
+    min-height: 50px;
+}
+/*********** Form Formato ***********/
+
+/*********** Form Página Formato ***********/
+.hoja-cont .pie,
+.hoja-cont .contenido-pagina,
+.hoja-cont .encabezado-pagina,
+.hoja-cont .placeholder-sort-pregunta{
+    text-align: center;
+    width: 100%;
+}
+.hoja-cont .contenido-pagina,
+.hoja-cont .contenido-pagina ol{
+    height: 100%;
+    text-align: justify;
+}
+.hoja-cont .template-item-pregunta{
+    border-radius: 10px;
+    border-top: 1px solid #EEE;
+    border-bottom: 1px solid #EEE;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-shadow: 0 15px 10px -15px #CCC, 0 -10px 15px -10px #CCC;
+}
+.content-plantilla{
+    display: none;
+}
+/*********** Form Página Formato ***********/
+
+/*********** Form ***********/

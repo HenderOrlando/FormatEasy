@@ -13,7 +13,7 @@ use FormatEasy\PlantillasBundle\Form\PlantillaPreguntaType;
 /**
  * PlantillaPregunta controller.
  *
- * @Route("/plantillaPregunta_")
+ * @Route("/Plantilla-Pregunta")
  */
 class PlantillaPreguntaController extends Controller
 {
@@ -35,6 +35,7 @@ class PlantillaPreguntaController extends Controller
             'entities' => $entities,
         );
     }
+    
     /**
      * Creates a new PlantillaPregunta entity.
      *

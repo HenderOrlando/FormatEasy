@@ -13,11 +13,30 @@ use FormatEasy\PlantillasBundle\Form\PlantillaRespuestaType;
 /**
  * PlantillaRespuesta controller.
  *
- * @Route("/plantillaRespuesta_")
+ * @Route("/Plantilla-Respuesta")
  */
 class PlantillaRespuestaController extends Controller
 {
 
+    /**
+     * Lists all PlantillaRespuesta entities in button.
+     *
+     * @Route("/Botones/{formato}/", name="_plantillaRespuesta_buttonlist")
+     * @Method("GET")
+     * @Template()
+     */
+    public function buttonListAction($formato)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entities = $em->getRepository('FormatEasyPlantillasBundle:PlantillaRespuesta')->findAll();
+        $formato = $em->getRepository('FormatEasyFormatosBundle:Formato')->findOneBy(array('canonical' => $formato));
+
+        return array(
+            'entities' => $entities,
+            'formato'  => $formato,
+        );
+    }
     /**
      * Lists all PlantillaRespuesta entities.
      *

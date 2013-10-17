@@ -3,8 +3,17 @@ namespace FormatEasy\UsuariosBundle\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /** 
- * @ORM\Entity(repositoryClass="FormatEasy\UsuariosBundle\Repository\UsuarioRepository")
  * @ORM\Table(name="usuario")
+ * @ORM\Entity(repositoryClass="FormatEasy\UsuariosBundle\Repository\UsuarioRepository")
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="etiquetas",
+ *          joinTable=@ORM\JoinTable(
+ *              name="etiqueta_usuario", 
+ *              joinColumns={@ORM\JoinColumn(name="id_objeto_usuario", referencedColumnName="id", nullable=false)}, 
+ *              inverseJoinColumns={@ORM\JoinColumn(name="id_etiqueta", referencedColumnName="id", nullable=false)}
+ *          )
+ *      )
+ * })
  */
 class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
 {
@@ -19,9 +28,9 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
     /** 
      * @ORM\ManyToMany(targetEntity="FormatEasy\CommonBundle\Entity\Rol", inversedBy="Usuarios")
      * @ORM\JoinTable(
-     *     name="RolUsuario", 
-     *     joinColumns={@ORM\JoinColumn(name="usuario", referencedColumnName="id", nullable=false)}, 
-     *     inverseJoinColumns={@ORM\JoinColumn(name="rol", referencedColumnName="id", nullable=false)}
+     *     name="rol_usuario", 
+     *     joinColumns={@ORM\JoinColumn(name="id_usuario", referencedColumnName="id", nullable=false)}, 
+     *     inverseJoinColumns={@ORM\JoinColumn(name="id_rol", referencedColumnName="id", nullable=false)}
      * )
      */
     private $Roles;

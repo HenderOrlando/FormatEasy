@@ -1,11 +1,14 @@
-<div class="show-grid">
+<div class="show-grid text-left">
     <div class="col-xs-6 col-sm-6 col-md-6">
-        <h1>Plantilla list</h1>
+        <h3 class="pull-left">Plantilla Formato list</h3>
+        <a href="{{ path('plantilla__new') }}" data-toggle="modal" href="#modal-link" class="link-modal btn btn-primary btn-lg pull-right">
+            Crear Plantilla Formato
+        </a>
     </div>
     <div class="col-xs-6 col-sm-6 col-md-6">
-        <div class="btn-group">
-            <a href="{{ path('plantilla__new') }}" data-toggle="modal" href="#modal-link" class="link-modal btn btn-primary btn-lg">Crear Hoja</a>
+        <div class="btn-group form-buscar">
             <a href="{{ path('plantilla__new') }}" data-toggle="modal" href="#modal-link" class="link-modal btn btn-primary btn-lg">Buscar</a>
+            <input class="buscar form-control input-lg" name="search-plantilla" type="text">
         </div>
     </div>
 </div>
@@ -15,40 +18,31 @@
         <tr>
             {#<th>Id</th> #}
             <th>Nombre</th>
-            <th>Canonical</th>
             <th>Descripcion</th>
-            <th>Codigo</th>
+            <th>Hoja</th>
             <th>Actions</th>
         </tr>
+        
     </thead>
     <tbody>
     {% for entity in entities %}
         <tr>
             {# <td><a href="{{ path('plantilla__show', { 'id': entity.id }) }}">{{ entity.id }}</a></td> #}
             <td>{{ entity.nombre }}</td>
-            <td>{{ entity.canonical }}</td>
             <td>{{ entity.descripcion }}</td>
             {# <td>{% if entity.fechaCreado %}{{ entity.fechaCreado|date('Y-m-d H:i:s') }}{% endif %}</td> #}
-            <td>{{ entity.codigo }}</td>
+            <td>{{ entity.hoja }}</td>
             <td>
-            <ul>
-                <li>
-                    <a href="{{ path('plantilla__show', { 'id': entity.id }) }}">show</a>
-                </li>
-                <li>
-                    <a href="{{ path('plantilla__edit', { 'id': entity.id }) }}">edit</a>
-                </li>
-            </ul>
+                <ul>
+                    <li>
+                        <a href="{{ path('plantilla__show', { 'id': entity.id }) }}" class="link-ajax btn btn-sm">show</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('plantilla__edit', { 'id': entity.id }) }}" class="link-ajax btn btn-sm">edit</a>
+                    </li>
+                </ul>
             </td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
-
-<ul>
-    <li>
-        <a href="{{ path('plantilla__new') }}">
-            Create a new entry
-        </a>
-    </li>
-</ul>

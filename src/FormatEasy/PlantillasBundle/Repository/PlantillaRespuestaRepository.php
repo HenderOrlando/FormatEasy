@@ -12,4 +12,16 @@ class PlantillaRespuestaRepository extends EntityRepository
             )
             ->getResult();
     }
+    public function findFirst()
+    {
+        try{
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.id','ASC')
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getSingleResult();
+        }catch (\Doctrine\ORM\NoResultException $e){
+            return null;
+        }
+    }
 }

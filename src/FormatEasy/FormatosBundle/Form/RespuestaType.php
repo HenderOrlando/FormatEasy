@@ -16,9 +16,7 @@ class RespuestaType extends AbstractType
     {
         $builder
             ->add('nombre')
-            ->add('canonical')
             ->add('descripcion')
-            ->add('fechaCreado')
             ->add('etiquetas')
             ->add('pregunta')
         ;

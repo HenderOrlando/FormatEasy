@@ -16,17 +16,17 @@ class HojaType extends AbstractType
     {
         $builder
             ->add('nombre')
-            ->add('canonical')
             ->add('descripcion')
-            ->add('fechaCreado')
-            ->add('orientacion')
+            ->add('orientacion', 'choice', array(
+                'choices'   => array(
+                    1   => 'Horizontal',
+                    0   => 'Vertical',
+                ),
+                'multiple'  => false,
+            ))
+            ->add('unidad')
             ->add('ancho')
             ->add('alto')
-            ->add('unidad')
-            ->add('margen_sup')
-            ->add('margen_inf')
-            ->add('margen_izq')
-            ->add('margen_der')
             ->add('etiquetas')
         ;
     }

@@ -8,9 +8,7 @@
             <tr>
                 <th>Id</th>
                 <th>Nombre</th>
-                <th>Canonical</th>
                 <th>Descripcion</th>
-                <th>Fechacreado</th>
                 <th>Codigo</th>
                 <th>Actions</th>
             </tr>
@@ -20,9 +18,7 @@
             <tr>
                 <td><a href="{{ path('plantillaPregunta__show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
                 <td>{{ entity.nombre }}</td>
-                <td>{{ entity.canonical }}</td>
                 <td>{{ entity.descripcion }}</td>
-                <td>{% if entity.fechaCreado %}{{ entity.fechaCreado|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>{{ entity.codigo }}</td>
                 <td>
                 <ul>

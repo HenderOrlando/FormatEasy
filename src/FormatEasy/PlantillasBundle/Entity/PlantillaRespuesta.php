@@ -3,12 +3,25 @@ namespace FormatEasy\PlantillasBundle\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /** 
- * @ORM\Entity
  * @ORM\Table(name="plantilla_respuesta")
  * @ORM\Entity(repositoryClass="FormatEasy\PlantillasBundle\Repository\PlantillaRespuestaRepository")
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="etiquetas",
+ *          joinTable=@ORM\JoinTable(
+ *              name="etiqueta_plantilla_respuesta", 
+ *              joinColumns={@ORM\JoinColumn(name="id_objeto_plantilla_respuesta", referencedColumnName="id", nullable=false)}, 
+ *              inverseJoinColumns={@ORM\JoinColumn(name="id_etiqueta", referencedColumnName="id", nullable=false)}
+ *          )
+ *      )
+ * })
  */
-class PlantillaRespuesta extends Plantilla
+class PlantillaRespuesta extends \FormatEasy\CommonBundle\Entity\Objeto
 {
+    /** 
+     * @ORM\Column(type="text", nullable=false, name="codigo")
+     */
+    private $codigo;
+    
     /** 
      * @ORM\Column(type="string", length=50, nullable=false, name="widget")
      */
@@ -31,6 +44,29 @@ class PlantillaRespuesta extends Plantilla
         parent::__construct();
         $this->preguntas = new \Doctrine\Common\Collections\ArrayCollection();
         $this->PreguntaFormatos = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Set codigo
+     *
+     * @param string $codigo
+     * @return PlantillaRespuesta
+     */
+    public function setCodigo($codigo)
+    {
+        $this->codigo = $codigo;
+    
+        return $this;
+    }
+
+    /**
+     * Get codigo
+     *
+     * @return string 
+     */
+    public function getCodigo()
+    {
+        return $this->codigo;
     }
     
     /**
@@ -120,5 +156,23 @@ class PlantillaRespuesta extends Plantilla
     public function getPreguntaFormatos()
     {
         return $this->PreguntaFormatos;
+    }
+    
+    public function __toString() {
+        return $this->getNombre();
+    }
+    
+    public function json($json = true){
+        $datos = array(
+            'id'            => $this->getId(),
+            'nombre'        => $this->getNombre(),
+            'descripcion'   => $this->getDescripcion(),
+            'codigo'        => $this->getCodigo(),
+            'widget'        => $this->getWidget(),
+            'fechaCreado'   => $this->getFechaCreado(),
+        );
+        if($json)
+            return json_encode($datos);
+        return $datos;
     }
 }

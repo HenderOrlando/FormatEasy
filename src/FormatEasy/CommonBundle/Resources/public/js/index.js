@@ -16,39 +16,7 @@ $(document).ready(function(){
     /********* Checkbox - Radio *********/
     
     /********* Input [Labels vs Placeholder] *********/
-    if(Modernizr.input.placeholder){
-        $('form input').not(':checkbox').not(':radio').each(function(){
-            var label = $(this).parent('label');
-            if(label.length < 1){
-                label = $(this).siblings('label');
-            }
-            label.hide();
-            $(this).prop('placeholder', label.text());
-        });
-    }else{
-
-        $('[placeholder]').focus(function() {
-            var input = $(this);
-            if (input.val() == input.prop('placeholder')) {
-                input.val('');
-                input.removeClass('placeholder');
-            }
-          }).blur(function() {
-            var input = $(this);
-            if (input.val() == '' || input.val() == input.prop('placeholder')) {
-                input.addClass('placeholder');
-                input.val(input.attr('placeholder'));
-            }
-        }).blur();
-        $('[placeholder]').parents('form').submit(function() {
-            $(this).find('[placeholder]').each(function() {
-                var input = $(this);
-                if (input.val() == input.prop('placeholder')) {
-                   input.val('');
-                }
-            });
-        });
-    }
+    ajustarPlaceholder();
     /********* Input [Labels vs Placeholder] *********/
     
     /********* Link Mmenu *********/
@@ -75,13 +43,26 @@ $(document).ready(function(){
                 opts.configuration.hardwareAcceleration = este.attr('data-hardwareAcceleration') === 'true' || este.attr('data-hardwareAcceleration') === 'false'?eval(este.attr('data-hardwareAcceleration')):true;
             }
             $(menu_open).find('.mm-inner .mmenu-content').html(data);
-            $(menu_open).mmenu(opts).trigger('open.mm').on("closed.mm", function(){
-                $(this).find('.mm-inner .mmenu-content').html('');
-            });
+            var click_open = true;
+            if($('html').hasClass('mm-opened') && !$('html').hasClass('mm-'+este.attr('data-menu-position'))){
+                $('nav.mmenu').not(menu_open).on("closed.mm",function(){
+                        if(click_open){
+                            $(menu_open).trigger('open.mm').on("closed.mm", function(){
+                                $(this).find('.mm-inner .mmenu-content').html('');
+                            });
+                            click_open = false;
+                        }
+                    }
+                ).trigger('close.mm');
+            }else{
+                $(menu_open).trigger('open.mm').on("closed.mm", function(){
+                    $(this).find('.mm-inner .mmenu-content').html('');
+                });
+            }
         }).fail(function( jqXHR, textStatus ) {
             console.log("Request failed: "+textStatus);
         }).always(function() {
-            
+            ajustarContentAjax();
         });
     });
     /********* Link Mmenu *********/
@@ -95,15 +76,10 @@ $(document).ready(function(){
           url: este.prop('href')  
         }).done(function(data) {
             
-            var menu_open = '#mmenu-'+este.attr('data-menu-position');
-            if(menu_open.length < 1){
-                menu_open = '#mmenu-right';
-            }
-            
         }).fail(function( jqXHR, textStatus ) {
             console.log("Request failed: "+textStatus);
         }).always(function() {
-            
+            ajustarContentAjax();
         });
     });
     /********* Link Modal *********/
@@ -262,6 +238,90 @@ $(document).ready(function(){
     /********* Modal *********/
     
     /********* Modal *********/
+    
+    /********* Forms *********/
+    ajustarContentAjax();
+    /********* Forms *********/
 });
 /********* Functions *********/
+function ajustarPlaceholder(){
+    if(Modernizr.input.placeholder){
+        $('input, textarea').not(':checkbox').not(':radio').each(function(){
+            var label = $(this).parent('label');
+            if(label.length < 1){
+                label = $(this).siblings('label');
+            }
+            label.css({display: 'none'});
+            $(this).prop('placeholder', label.text());
+        });
+    }else{
+        $('input').focus(function() {
+            var input = $(this);
+            if (input.val() == input.prop('placeholder')) {
+                input.val('');
+                input.removeClass('placeholder');
+            }
+          }).blur(function() {
+            var input = $(this);
+            if (input.val() == '' || input.val() == input.prop('placeholder')) {
+                input.addClass('placeholder');
+                input.val(input.attr('placeholder'));
+            }
+        }).blur();
+        $('input').parents('form').submit(function() {
+            $(this).find('[placeholder]').each(function() {
+                var input = $(this);
+                if (input.val() == input.prop('placeholder')) {
+                   input.val('');
+                }
+            });
+        });
+    }
+}
+
+function ajustarContentAjax(){
+    /********* Links *********/
+    $('.link-ajax').on('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var este = $(this);
+        $.ajax({
+          url: este.prop('href'),
+          method: 'GET'
+        }).done(function(data) {
+            $('.mm-page div#content').html(data);
+        }).fail(function( jqXHR, textStatus ) {
+            console.log("Request failed: "+textStatus);
+        }).always(function() {
+            ajustarContentAjax();
+        });
+    });
+    /********* Links *********/
+    
+    /********* Forms *********/
+    $('.form-buscar .btn, .form-buscar input.buscar').on({
+        mouseenter: function(){
+            $(this).parent().stop()
+                    .queue( function(next){ 
+                        $(this).addClass('active');
+                        next(); 
+                      });
+        },
+        mouseleave: function(){
+            if(!$(this).parent().hasClass('focused'))
+                $(this).parent().stop().delay(500)
+                    .queue( function(next){ 
+                        $(this).removeClass('active');
+                        next(); 
+                      });
+        },
+        focusin: function(){
+            $(this).parent().addClass('active focused');
+        },
+        focusout: function(){
+            $(this).parent().removeClass('active focused');
+        }
+    });
+    /********* Forms *********/
+}
 /********* Functions *********/

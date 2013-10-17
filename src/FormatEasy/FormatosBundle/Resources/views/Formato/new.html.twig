@@ -1,15 +1,108 @@
-{% extends '::base.html.twig' %}
+{% extends '::base_bootstrap.html.twig' %}
 
 {% block body -%}
-    <h1>Formato creation</h1>
-
-    {{ form(form) }}
-
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('formato_') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    {% include "FormatEasyFormatosBundle:Formato:_new.html.twig" %}
+{% endblock %}
+{% block javascripts -%}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.margen').addClass('mouseenter');
+            var pp = eval({{ plantillaPregunta.json | raw}}),
+                pf = eval({{ plantillaFormato.json | raw}}),
+                hoja = pf.hoja;
+            $('.hoja-cont').css({
+                'padding-top'    : '4cm',
+                'padding-right'  : '2.5cm',
+                'padding-left'   : '4cm',
+                'padding-bottom' : '2.5cm',
+                'height': hoja.alto+hoja.unidad,
+                'width' : hoja.ancho+hoja.unidad
+            });
+            $('form.edit-inline .hoja-cont').children().on({
+                focusin: function(){
+                    $('.hoja-cont').addClass('focused');
+                },
+                focusout: function(){
+                    $('.hoja-cont').removeClass('focused');
+                }
+            });
+            $('.margen').on({
+                mouseenter: function(){
+                    $(this).addClass('mouseenter');
+                },
+                mouseleave: function(){
+                    if(!$(this).hasClass('focused'))
+                        $(this).removeClass('mouseenter');
+                },
+                focusin: function(){
+                    $(this).addClass('focused');
+                },
+                focusout: function(){
+                    $(this).removeClass('focused mouseenter');
+                }
+            });
+            var margen_input = null;
+            $('.margen input, #unidad').on({
+                mouseenter: function(){
+                    if($(this).attr('id') !== 'unidad'){
+                        margen_input = $(this);
+                        $('#unidad').position({
+                            of:         margen_input,
+                            my:         "right center",
+                            at:         "right center",
+                            collision:  "fit fit"
+                        });
+                    }
+                    margen_input.parent().addClass("mouseenter");
+                    $('#unidad').stop().animate({opacity: 1});
+                },
+                mouseleave: function(){
+                    
+                    if(!margen_input.hasClass('focused') && !$('#unidad').hasClass('focused')){
+                        margen_input.parent().removeClass("focused mouseenter");
+                        $('#unidad').stop().animate({opacity: 0});
+                    }
+                },
+                focusin: function(){
+                    if($(this).attr('id') !== 'unidad'){
+                        margen_input = $(this);
+                        $('#unidad').position({
+                            of:         margen_input,
+                            my:         "right center",
+                            at:         "right center",
+                            collision:  "fit fit"
+                        });
+                    }
+                    margen_input.parent().addClass("focused mouseenter");
+                    $('#unidad').addClass('focused').stop().animate({opacity: 1});
+                },
+                focusout: function(){
+                    $('#unidad').removeClass('focused').stop().animate({opacity: 0});
+                    margen_input.parent().removeClass('mouseenter focused');
+                }
+            });
+            var menu_open = '#mmenu-left';
+            $(menu_open).find('.mm-inner .mmenu-content').html($('.hoja-config .form-hide').html());
+            $(menu_open).find('.mm-inner .mmenu-content').find('select').on('change', function(){
+                var val = $(this).val();
+                $('.hoja-config .form-hide').find('#'+$(this).attr('id')+' option').removeAttr('selected');
+                $('.hoja-config .form-hide').find('#'+$(this).attr('id')+' option[value='+val+']').attr('selected', true);
+            });
+            $(menu_open).find('.mm-inner .mmenu-content textarea').on('change, keyup', function(){
+                var val = $(this).val();
+                $('.hoja-config .form-hide').find('#'+$(this).attr('id')).text(val);
+            });
+            $(menu_open).find('.mm-inner .mmenu-content input').on('change, keyup', function(){
+                var val = $(this).val();
+                if($(this).attr('type') === 'submit'){
+                    $('.hoja-config .form-hide').find('#'+$(this).attr('id')).click();
+                }else{
+                    $('.hoja-config .form-hide').find('#'+$(this).attr('id')).val(val);
+                }
+            });
+            $('.hoja-config').find('.btn').click(function(){
+                $(menu_open).trigger('open.mm');
+            });
+        });
+    </script>
 {% endblock %}

@@ -1,0 +1,4 @@
+
+{#{ pp.codigo | replace({'%enunciado%':form(form), '%respuesta%': pr.codigo}) | raw}#}
+
+{% include 'FormatEasyFormatosBundle:PreguntaFormato:_formPreguntaFormato.html.twig' %}

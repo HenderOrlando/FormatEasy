@@ -3,13 +3,22 @@ namespace FormatEasy\PlantillasBundle\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /** 
- * @ORM\Entity(repositoryClass="FormatEasy\PlantillasBundle\Repository\HojaRepository")
  * @ORM\Table(name="hoja")
+ * @ORM\Entity(repositoryClass="FormatEasy\PlantillasBundle\Repository\HojaRepository")
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="etiquetas",
+ *          joinTable=@ORM\JoinTable(
+ *              name="etiqueta_hoja", 
+ *              joinColumns={@ORM\JoinColumn(name="id_objeto_hoja", referencedColumnName="id", nullable=false)}, 
+ *              inverseJoinColumns={@ORM\JoinColumn(name="id_etiqueta", referencedColumnName="id", nullable=false)}
+ *          )
+ *      )
+ * })
  */
 class Hoja extends \FormatEasy\CommonBundle\Entity\Objeto
 {
     /** 
-     * @ORM\Column(type="boolean", nullable=false, name="orientacion")
+     * @ORM\Column(type="boolean", nullable=true, name="orientacion", options={"default" = 0})
      */
     private $orientacion;
 
@@ -24,32 +33,12 @@ class Hoja extends \FormatEasy\CommonBundle\Entity\Objeto
     private $alto;
 
     /** 
-     * @ORM\Column(type="string", length=2, nullable=false, name="unidad")
+     * @ORM\Column(type="string", length=2, nullable=false, name="unidad", options={"default" = "mm"})
      */
     private $unidad;
 
     /** 
-     * @ORM\Column(type="decimal", nullable=false, name="margen_sup", precision=4, scale=2)
-     */
-    private $margen_sup;
-
-    /** 
-     * @ORM\Column(type="decimal", nullable=false, name="margen_inf", precision=4, scale=2)
-     */
-    private $margen_inf;
-
-    /** 
-     * @ORM\Column(type="decimal", nullable=false, name="margen_izq", precision=4, scale=2)
-     */
-    private $margen_izq;
-
-    /** 
-     * @ORM\Column(type="decimal", nullable=false, name="margen_der", precision=4, scale=2)
-     */
-    private $margen_der;
-
-    /** 
-     * @ORM\OneToMany(targetEntity="FormatEasy\PlantillasBundle\Entity\Plantilla", mappedBy="Hoja")
+     * @ORM\OneToMany(targetEntity="FormatEasy\PlantillasBundle\Entity\PlantillaFormato", mappedBy="Hoja")
      */
     private $Plantillas;
     /**
@@ -59,6 +48,8 @@ class Hoja extends \FormatEasy\CommonBundle\Entity\Objeto
     {
         parent::__construct();
         $this->Plantillas = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->unidad = 'mm';
+        $this->orientacion = 0;
     }
     
     /**
@@ -82,6 +73,16 @@ class Hoja extends \FormatEasy\CommonBundle\Entity\Objeto
     public function getOrientacion()
     {
         return $this->orientacion;
+    }
+    
+    /**
+     * Get orientacion text
+     *
+     * @return boolean 
+     */
+    public function getOrientacionText()
+    {
+        return $this->orientacion?'Horizontal':'Vertical';
     }
 
     /**
@@ -154,104 +155,12 @@ class Hoja extends \FormatEasy\CommonBundle\Entity\Objeto
     }
 
     /**
-     * Set margen_sup
-     *
-     * @param float $margenSup
-     * @return Hoja
-     */
-    public function setMargenSup($margenSup)
-    {
-        $this->margen_sup = $margenSup;
-    
-        return $this;
-    }
-
-    /**
-     * Get margen_sup
-     *
-     * @return float 
-     */
-    public function getMargenSup()
-    {
-        return $this->margen_sup;
-    }
-
-    /**
-     * Set margen_inf
-     *
-     * @param float $margenInf
-     * @return Hoja
-     */
-    public function setMargenInf($margenInf)
-    {
-        $this->margen_inf = $margenInf;
-    
-        return $this;
-    }
-
-    /**
-     * Get margen_inf
-     *
-     * @return float 
-     */
-    public function getMargenInf()
-    {
-        return $this->margen_inf;
-    }
-
-    /**
-     * Set margen_izq
-     *
-     * @param float $margenIzq
-     * @return Hoja
-     */
-    public function setMargenIzq($margenIzq)
-    {
-        $this->margen_izq = $margenIzq;
-    
-        return $this;
-    }
-
-    /**
-     * Get margen_izq
-     *
-     * @return float 
-     */
-    public function getMargenIzq()
-    {
-        return $this->margen_izq;
-    }
-
-    /**
-     * Set margen_der
-     *
-     * @param float $margenDer
-     * @return Hoja
-     */
-    public function setMargenDer($margenDer)
-    {
-        $this->margen_der = $margenDer;
-    
-        return $this;
-    }
-
-    /**
-     * Get margen_der
-     *
-     * @return float 
-     */
-    public function getMargenDer()
-    {
-        return $this->margen_der;
-    }
-
-    /**
      * Add Plantillas
      *
-     * @param \FormatEasy\PlantillasBundle\Entity\Plantilla $plantillas
+     * @param \FormatEasy\PlantillasBundle\Entity\PlantillaFormato $plantillas
      * @return Hoja
      */
-    public function addPlantilla(\FormatEasy\PlantillasBundle\Entity\Plantilla $plantillas)
+    public function addPlantilla(\FormatEasy\PlantillasBundle\Entity\PlantillaFormato $plantillas)
     {
         $this->Plantillas[] = $plantillas;
     
@@ -261,9 +170,9 @@ class Hoja extends \FormatEasy\CommonBundle\Entity\Objeto
     /**
      * Remove Plantillas
      *
-     * @param \FormatEasy\PlantillasBundle\Entity\Plantilla $plantillas
+     * @param \FormatEasy\PlantillasBundle\Entity\PlantillaFormato $plantillas
      */
-    public function removePlantilla(\FormatEasy\PlantillasBundle\Entity\Plantilla $plantillas)
+    public function removePlantilla(\FormatEasy\PlantillasBundle\Entity\PlantillaFormato $plantillas)
     {
         $this->Plantillas->removeElement($plantillas);
     }
@@ -276,5 +185,25 @@ class Hoja extends \FormatEasy\CommonBundle\Entity\Objeto
     public function getPlantillas()
     {
         return $this->Plantillas;
+    }
+    
+    public function __toString() {
+        return $this->getNombre();
+    }
+    
+    public function json($json = true){
+        $datos = array(
+            'id'            => $this->getId(),
+            'nombre'        => $this->getNombre(),
+            'descripcion'   => $this->getDescripcion(),
+            'alto'          => $this->getAlto(),
+            'ancho'         => $this->getAncho(),
+            'orientacion'   => $this->getOrientacion(),
+            'unidad'        => $this->getUnidad(),
+            'fechaCreado'   => $this->getFechaCreado(),
+        );
+        if($json)
+            return json_encode($datos);
+        return $datos;
     }
 }
