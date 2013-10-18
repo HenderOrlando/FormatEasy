@@ -1,0 +1,33 @@
+<div class="item-respuesta">
+    <h4>Nueva Respuesta</h4>
+        {#{ form(form) }#}
+    <form method="post" action="{{ url('respuesta__addRespuesta', {'id' : entity.id}) }}" class="edit-inline col-md-10">
+        <div class="col-md-7">
+            {{ form_label(form.nombre, 'Enunciado respuesta', { 'attr': {'class': 'control-label'} }) }}
+            {{ form_errors(form.nombre) }}
+            {{ form_widget(form.nombre, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="col-md-5">
+            {{ form_label(form.descripcion, 'Ayuda', { 'attr': {'class': 'control-label'} }) }}
+            {{ form_errors(form.descripcion) }}
+            {{ form_widget(form.descripcion, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-hide">
+            {{ form_rest(form) }}
+        </div>
+    </form>
+    <div class="col-md-2 opciones-respuesta">
+        <div class="row">
+            <div class="btn-group">
+                <a href="#" class="btn btn-sm btn-default tooltip_" data-title="Guardar" data-placement="top" data-toggle="tooltip" title="Guardar"><span class="glyphicon glyphicon-save"></span></a>
+                <a href="#" class="btn btn-sm btn-default tooltip_" data-title="Borrar" data-placement="top" data-toggle="tooltip" title="Borrar"><span class="glyphicon glyphicon-trash"></span></a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="btn-group">
+                <a href="#" class="btn btn-sm btn-default tooltip_" data-title="Configurar" data-placement="bottom" data-toggle="tooltip" title="Configurar"><span class="glyphicon glyphicon-wrench"></span></a>                
+                <a href="#" class="btn btn-sm btn-default tooltip_" data-title="Duplicar" data-placement="bottom" data-toggle="tooltip" title="Duplicar"><span class="glyphicon glyphicon-plus-sign"></span></a>
+            </div>
+        </div>
+    </div>
+</div>

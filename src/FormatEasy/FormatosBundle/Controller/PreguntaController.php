@@ -7,8 +7,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FormatEasy\FormatosBundle\Entity\Pregunta;
 use FormatEasy\FormatosBundle\Form\PreguntaType;
+use FormatEasy\FormatosBundle\Entity\Formato;
+use FormatEasy\FormatosBundle\Form\FormatoType;
 
 /**
  * Pregunta controller.
@@ -18,6 +21,56 @@ use FormatEasy\FormatosBundle\Form\PreguntaType;
 class PreguntaController extends Controller
 {
 
+    /**
+     * Form para responder la Pregunta.
+     *
+     * @Route("/Responder/{pregunta}/en/{formato}/", name="pregunta__responderPregunta")
+     * @Route("/Responder/{pregunta}/en/{formato}/{disabled}-Deshabilitado/", name="pregunta__responderPregunta_deshabilitado", defaults={"disabled" = "Si"})
+     * @ParamConverter("pregunta", class="FormatEasyFormatosBundle:Pregunta", options={"canonical" = "pregunta", "repository_method" = "findOneByCanonical"})
+     * @ParamConverter("formato", class="FormatEasyFormatosBundle:Formato", options={"canonical" = "formato", "repository_method" = "findOneByCanonical"})
+     * @Template("FormatEasyFormatosBundle:Pregunta:_formResponderPregunta.html.twig")
+     */
+    public function formResponderPreguntaAction(Pregunta $pregunta, Formato $formato){
+        $em = $this->getDoctrine()->getManager();
+//        $pf = new \FormatEasy\FormatosBundle\Entity\PreguntaFormato();
+        $pf = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->findOneBy(array('formato' => $formato, 'pregunta' => $pregunta));
+        $form = $this->createFormBuilder();
+        $canonical = str_replace('-', '_', $pf->getPlantillaRespuesta()->getCanonical());
+        if(!$canonical){
+            $canonical = $pregunta->getPlantilla()->getCanonical();
+        }
+        $pr = $pf->getPlantillaRespuesta();
+        $nombre = $pf->getCanonicalForm();
+        if(!$nombre){
+            $nombre = $pregunta->getCanonicalForm();
+        }
+        if(!$pr){
+            $pr = $pregunta->getPlantilla();
+        }
+        if(stripos($canonical, 'texto') !== false || stripos($canonical, 'fecha') !== false || stripos($canonical, 'hora') !== false || stripos($canonical, 'numero') !== false){
+            $form->add($nombre, $pr->getWidget());
+        }else{
+            foreach ($pregunta->getRespuestas() as $respuesta) {
+                $form->add($respuesta->getCanonicalForm(), $pr->getWidget());
+            }
+        }
+        $disabled = $this->getRequest()->get('disabled', false);
+        $form->setDisabled($disabled)
+            ->setAction($this->generateUrl('pregunta__responderPregunta', array(
+            'pregunta'     =>  $pregunta->getCanonical(),
+            'formato'     =>  $formato->getCanonical(),
+        )));
+        $form = $form->getForm();
+        return array(
+            'p'     =>  $pregunta,
+            'f'     =>  $formato,
+            'nombre'=>  $nombre,
+            'pf'    =>  $pf,
+            'pr'    =>  $pr,
+            'form'  =>  $form->createView(),
+        );
+    }
+    
     /**
      * Lists all Pregunta entities.
      *

@@ -164,6 +164,7 @@ table.table thead th{
     right: 50%;
 }
 
+.hoja-cont .template-item-pregunta .enunciado-pregunta form.edit-inline,
 form.edit-inline + .hoja-cont,
 .form-buscar a.btn.btn-lg:first-child:not(:last-child):not(.dropdown-toggle),
 .form-buscar input.form-control.buscar{
@@ -246,11 +247,14 @@ form.edit-inline .margen input:focus{
     text-align: left;
 }
 form.edit-inline .hoja-inf .margen,
-form.edit-inline .hoja-sup .margen,
+form.edit-inline .hoja-sup .margen{
+    position: absolute;
+    width: 90%;
+}
 form.edit-inline .hoja-izq .margen,
 form.edit-inline .hoja-der .margen{
     position: fixed;
-    width: 90%;
+    
 }
 form.edit-inline .hoja-inf .margen,
 form.edit-inline .hoja-sup .margen{
@@ -267,7 +271,8 @@ form.edit-inline .hoja-sup .margen{
     top: 120px;
 }
 form.edit-inline .hoja-inf .margen{
-    bottom: 20px;
+    bottom: 0px;
+    position: fixed;
 }
 form.edit-inline .hoja-izq .margen,
 form.edit-inline .hoja-der .margen{
@@ -346,8 +351,10 @@ form.edit-inline + .hoja-cont.focused{
     box-shadow: 0 0 15px 1px #AAA;
 }
 form.edit-inline .hoja-config{
-    margin-bottom: 50px;
+    margin-bottom: 15px;
     text-align: center;
+    margin-top: 40px;
+    width: 100%;
 }
 nav.mm-menu.mm-front .mm-inner{
     padding: 20px 10px 20px 80px;
@@ -374,6 +381,10 @@ form.edit-inline .drop_pregunta{
 .hoja-cont .contenido-pagina ol{
     height: 100%;
     text-align: justify;
+    overflow: hidden;
+}
+.hoja-cont .contenido-pagina ol{
+    overflow: auto;
 }
 .hoja-cont .template-item-pregunta{
     border-radius: 10px;
@@ -384,10 +395,65 @@ form.edit-inline .drop_pregunta{
     padding-top: 10px;
     padding-bottom: 10px;
     box-shadow: 0 15px 10px -15px #CCC, 0 -10px 15px -10px #CCC;
+    background: rgba(250, 250, 250, 0.7);
+}
+.hoja-cont .template-item-pregunta .item-respuesta:hover .opciones-respuesta,
+.hoja-cont .template-item-pregunta .item-respuesta:focus .opciones-respuesta{
+    display: block;
+    opacity: 1;
+}
+.hoja-cont .template-item-pregunta .enunciado-pregunta form{
+    border-right: 1px solid #EEE;
 }
 .content-plantilla{
     display: none;
 }
-/*********** Form Página Formato ***********/
+.hoja-cont .template-item-pregunta .item-respuesta .opciones-respuesta,
+.hoja-cont .template-item-pregunta .enunciado-pregunta .opciones-pregunta-pagina{
+    box-shadow: -5px 0px 10px -5px #CCC, inset 5px 0px 10px -5px #CCC;;
+    display: none;
+    opacity: 0;
+    position: absolute;
+    padding: 5px 0px 5px 2px;
+}
+.hoja-cont .template-item-pregunta .enunciado-pregunta.editando .opciones-pregunta-pagina .btn.editar-pregunta,
+.hoja-cont .template-item-pregunta .enunciado-pregunta .opciones-pregunta-pagina .btn:not(.editar-pregunta){
+    display: none;
+    opacity: 0;
+}
+.hoja-cont .template-item-pregunta .enunciado-pregunta form.edit-inline{
+    max-height: 0;
+    overflow: hidden
+}
+.hoja-cont .template-item-pregunta .enunciado-pregunta.editando form.edit-inline{
+    max-height: 20em;
+}
+.hoja-cont .template-item-pregunta .enunciado-pregunta.editando .opciones-pregunta-pagina .btn{
+    display: block;
+    opacity: 1;
+}
 
+.hoja-cont .template-item-pregunta .item-respuesta .opciones-respuesta > .row:first-child .btn-group .btn:first-child{
+    border-bottom-left-radius: 0;
+}
+.hoja-cont .template-item-pregunta .item-respuesta .opciones-respuesta > .row:first-child .btn-group .btn:last-child{
+    border-bottom-right-radius: 0;
+}
+.hoja-cont .template-item-pregunta .item-respuesta .opciones-respuesta > .row:last-child .btn-group .btn:first-child{
+    border-top-left-radius: 0;
+}
+.hoja-cont .template-item-pregunta .item-respuesta .opciones-respuesta > .row:last-child .btn-group .btn:last-child{
+    border-top-right-radius: 0;
+}
+
+.hoja-cont .template-item-pregunta .enunciado-pregunta .opciones-pregunta-pagina .btn-group-vertical>.btn:last-child:not(:first-child),
+.hoja-cont .template-item-pregunta .enunciado-pregunta .opciones-pregunta-pagina .btn-group-vertical>.btn:first-child:not(:last-child),
+.hoja-cont .template-item-pregunta .enunciado-pregunta .opciones-pregunta-pagina .btn-group-vertical>.btn{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+/*********** Form Página Formato ***********/
+.form-inline .form-control{
+    width: auto;
+}
 /*********** Form ***********/

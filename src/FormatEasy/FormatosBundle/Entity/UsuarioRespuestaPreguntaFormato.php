@@ -22,6 +22,11 @@ class UsuarioRespuestaPreguntaFormato
     private $fechaCreado;
 
     /** 
+     * @ORM\Column(type="text", nullable=true, name="valor")
+     */
+    private $valor;
+    
+    /** 
      * @ORM\ManyToOne(targetEntity="FormatEasy\UsuariosBundle\Entity\Usuario", inversedBy="respuestasPreguntasFormatos")
      * @ORM\JoinColumn(name="usuario", referencedColumnName="id", nullable=false)
      */
@@ -175,5 +180,28 @@ class UsuarioRespuestaPreguntaFormato
     public function getFormato()
     {
         return $this->formato;
+    }
+    
+    /**
+     * Set valor
+     *
+     * @param string $valor
+     * @return Objeto
+     */
+    public function setValor($valor)
+    {
+        $this->valor = $valor;
+    
+        return $this;
+    }
+
+    /**
+     * Get valor
+     *
+     * @return string 
+     */
+    public function getValor()
+    {
+        return $this->valor;
     }
 }

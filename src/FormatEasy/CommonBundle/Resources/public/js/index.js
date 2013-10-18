@@ -323,5 +323,8 @@ function ajustarContentAjax(){
         }
     });
     /********* Forms *********/
+    $('.tooltip_').each(function(){
+        $(this).tooltip();
+    });
 }
 /********* Functions *********/

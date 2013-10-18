@@ -116,6 +116,29 @@ class RespuestaController extends Controller
 
         return $datos;
     }
+    /**
+     * Displays a form to create a new Respuesta entity.
+     *
+     * @Route("/Agregar-Respuesta", name="respuesta__addRespuesta")
+     * @Method("GET")
+     * @Template()
+     */
+    public function addRespuestaAction(Request $request)
+    {
+        $entity = new Respuesta();
+        $form   = $this->createCreateForm($entity);
+
+        $datos = array(
+            'entity' => $entity,
+            'form'   => $form->createView(),
+        );
+        
+//        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_addRespuesta.html.twig', $datos);
+//        }
+//
+//        return $datos;
+    }
 
     /**
      * Finds and displays a Respuesta entity.
@@ -175,6 +198,38 @@ class RespuestaController extends Controller
         );
         if($request->isXmlHttpRequest()){
             return $this->render('FormatEasyFormatosBundle:Respuesta:_edit.html.twig', $datos);
+        }
+        
+        return $datos;
+    }
+
+    /**
+     * Displays a form to edit an existing Respuesta entity.
+     *
+     * @Route("/Actualizar/{id}", name="respuesta__editar")
+     * @Method("GET")
+     * @Template()
+     */
+    public function editRespuestaAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('FormatEasyFormatosBundle:Respuesta')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Respuesta entity.');
+        }
+
+        $editForm = $this->createEditForm($entity);
+        $deleteForm = $this->createDeleteForm($id);
+
+        $datos = array(
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_editRespuesta.html.twig', $datos);
         }
         
         return $datos;

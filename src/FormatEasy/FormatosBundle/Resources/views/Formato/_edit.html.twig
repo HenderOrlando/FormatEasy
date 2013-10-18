@@ -2,10 +2,15 @@
     {{ form(delete_form) }}
 </div>
 <form method="post" action="{{ url('formato__update', {'id' : entity.id}) }}" class="edit-inline">
-    <div class="hoja-config">
-        <div class="btn btn-lg btn-success config">Configurar</div>
-        <div class="btn btn-lg btn-primary construct">Construir</div>
-        <div class="btn btn-lg btn-info design">Diseñar</div>
+    <div class="hoja-config" data-spy="affix" data-offset-top="50">
+        <div class="text-center">
+            <div class="btn-group btn-group-lg">
+                <div class="btn btn-success config">Configurar</div>
+                <div class="btn btn-primary construct">Construir</div>
+                <div class="btn btn-info design">Diseñar</div>
+                <div class="btn btn-danger delete formato" id="button-delete-{{entity.canonical}}">Borrar</div>
+            </div>
+        </div>
         <div class="form-hide">
             <div>
                 <h3>

@@ -1,7 +1,37 @@
 
-<div class="enunciado">
-    <form method="post" action="{{ url('preguntaFormato__update', {'id' : f.id}) }}" class="edit-inline">
+<div class="enunciado {{ pf is not defined or (pf is defined and pf.id is empty)?'editando':'' }}">
+    {% set action = 'preguntaFormato__addPregunta' %}
+    {% if pf is defined and pf.id is not empty %}
+        <div class="view-pregunta">
+            {% set action = 'preguntaFormato__verPreguntaFormato' %}
+            {% set datos_action = {'id': pf.id} %}
+            {% render(controller('FormatEasyFormatosBundle:Pregunta:formResponderPregunta', {
+                'pregunta': pf.pregunta.canonical,
+                'formato': f.canonical,
+                'disabled': 'Si'
+            })) %}
+        </div>
+    {% else %}
         <div>Pregunta tipo "{{ pr.nombre }}"</div>
+        {% set datos_action = {'respuesta': pr.canonical, 'formato': f.canonical} %}
+    {% endif %}
+    <form method="post" action="{{ url(action, datos_action) }}" class="edit-inline">
+        <div class="opciones-pregunta-pagina">
+            <div class="btn-group-vertical">
+                <a href="#" class="btn btn-sm btn-default tooltip_ guardar-pregunta" data-title="Guardar" data-placement="right" data-toggle="tooltip" title="Guardar"><span class="glyphicon glyphicon-save"></span></a>
+                <a href="#" class="btn btn-sm btn-default tooltip_ duplicar-pregunta" data-title="Duplicar" data-placement="right" data-toggle="tooltip" title="Duplicar"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                <a href="#" class="btn btn-sm btn-default tooltip_ borrar-pregunta" data-title="Borrar" data-placement="right" data-toggle="tooltip" title="Borrar"><span class="glyphicon glyphicon-trash"></span></a>
+                <a href="#" class="btn btn-sm btn-default tooltip_ configure-pregunta" data-title="Configurar" data-placement="right" data-toggle="tooltip" title="Configurar"><span class="glyphicon glyphicon-wrench"></span></a>
+                {% if not ('texto' in (pr.canonical | lower) or 'fecha' in (pr.canonical | lower) or 'hora' in (pr.canonical | lower) or 'numero' in (pr.canonical | lower)) %}
+                    <a href="#" class="btn btn-sm btn-default tooltip_ nueva-pregunta" data-title="Nueva Respuesta" data-placement="right" data-toggle="tooltip" title="Agregar Respuesta"><span class="glyphicon glyphicon-plus"></span></a>
+                {% endif %}
+                <a href="#" class="btn btn-sm btn-default tooltip_ cerrar-edicion-pregunta" data-title="Cerrar Edición" data-placement="right" data-toggle="tooltip" title="Cerrar Edición"><span class="glyphicon glyphicon-remove-circle"></span></a>
+                <a href="#" class="btn btn-sm btn-default tooltip_ editar-pregunta" data-title="Abrir Edición" data-placement="right" data-toggle="tooltip" title="Abrir Edición"><span class="glyphicon glyphicon-pencil"></span></a>
+            </div>
+        </div>
+        {% if pf is defined and pf.id is not empty %}
+            <div>Pregunta tipo "{{ pr.nombre }}"</div>
+        {% endif %}
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -17,7 +47,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     {% if form.pregunta.descripcion is defined %}
                         {{ form_label(form.pregunta.descripcion, 'Ayuda', { 'attr': {'class': 'control-label'} }) }}
                         {{ form_errors(form.pregunta.descripcion) }}
@@ -28,7 +58,7 @@
                         {{ form_widget(form.descripcion, { 'attr': {'class': 'form-control'} }) }}
                     {% endif %}
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     {% if form.pregunta.etiquetas is defined %}
                         {{ form_label(form.pregunta.etiquetas, 'Etiquetas', { 'attr': {'class': 'control-label'} }) }}
                         {{ form_errors(form.pregunta.etiquetas) }}
@@ -39,28 +69,25 @@
                         {{ form_widget(form.etiquetas, { 'attr': {'class': 'form-control'} }) }}
                     {% endif %}
                 </div>
-                <div class="col-md-4 text-center">
-                    <div class="col-md-6">
-                        <div class="btn-group-vertical">
-                            <input type="submit" class="btn btn-sm btn-default" value="Guardar"/>
-                            <a href="#" class="btn btn-sm btn-default">Duplicar</a>
-                            <a href="#" class="btn btn-sm btn-default">Borrar</a>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="btn-group-vertical">
-                        <a href="#" class="btn btn-sm btn-default">Opciones</a>
-                        <a href="#" class="btn btn-sm btn-default"></a>
-                        <a href="#" class="btn btn-sm btn-default">Respuestas</a>
-                        </div>
-                    </div>
-                </div>
-                <span class="hide">
+                <span class="form-hide">
+                    <input type="submit" class="btn btn-sm btn-default" value="Guardar"/>
                     {{ form_rest(form) }}
                 </span>
             </div>
         </div>
     </form>
 </div>
-
+{% if not ('texto' in (pr.canonical | lower) or 'fecha' in (pr.canonical | lower) or 'hora' in (pr.canonical | lower) or 'numero' in (pr.canonical | lower)) %}
+    {% if pf is defined and pf is not empty %}
+        <div class="respuestas">
+            {% for r in pf.pregunta.respuestas %}
+                {% render(controller('FormatEasyFormatosBundle:Respuesta:editRespuesta', {'id': r.id})) %}
+            {% endfor %}
+            <div>
+                {% render(controller('FormatEasyFormatosBundle:Respuesta:addRespuesta')) %}
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
 {{ pp.codigo | replace({'%respuesta%': ''}) | raw}}
+<div class="clear clearfix clear-fix"></div>

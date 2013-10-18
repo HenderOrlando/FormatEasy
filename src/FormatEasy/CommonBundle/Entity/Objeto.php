@@ -127,6 +127,16 @@ class Objeto
     {
         return $this->canonical;
     }
+    
+    /**
+     * Get canonical
+     *
+     * @return string 
+     */
+    public function getCanonicalForm()
+    {
+        return str_replace('-', '_', $this->canonical);
+    }
 
     /**
      * Set descripcion

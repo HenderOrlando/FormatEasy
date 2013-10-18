@@ -57,14 +57,20 @@ class PreguntaFormatoController extends Controller
                 'formato'       => $formato->getCanonical(),
                 'em'            => $this->getDoctrine()->getManager(),
             ));
-        if($request->getMethod() === 'POST' || $request->getMethod() === 'PUT'){
+        if($request->getMethod() == 'POST' || $request->getMethod() == 'PUT'){
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($entity);
                 $em->flush();
 
-                return $this->redirect($this->generateUrl('preguntaFormato__show', array('id' => $entity->getId())));
+                return array(
+                    'form'   => $form->createView(),
+                    'pp' => $formato->getPlantillaPreguntas(),
+                    'pr' => $respuesta,
+                    'f' => $formato,
+                    'pf' => $entity,
+                );
             }
         }
         return array(
@@ -101,14 +107,18 @@ class PreguntaFormatoController extends Controller
         $formato = $entity->getFormato();
         $orden_ = true;
         $form = $this->getForm($entity, array(
+                'form_pregunta' => new PreguntaType(array(
+                    'plantilla' => $respuesta,
+                    'em'        => $this->getDoctrine()->getManager()
+                )),
                 'plantilla'     => $respuesta,
                 'formato'       => $formato,
                 'orden'         => $orden_,
+                'em'            => $this->getDoctrine()->getManager()
             ), array(
                 'id'            => $entity->getId(),
                 'respuesta'     => $respuesta->getCanonical(),
                 'formato'       => $formato->getCanonical(),
-                'em'            => $this->getDoctrine()->getManager(),
             ));
         if($request->getMethod() === 'POST' || $request->getMethod() === 'PUT'){
             $form->handleRequest($request);
@@ -120,9 +130,11 @@ class PreguntaFormatoController extends Controller
                 return $this->redirect($this->generateUrl('preguntaFormato__show', array('id' => $entity->getId())));
             }
         }
+        
         return array(
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
             'pp' => $formato->getPlantillaPreguntas(),
+            'pf' => $entity,
             'pr' => $respuesta,
             'f' => $formato,
         );
@@ -150,12 +162,12 @@ class PreguntaFormatoController extends Controller
             $url_action .= 'update';
         }
         $form = $this->createForm(new $classname_type($datos), $entity, array(
-            'action' => $this->generateUrl($url_action, $parameters),
+            //'action' => $this->generateUrl($url_action, $parameters),
             'method' => 'POST',
             'em'            => $this->getDoctrine()->getManager(),
         ));
 
-        $form->add('submit', 'submit', array('label' => $button));
+//        $form->add('submit', 'submit', array('label' => $button));
 
         return $form;
     }

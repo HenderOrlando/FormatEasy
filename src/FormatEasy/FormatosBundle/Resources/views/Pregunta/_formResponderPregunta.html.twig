@@ -1,0 +1,22 @@
+<div class="form-respuesta">
+    {{ form_start(form,{'attr': {'class': 'form-inline', 'role':'form'} }) }}
+        {% if 'texto' in (pr.canonical | lower) or 'fecha' in (pr.canonical | lower) or 'hora' in (pr.canonical | lower) or 'numero' in (pr.canonical | lower) %}
+        <div class="form-group">
+            {{ form_label(form[nombre], nombre|humanize, { 'attr': {'class': 'control-label'} }) }}
+            {{ form_errors(form[nombre]) }}
+            {{ form_widget(form[nombre], { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        {% else %}
+            {% for r in p.respuestas %}
+            <div id="respuesta-{{ r.id }}" class="form-group">
+                <span>
+                    {{ form_label(form[r.getCanonicalForm], nombre|humanize, { 'attr': {'class': 'control-label'} }) }}
+                </span>
+                {{ form_errors(form[r.getCanonicalForm]) }}
+                {{ form_widget(form[r.getCanonicalForm], { 'attr': {'class': 'form-control'} }) }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {{ form_rest(form) }}
+    {{ form_end(form) }}
+</div>
