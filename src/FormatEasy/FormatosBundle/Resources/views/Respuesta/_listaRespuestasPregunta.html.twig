@@ -1,0 +1,5 @@
+{# empty Twig template #}
+{% for r in respuestas %}
+    {% render(controller('FormatEasyFormatosBundle:Respuesta:editRespuesta', {'id': r.id})) %}
+    <div class="clear clearfix" ></div>
+{% endfor %}

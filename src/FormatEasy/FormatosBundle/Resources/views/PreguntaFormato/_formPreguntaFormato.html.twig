@@ -2,14 +2,27 @@
 <div class="enunciado {{ pf is not defined or (pf is defined and pf.id is empty)?'editando':'' }}">
     {% set action = 'preguntaFormato__addPregunta' %}
     {% if pf is defined and pf.id is not empty %}
-        <div class="view-pregunta">
-            {% set action = 'preguntaFormato__verPreguntaFormato' %}
-            {% set datos_action = {'id': pf.id} %}
+        {% set action = 'preguntaFormato__verPreguntaFormato' %}
+        {% set datos_action = {'id': pf.id} %}
+        {#<div class="view-pregunta" data-pos="{{ pf is defined?pf.orden:'' }}">
             {% render(controller('FormatEasyFormatosBundle:Pregunta:formResponderPregunta', {
                 'pregunta': pf.pregunta.canonical,
                 'formato': f.canonical,
                 'disabled': 'Si'
             })) %}
+        </div>#}
+        <div>
+            <span class="text-success">{{ pf.pregunta.nombre }}</span>
+            {% if 'choice' in pr.widget or 'radio' in pr.widget or 'checkbox' in pr.widget  or 'lista' in pr.canonical |lower  or 'tabla' in pr.canonical |lower %}
+                <span class="text-muted pull-right opciones">
+                    <span class="num">{{ pf.pregunta.respuestas | length }}</span> 
+                    <a href="{{ url('respuestas_pregunta', {'pregunta':pf.pregunta.canonical}) }}" class="text-muted">{{ 'tabla' in pr.canonical |lower? 'Columna(s)': 'Opcion(es)' }}</a>
+                    {% if 'tabla' in pr.canonical |lower %}
+                        y <span class="num-fila">{{ pf.pregunta.respuestas | length }}</span> 
+                        <a href="{{ url('respuestas_pregunta', {'pregunta':pf.pregunta.canonical}) }}" class="text-muted">Fila(s)</a>
+                    {% endif %}
+                </span>
+            {% endif %}
         </div>
     {% else %}
         <div>Pregunta tipo "{{ pr.nombre }}"</div>
@@ -22,11 +35,11 @@
                 <a href="#" class="btn btn-sm btn-default tooltip_ duplicar-pregunta" data-title="Duplicar" data-placement="right" data-toggle="tooltip" title="Duplicar"><span class="glyphicon glyphicon-plus-sign"></span></a>
                 <a href="#" class="btn btn-sm btn-default tooltip_ borrar-pregunta" data-title="Borrar" data-placement="right" data-toggle="tooltip" title="Borrar"><span class="glyphicon glyphicon-trash"></span></a>
                 <a href="#" class="btn btn-sm btn-default tooltip_ configure-pregunta" data-title="Configurar" data-placement="right" data-toggle="tooltip" title="Configurar"><span class="glyphicon glyphicon-wrench"></span></a>
-                {% if not ('texto' in (pr.canonical | lower) or 'fecha' in (pr.canonical | lower) or 'hora' in (pr.canonical | lower) or 'numero' in (pr.canonical | lower)) %}
-                    <a href="#" class="btn btn-sm btn-default tooltip_ nueva-pregunta" data-title="Nueva Respuesta" data-placement="right" data-toggle="tooltip" title="Agregar Respuesta"><span class="glyphicon glyphicon-plus"></span></a>
+                {% if pf is defined and ('choice' in pr.widget or 'radio' in pr.widget or 'checkbox' in pr.widget) %}
+                    <a href="{{ url('respuesta__addRespuesta',{'pregunta':pf.pregunta.canonical}) }}" class="btn btn-sm btn-default tooltip_ add-respuesta" data-title="Agregar Respuesta" data-placement="right" data-toggle="tooltip" title="Agregar Respuesta"><span class="glyphicon glyphicon-plus"></span></a>
                 {% endif %}
+                <a href="#" class="btn btn-sm btn-default tooltip_ editar-pregunta border-radius-r" data-title="Abrir Edición" data-placement="right" data-toggle="tooltip" title="Abrir Edición"><span class="glyphicon glyphicon-pencil"></span></a>
                 <a href="#" class="btn btn-sm btn-default tooltip_ cerrar-edicion-pregunta" data-title="Cerrar Edición" data-placement="right" data-toggle="tooltip" title="Cerrar Edición"><span class="glyphicon glyphicon-remove-circle"></span></a>
-                <a href="#" class="btn btn-sm btn-default tooltip_ editar-pregunta" data-title="Abrir Edición" data-placement="right" data-toggle="tooltip" title="Abrir Edición"><span class="glyphicon glyphicon-pencil"></span></a>
             </div>
         </div>
         {% if pf is defined and pf.id is not empty %}
@@ -77,17 +90,15 @@
         </div>
     </form>
 </div>
-{% if not ('texto' in (pr.canonical | lower) or 'fecha' in (pr.canonical | lower) or 'hora' in (pr.canonical | lower) or 'numero' in (pr.canonical | lower)) %}
+{#% if not ('texto' in (pr.canonical | lower) or 'fecha' in (pr.canonical | lower) or 'hora' in (pr.canonical | lower) or 'numero' in (pr.canonical | lower)) %}
     {% if pf is defined and pf is not empty %}
         <div class="respuestas">
             {% for r in pf.pregunta.respuestas %}
                 {% render(controller('FormatEasyFormatosBundle:Respuesta:editRespuesta', {'id': r.id})) %}
+                <div class="clear clearfix" ></div>
             {% endfor %}
-            <div>
-                {% render(controller('FormatEasyFormatosBundle:Respuesta:addRespuesta')) %}
-            </div>
         </div>
     {% endif %}
-{% endif %}
+{% endif %#}
 {{ pp.codigo | replace({'%respuesta%': ''}) | raw}}
 <div class="clear clearfix clear-fix"></div>

@@ -7,7 +7,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FormatEasy\FormatosBundle\Entity\Respuesta;
+use FormatEasy\FormatosBundle\Entity\Pregunta;
 use FormatEasy\FormatosBundle\Form\RespuestaType;
 
 /**
@@ -39,6 +41,28 @@ class RespuestaController extends Controller
         }
         
         return $datos;
+    }
+    /**
+     * Lists all Respuesta de una pregunta.
+     *
+     * @Route("/{pregunta}/Respuestas/", name="respuestas_pregunta")
+     * @Template()
+     */
+    public function respuestasPreguntaAction($pregunta)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('FormatEasyFormatosBundle:Pregunta')->findOneByCanonical($pregunta);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Pregunta entity.');
+        }
+
+        $datos = array(
+            'respuestas'      => $entity->getRespuestas()
+        );
+        
+        return $this->render('FormatEasyFormatosBundle:Respuesta:_listaRespuestasPregunta.html.twig', $datos);
     }
     /**
      * Creates a new Respuesta entity.
@@ -119,25 +143,42 @@ class RespuestaController extends Controller
     /**
      * Displays a form to create a new Respuesta entity.
      *
-     * @Route("/Agregar-Respuesta", name="respuesta__addRespuesta")
-     * @Method("GET")
+     * @Route("/Agregar-Respuesta/{pregunta}", name="respuesta__addRespuesta")
+     * @ParamConverter("pregunta", class="FormatEasyFormatosBundle:Pregunta", options={"canonical" = "pregunta", "repository_method" = "findOneByCanonical"})
      * @Template()
      */
-    public function addRespuestaAction(Request $request)
+    public function addRespuestaAction(Pregunta $pregunta, Request $request)
     {
         $entity = new Respuesta();
+        $entity->setPregunta($pregunta);
         $form   = $this->createCreateForm($entity);
 
         $datos = array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
+            'pregunta'  => $pregunta,
+            'entity'    => $entity,
+            'form'      => $form->createView(),
         );
+        if($request->getMethod() == 'POST'){
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($entity);
+                $em->flush();
+            }
+            $deleteForm = $this->createDeleteForm($entity->getId());
+            $editForm = $this->createEditForm($entity);
+            $datos = array(
+                'entity'      => $entity,
+                'edit_form'   => $editForm->createView(),
+                'delete_form' => $deleteForm->createView(),
+                'new' => true,
+            );
+
+            return $this->render('FormatEasyFormatosBundle:Respuesta:_editRespuesta.html.twig', $datos);
+        }
         
-//        if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyFormatosBundle:Respuesta:_addRespuesta.html.twig', $datos);
-//        }
-//
-//        return $datos;
+        return $this->render('FormatEasyFormatosBundle:Respuesta:_addRespuesta.html.twig', $datos);
     }
 
     /**
@@ -210,7 +251,7 @@ class RespuestaController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function editRespuestaAction(Request $request, $id)
+    public function editRespuestaAction($id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -228,11 +269,8 @@ class RespuestaController extends Controller
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
-        if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyFormatosBundle:Respuesta:_editRespuesta.html.twig', $datos);
-        }
         
-        return $datos;
+        return $this->render('FormatEasyFormatosBundle:Respuesta:_editRespuesta.html.twig', $datos);
     }
 
     /**

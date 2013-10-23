@@ -169,4 +169,18 @@ class PreguntaFormato extends \FormatEasy\CommonBundle\Entity\Objeto
         if(parent::getCanonical() === '')
             return $this->getPregunta ()->getCanonical ();
     }
+
+    public function json($json = true){
+        $datos = array(
+            'id'            => $this->getId(),
+            'nombre'        => $this->getNombre(),
+            'descripcion'   => $this->getDescripcion(),
+            'orden'         => $this->getOrden(),
+//            'formato'       => $this->getFormato()->json(false),
+            'pregunta'      => $this->getPregunta(),
+        );
+        if($json)
+            return json_encode($datos);
+        return $datos;
+    }
 }

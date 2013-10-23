@@ -7,15 +7,18 @@
             {{ form_widget(form[nombre], { 'attr': {'class': 'form-control'} }) }}
         </div>
         {% else %}
-            {% for r in p.respuestas %}
-            <div id="respuesta-{{ r.id }}" class="form-group">
+            <span class="">{{ p.nombre }}</span>
+            <span class="text-muted pull-right opciones">
+                <span class="num">{{ p.respuestas | length }}</span> 
+                <a href="{{ url('respuestas_pregunta', {'pregunta':p.canonical}) }}" class="text">Opciones</a>
+            </span>
+            <div class="form-group">
                 <span>
-                    {{ form_label(form[r.getCanonicalForm], nombre|humanize, { 'attr': {'class': 'control-label'} }) }}
+                    {{ form_label(form[nombre], nombre|humanize, { 'attr': {'class': 'control-label'} }) }}
                 </span>
-                {{ form_errors(form[r.getCanonicalForm]) }}
-                {{ form_widget(form[r.getCanonicalForm], { 'attr': {'class': 'form-control'} }) }}
+                {{ form_errors(form[nombre]) }}
+                {{ form_widget(form[nombre], { 'attr': {'class': 'form-control'} }) }}
             </div>
-            {% endfor %}
         {% endif %}
         {{ form_rest(form) }}
     {{ form_end(form) }}

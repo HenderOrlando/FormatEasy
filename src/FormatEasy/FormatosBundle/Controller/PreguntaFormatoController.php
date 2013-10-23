@@ -8,13 +8,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use FormatEasy\FormatosBundle\Entity\PreguntaFormato;
 use FormatEasy\FormatosBundle\Form\PreguntaFormatoType;
 use FormatEasy\FormatosBundle\Entity\Formato;
-use FormatEasy\FormatosBundle\Entity\Pregunta;
 use FormatEasy\FormatosBundle\Form\PreguntaType;
-use FormatEasy\FormatosBundle\Entity\Respuesta;
-use FormatEasy\FormatosBundle\Form\RespuestaType;
 use FormatEasy\PlantillasBundle\Entity\PlantillaRespuesta;
 
 /**
@@ -28,7 +26,7 @@ class PreguntaFormatoController extends Controller
      * Add Pregunta.
      *
      * @Route("/Agregar/{formato}/{respuesta}/", name="preguntaFormato__addPregunta")
-     * @Route("/Agregar/{formato}/{respuesta}/{posicion}/", name="preguntaFormato__addPregunta_posicion")
+     * @Route("/Agregar/{formato}/{respuesta}/{posicion}/{etiqueta}", name="preguntaFormato__addPregunta_posicion")
      * @ParamConverter("formato", class="FormatEasyFormatosBundle:Formato", options={"canonical" = "formato", "repository_method" = "findOneByCanonical"})
      * @ParamConverter("respuesta", class="FormatEasyPlantillasBundle:PlantillaRespuesta", options={"canonical" = "respuesta", "repository_method" = "findOneByCanonical"})
      * @Template()
@@ -39,9 +37,10 @@ class PreguntaFormatoController extends Controller
         $entity->setFormato($formato);
         $entity->setPlantillaRespuesta($respuesta);
         $orden = $request->get('posicion', -1);
+        $etiqueta = $request->get('etiqueta', 'Formato');
         $orden_ = FALSE;
         if($orden >= 0){
-            $entity->setOrden($orden);
+            $entity->setOrden($orden+1);
             $orden_ = true;
         }
         $form = $this->getForm($entity, array(
@@ -61,7 +60,8 @@ class PreguntaFormatoController extends Controller
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($entity);
+                $this->sortPreguntaFormato($em, $entity, -1, $entity->getOrden(), $etiqueta);
+//                $em->persist($entity);
                 $em->flush();
 
                 return array(
@@ -79,6 +79,63 @@ class PreguntaFormatoController extends Controller
             'pr' => $respuesta,
             'f' => $formato,
         );
+    }
+    /**
+     * Edit Orden Pregunta Formato.
+     *
+     * @Route("/Cambiar-Orden/", name="preguntaFormato__ordenPreguntaFormato_")
+     * @Route("/Cambiar-Orden/{pos_antes}/a/{pos_ahora}/{id}/{etiqueta}", name="preguntaFormato__ordenPreguntaFormato", defaults={"id" = -1, "pos_antes" = -1, "pos_ahora" = -1})
+     * @Template("FormatEasyFormatosBundle:PreguntaFormato:_formPreguntaFormato.html.twig")
+     */
+    public function editOrdenPreguntaFormatoAction(Request $request)
+    {
+        $pos_antes = $request->get('pos_antes')+0;
+        $pos_ahora = $request->get('pos_ahora')+0;
+        $etiqueta = $request->get('etiqueta', 'Formato');
+        $id = $request->get('id')+0;
+//        $pos_ahora++;
+        if($pos_ahora == -1){
+            return new JsonResponse(array(
+                'error' => TRUE,
+                'msg'   => 'Fail',
+                'datos' => array(
+                    'antes' =>  $pos_antes,
+                    'ahora' =>  $pos_ahora,
+                    'etiqueta' =>  $etiqueta,
+                    'id'    =>  $id
+                )
+            ));
+        }
+        $em = $this->getDoctrine()->getManager();
+        $pf = null;
+        if($pos_antes){
+            $pf = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->getOneByWithEtiquetas(array('formato' => $id, 'orden' => $pos_antes), array($etiqueta));
+            if(is_array($pf) && isset($pf['dql'])){
+                return new JsonResponse(array(
+                    'error' => TRUE,
+                    'msg'   => 'Fail',
+                    'datos' => array(
+                        'antes' =>  $pos_antes,
+                        'ahora' =>  $pos_ahora,
+                        'id'    =>  $id,
+                        'result'    =>  $pf,
+                    )
+                ));
+            }
+            
+        }
+        $this->sortPreguntaFormato($em, $pf, $pos_antes, $pos_ahora, $etiqueta);
+        $em->flush();
+        return new JsonResponse(array(
+//            'viejas'=> $viejas,
+            'error' => FALSE,
+            'msg'   => 'Ok',
+//            'datos' => array(
+//                    'antes' =>  $pos_antes,
+//                    'ahora' =>  $pos_ahora,
+//                    'id'    =>  $id
+//                ),
+        ));
     }
     /**
      * Edit Pregunta Formato.
@@ -124,10 +181,11 @@ class PreguntaFormatoController extends Controller
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($entity);
+                $this->sortPreguntaFormato($em, $entity, -1, $entity->getOrden());
+//                $em->persist($entity);
                 $em->flush();
 
-                return $this->redirect($this->generateUrl('preguntaFormato__show', array('id' => $entity->getId())));
+//                return $this->redirect($this->generateUrl('preguntaFormato__show', array('id' => $entity->getId())));
             }
         }
         
@@ -440,5 +498,28 @@ class PreguntaFormatoController extends Controller
             ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+
+    public function sortPreguntaFormato($em, PreguntaFormato $pf, $pos_antes, $pos_ahora, $etiqueta = null) {
+        $pfs_ = array();
+        if(!$pf || $pos_antes < 0 || ($pf && $pos_antes > -1 && $pos_antes > $pos_ahora)){
+            $pfs_ = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->getGreaterEqualTo(array('orden' => $pos_ahora), array('orden' => 'Asc'), $etiqueta);
+            $pos = $pos_ahora;
+        }elseif($pf && $pos_antes < $pos_ahora){
+            $pfs_ = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->getGreaterEqualTo(array('orden' => $pos_antes+1), array('orden' => 'Asc'), $etiqueta);
+            $pos = $pos_antes-1;
+        }
+        foreach($pfs_ as $pfs){
+            if(!$pf || $pos_antes < 0  || ($pf && $pos_antes > -1 && $pf->getId() != $pfs->getId() && $pos+1 != $pos_ahora)){
+                $pfs->setOrden(++$pos);
+                $em->persist($pfs);
+            }else{
+                break;
+            }
+        }
+        if($pf){
+            $pf->setOrden($pos_ahora);
+            $em->persist($pf);
+        }
     }
 }

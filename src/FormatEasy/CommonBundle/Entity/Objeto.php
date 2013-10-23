@@ -1,26 +1,6 @@
 <?php
 namespace FormatEasy\CommonBundle\Entity;
 use Doctrine\ORM\Mapping AS ORM;
-/*
- * @ORM\Entity
- * @ORM\Table(name="objeto")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="aplicable_a", length=50, type="string")
- * @ORM\DiscriminatorMap(
- *     {
- *     "Etiqueta"="FormatEasy\CommonBundle\Entity\Etiqueta",
- *     "Rol"="FormatEasy\CommonBundle\Entity\Rol",
- *     "Usuario"="FormatEasy\UsuariosBundle\Entity\Usuario",
- *     "Formato"="FormatEasy\FormatosBundle\Entity\Formato",
- *     "Pregunta"="FormatEasy\FormatosBundle\Entity\Pregunta",
- *     "PreguntaFormato"="FormatEasy\FormatosBundle\Entity\PreguntaFormato",
- *     "Respuesta"="FormatEasy\FormatosBundle\Entity\Respuesta",
- *     "Hoja"="FormatEasy\PlantillasBundle\Entity\Hoja"
- *     "PlantillaFormato"="FormatEasy\PlantillasBundle\Entity\PlantillaFormato"
- *     "PlantillaPregunta"="FormatEasy\PlantillasBundle\Entity\PlantillaPregunta"
- *     "PlantillaRespuesta"="FormatEasy\PlantillasBundle\Entity\PlantillaRespuesta"
- * })
- */
 
 /** 
  * @ORM\MappedSuperclass
@@ -215,6 +195,13 @@ class Objeto
     public function getEtiquetas()
     {
         return $this->etiquetas;
+    }
+
+    public function getTextEtiquetas($separador = ' '){
+        $e = array();
+        foreach($this->getEtiquetas() as $et)
+            $e[$et->getId()] = $et->getCanonical();
+        return is_bool($separador)?$e:implode($separador, $e);
     }
     
     public function __toString() {

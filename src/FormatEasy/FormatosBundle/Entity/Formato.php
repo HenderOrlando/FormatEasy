@@ -27,6 +27,7 @@ class Formato extends \FormatEasy\CommonBundle\Entity\Objeto
 
     /** 
      * @ORM\OneToMany(targetEntity="FormatEasy\FormatosBundle\Entity\PreguntaFormato", mappedBy="formato")
+     * @ORM\OrderBy({"orden" = "ASC", "id" = "ASC"})
      */
     private $preguntas;
 

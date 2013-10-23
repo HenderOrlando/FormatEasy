@@ -31,10 +31,14 @@ class PlantillaRespuestaController extends Controller
 
         $entities = $em->getRepository('FormatEasyPlantillasBundle:PlantillaRespuesta')->findAll();
         $formato = $em->getRepository('FormatEasyFormatosBundle:Formato')->findOneBy(array('canonical' => $formato));
-
+        $etiquetas = array();
+        foreach ($entities as $entity) {
+            $etiquetas[$entity->getId()] = $entity->getTextEtiquetas();
+        }
         return array(
             'entities' => $entities,
             'formato'  => $formato,
+            'etiquetas'  => $etiquetas,
         );
     }
     /**

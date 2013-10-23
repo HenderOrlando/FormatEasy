@@ -1,2 +1,32 @@
-<h4>Respuesta "{{ entity.nombre }}"</h4>
-    {{ form(edit_form) }}
+
+<div class="item-respuesta">
+    <form method="post" action="{{ url('respuesta__editar', {'id': entity.id}) }}" class="edit-inline col-md-10">
+        <div class="col-md-7">
+            {{ form_label(edit_form.nombre, 'Enunciado respuesta', { 'attr': {'class': 'control-label'} }) }}
+            {{ form_errors(edit_form.nombre) }}
+            {{ form_widget(edit_form.nombre, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="col-md-5">
+            {{ form_label(edit_form.descripcion, 'Ayuda', { 'attr': {'class': 'control-label'} }) }}
+            {{ form_errors(edit_form.descripcion) }}
+            {{ form_widget(edit_form.descripcion, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        <div class="form-hide">
+            {{ form_rest(edit_form) }}
+        </div>
+    </form>
+    <div class="col-md-2 opciones-respuesta">
+        <div class="row">
+            <div class="btn-group">
+                <a href="#" class="btn btn-sm btn-default tooltip_ guardar" data-title="Guardar" data-placement="top" data-toggle="tooltip" title="Guardar"><span class="glyphicon glyphicon-save"></span></a>
+                <a href="#" class="btn btn-sm btn-default tooltip_ borrar" data-title="Borrar" data-placement="top" data-toggle="tooltip" title="Borrar"><span class="glyphicon glyphicon-trash"></span></a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="btn-group">
+                <a href="#" class="btn btn-sm btn-default tooltip_ configurar" data-title="Configurar" data-placement="bottom" data-toggle="tooltip" title="Configurar"><span class="glyphicon glyphicon-wrench"></span></a>                
+                <a href="#" class="btn btn-sm btn-default tooltip_ duplicar" data-title="Duplicar" data-placement="bottom" data-toggle="tooltip" title="Duplicar"><span class="glyphicon glyphicon-plus-sign"></span></a>
+            </div>
+        </div>
+    </div>
+</div>

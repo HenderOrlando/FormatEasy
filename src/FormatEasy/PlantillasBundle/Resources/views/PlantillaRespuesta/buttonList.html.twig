@@ -1,6 +1,6 @@
 <div id="button-list-plantilla-respuesta" class="btn-group-vertical">
     {% for entity in entities %}
-    <a href="{{ url('preguntaFormato__addPregunta', { 'respuesta': entity.canonical, 'formato': formato.canonical }) }}" class="btn btn-default btn-lg btn-block">
+    <a href="{{ url('preguntaFormato__addPregunta', { 'respuesta': entity.canonical, 'formato': formato.canonical }) }}" class="btn btn-default btn-lg btn-block {{ etiquetas[entity.id] }}">
         {{ entity.nombre }}
     </a>
     {% endfor %}

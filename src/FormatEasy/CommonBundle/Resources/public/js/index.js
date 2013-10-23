@@ -204,7 +204,7 @@ $(document).ready(function(){
         if(este.attr('data-configuration')){
             opts.configuration = {}
             /* true, false */
-            opts.configuration.preventTabbing = este.attr('data-preventTabbing') === 'true' || este.attr('data-preventTabbing') === 'false'?eval(este.attr('data-preventTabbing')):true;
+            opts.configuration.preventTabbing = este.attr('data-preventTabbing') === 'true' || este.attr('data-preventTabbing') === 'false'?eval(este.attr('data-preventTabbing')):false;
             /* true, false */
             opts.configuration.hardwareAcceleration = este.attr('data-hardwareAcceleration') === 'true' || este.attr('data-hardwareAcceleration') === 'false'?eval(este.attr('data-hardwareAcceleration')):true;
         }

@@ -11,7 +11,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FormatEasy\FormatosBundle\Entity\Pregunta;
 use FormatEasy\FormatosBundle\Form\PreguntaType;
 use FormatEasy\FormatosBundle\Entity\Formato;
-use FormatEasy\FormatosBundle\Form\FormatoType;
 
 /**
  * Pregunta controller.
@@ -34,6 +33,9 @@ class PreguntaController extends Controller
         $em = $this->getDoctrine()->getManager();
 //        $pf = new \FormatEasy\FormatosBundle\Entity\PreguntaFormato();
         $pf = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->findOneBy(array('formato' => $formato, 'pregunta' => $pregunta));
+        if(!$pf){
+            throw $this->createNotFoundException('Pregunta "'.$pregunta.'" de Formato "'.$formato.'" no Encontrada');
+        }
         $form = $this->createFormBuilder();
         $canonical = str_replace('-', '_', $pf->getPlantillaRespuesta()->getCanonical());
         if(!$canonical){
@@ -50,9 +52,13 @@ class PreguntaController extends Controller
         if(stripos($canonical, 'texto') !== false || stripos($canonical, 'fecha') !== false || stripos($canonical, 'hora') !== false || stripos($canonical, 'numero') !== false){
             $form->add($nombre, $pr->getWidget());
         }else{
-            foreach ($pregunta->getRespuestas() as $respuesta) {
-                $form->add($respuesta->getCanonicalForm(), $pr->getWidget());
+            $opts = array();
+            foreach($pregunta->getRespuestas() as $respuesta){
+                $opts[$respuesta->getId()] = $respuesta->getNombre();
             }
+            $form->add($nombre, $pr->getWidget(), array(
+                'choices'   =>  $opts
+            ));
         }
         $disabled = $this->getRequest()->get('disabled', false);
         $form->setDisabled($disabled)

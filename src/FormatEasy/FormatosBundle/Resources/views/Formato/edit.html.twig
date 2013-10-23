@@ -4,19 +4,38 @@
     {% include "FormatEasyFormatosBundle:Formato:_edit.html.twig" %}
     <ul class="content-plantilla">
         {% for pf in entity.preguntas %}
+            {% if 'Formato' in pf.plantillaRespuesta.getTextEtiquetas %}
             <li>
             {% render(controller('FormatEasyFormatosBundle:PreguntaFormato:editPreguntaFormato', {'id': pf.id})) %}
             </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <ul class="content-encabezado">
+        {% for pf in entity.preguntas %}
+            {% if 'Encabezado' in pf.plantillaRespuesta.getTextEtiquetas and 'Formato' not in pf.plantillaRespuesta.getTextEtiquetas%}
+            <li>
+            {% render(controller('FormatEasyFormatosBundle:PreguntaFormato:editPreguntaFormato', {'id': pf.id})) %}
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <ul class="content-pie">
+        {% for pf in entity.preguntas %}
+            {% if 'Pie' in pf.plantillaRespuesta.getTextEtiquetas and 'Encabezado' not in pf.plantillaRespuesta.getTextEtiquetas and 'Formato' not in pf.plantillaRespuesta.getTextEtiquetas%}
+            <li>
+            {% render(controller('FormatEasyFormatosBundle:PreguntaFormato:editPreguntaFormato', {'id': pf.id})) %}
+            </li>
+            {% endif %}
         {% endfor %}
     </ul>
 {% endblock %}
 {% block javascripts -%}
     <script type="text/javascript">
-        var template;
+        var template, pos_antes = -1, paginas = 1;
         $(document).ready(function(){
             $('.margen').addClass('mouseenter');
-            var pp = eval({{ plantillaPregunta.json | raw}}),
-                f = eval({{ entity.json | raw}}),
+            var f = eval({{ entity.json | raw}}),
                 pf = eval({{ plantillaFormato.json | raw}}),
                 hoja = pf.hoja;
             $('.hoja-cont').css({
@@ -151,49 +170,15 @@
                 url: "{{ url('_plantillaRespuesta_buttonlist', {'formato': entity.canonical}) }}"  
             }).done(function(data) {
                 $(menu_open_r).find('.mm-inner .mmenu-content').html(data);
-                $( ".drop_pregunta" ).sortable({
-                    connectWith: "#button-list-plantilla-respuesta a",
-                    dropOnEmpty: true,
-                    placeholder: "btn btn-warning placeholder-sort-pregunta",
-                    scroll: false,
-                    stop: function(event, ui) {
-                        /*Obtiene la estructura*/
-                        if(typeof ui.item.attr('href') !== 'undefined'){
-                            $.ajax({
-                                url:   ui.item.attr('href')+ui.item.index()+'/'
-                            }).done(function(data) {
-                                ajustarPreguntaFormato(template_item, data, ui.item);
-                            }).fail(function( jqXHR, textStatus ) {
-                                console.log("Request failed: "+textStatus);
-                            }).always(function() {
-                                ajustarContentAjax();
-                                ajustarPlaceholder();
-                                ajustarMargenes();
-                                checkFormPregunta();
-                            });
-                        }
-                        /*Obtiene la estructura*/
-                    }
-                });
-                $( "#button-list-plantilla-respuesta a" ).draggable({
-                    connectToSortable: ".drop_pregunta",
-                    helper: function(){
-                        return $(this).clone();
-                    },
-                    revert: "invalid",
-                    scroll: false,
-                    start: function(event, ui){
-                        $('html.mm-opened .mm-menu.mm-right.mm-front .mm-inner').css({
-                            overflow: 'visible'
-                        });
-                    },
-                    stop: function(event, ui){
-                        $('html.mm-opened .mm-menu.mm-right.mm-front .mm-inner').css({
-                            overflow: 'auto'
-                        });
-                    }
-                });
-                $( "#button-list-plantilla-respuesta a, .drop_pregunta li" ).disableSelection();
+                addHoja();
+                /*********************************************/
+                dragSortPreguntas(".drop_pregunta","#button-list-plantilla-respuesta a.Formato", '.hoja-cont .content-pagina .drop_pregunta', 'Formato');
+                /*********************************************/
+                dragSortPreguntas(".encabezado-drop-pregunta","#button-list-plantilla-respuesta a.Encabezado-Pagina", '.hoja-cont .encabezado-pagina .encabezado-drop-pregunta', 'Encabezado-Pagina');
+                /*********************************************/
+                //dragSortPreguntas(".pie-drop-pregunta","#button-list-plantilla-respuesta a.Pie-Pagina", '.hoja-cont .pie-pagina .pie-drop-pregunta', Pie-Pagina);
+                /*********************************************/
+                $( "#button-list-plantilla-respuesta a, ol li" ).disableSelection();
                 
             }).fail(function( jqXHR, textStatus ) {
                 console.log("Request failed: "+textStatus);
@@ -221,15 +206,90 @@
             $('.content-plantilla li').each(function(){
                 ajustarPreguntaFormato(template_item, $(this).html());
             }).parent().remove();
+            $('.content-encabezado li').each(function(){
+                ajustarPreguntaFormatoEncabezado(template_item, $(this).html());
+                //$('.encabezado-pagina .encabezado-drop-pregunta').html($(this).html());
+            }).parent().remove();
             /*Construcción*/
             ajustarMargenes();
-            $(window).on('scroll', function(){
+            $(window).on('scroll, resize', function(){
                 ajustarMargenes();
             });
-            $('.template-item-pregunta').resize(function(){
-                console.log('resize-template-item-pregunta');
+            $('ol.drop_pregunta').on('scroll',function(){
+                $(this).find('.opciones-pregunta-pagina').each(function(){
+                    posicionOpcionesPreguntaPagina(this);
+                });
+            });
+            $('.hoja-config').find('.btn.design').click(function(){
+                window.location = "{{ url("formato_disenarFormato", {'id':entity.id}) }}"
             });
         });
+        function dragSortPreguntas(sort, drag, id, etiqueta){
+            $( sort ).sortable({
+                connectWith: drag,
+                dropOnEmpty: true,
+                placeholder: "btn btn-warning placeholder-sort-pregunta",
+                scroll: false,
+                start: function (event, ui){
+                    pos_antes = -1;
+                    if(ui.item.find('.text-success').length && typeof ui.item.attr('href') === 'undefined'){
+                        pos_antes = ui.item.index()+1;
+                    }
+                },
+                stop: function(event, ui) {
+                    /*Obtiene la estructura*/
+                    //addHoja();
+                    if(typeof ui.item.attr('href') !== 'undefined'){
+                        $.ajax({
+                            url:   ui.item.attr('href')+ui.item.index()+'/'+etiqueta
+                        }).done(function(data) {
+                            ajustarPreguntaFormato_(template, data, ui.item,id);
+                        }).fail(function( jqXHR, textStatus ) {
+                            console.log("Request failed: "+textStatus);
+                        }).always(function() {
+                            ajustarContentAjax();
+                            ajustarPlaceholder();
+                            ajustarMargenes();
+                            //if(sort === ".encabezado-drop-pregunta")
+                            checkFormPregunta_(sort,id);
+                            addHoja();
+                        });
+                    }else{
+                        if(ui.item.find('.text-success').length){
+                            $.ajax({
+                                url:   "{{ url('preguntaFormato__ordenPreguntaFormato_') }}",
+                                data:   {pos_antes: pos_antes, pos_ahora: ui.item.index()+1, id: "{{ entity.id }}", etiqueta: etiqueta }
+                            }).done(function(data) {
+                               console.log(data);
+                            }).fail(function( jqXHR, textStatus ) {
+                                console.log("Request failed: "+textStatus);
+                            });
+                        }
+                    }
+                    /*Obtiene la estructura*/
+                }
+            });
+            $( drag ).draggable({
+                connectToSortable: sort,
+                helper: function(){
+                    return $(this).clone();
+                },
+                dropOnEmpty: true,
+                revert: "invalid",
+                scroll: false,
+                start: function(event, ui){
+                    $('html.mm-opened .mm-menu.mm-right.mm-front .mm-inner').css({
+                        overflow: 'visible'
+                    });
+                },
+                stop: function(event, ui){
+                    $('html.mm-opened .mm-menu.mm-right.mm-front .mm-inner').css({
+                        overflow: 'auto'
+                    });
+                }
+            });
+            checkFormPregunta_(sort,id);
+        }
         function ajustarMargenes(){
             $('.hoja-inf .margen').position({
                 of:         $(window) ,
@@ -257,6 +317,15 @@
             });
         }
         function ajustarPreguntaFormato(template_item, data, item){
+            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .contenido-pagina .drop_pregunta')
+        }
+        function ajustarPreguntaFormatoEncabezado(template_item, data, item){
+            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .encabezado-pagina .encabezado-drop-pregunta')
+        }
+        function ajustarPreguntaFormatoPie(template_item, data, item){
+            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .pie-pagina .pie-drop-pregunta')
+        }
+        function ajustarPreguntaFormato_(template_item, data, item, id){
             var li = template_item.clone();
             li.html(data);
             
@@ -265,7 +334,7 @@
             enunciado.remove();
             
             if(typeof item === 'undefined'){
-                $('.hoja-cont .contenido-pagina .drop_pregunta').append(li);
+                $(id).append(li);
                 $(this).remove();
             }else{
                 li = $('<li>'+li.html()+'</li>').addClass(template_item.attr('class'));
@@ -275,28 +344,100 @@
                 item.replaceWith(li);
             }
             
-            var respuestas = li.children('.respuestas')
-            respuestas.siblings('.respuesta-pregunta').html(respuestas.html());
+            var respuestas = li.children('.respuestas');
+            var rtas = respuestas.siblings('.respuesta-pregunta').html(respuestas.html());
             respuestas.remove();
             
             activarShowHideOpcionesPreguntaPagina(li);
             /*Botones de Configuración de la Pregunta*/
-            $('.cerrar-edicion-pregunta').on('click', function(e){
+            li.find('.cerrar-edicion-pregunta').on('click', function(e){
                 e.preventDefault();
                 e.stopPropagation();
-                $(this).parents('.enunciado-pregunta').removeClass('editando');
+                hideOpcionesPreguntaPagina($(this).parents('.opciones-pregunta-pagina'));
+                $('.enunciado-pregunta').removeClass('editando');
+                $('.respuesta-pregunta').removeClass('editando');
+                setTimeout(function(){
+                    addHoja();
+                }, 550);
             });
-            $('.editar-pregunta').on('click', function(e){
+            li.find('.editar-pregunta').on('click', function(e){
                 e.preventDefault();
                 e.stopPropagation();
-                $('.enunciado-pregunta').removeClass('editando')
-                $(this).parents('.enunciado-pregunta').addClass('editando');
+                var este = $(this).parents('.enunciado-pregunta');
+                hideOpcionesPreguntaPagina();
+                $('.enunciado-pregunta').removeClass('editando');
+                $('.respuesta-pregunta').removeClass('editando');
+                este.addClass('editando');
+                este.siblings('.respuesta-pregunta').addClass('editando');
+                showOpcionesPreguntaPagina(este);
+                var intShow = setInterval(function(){
+                    posicionOpcionesPreguntaPagina(este.find('.opciones-pregunta-pagina'));
+                }, 25);
+                setTimeout(function(){
+                    clearInterval(intShow);
+                    addHoja();
+                }, 500);
             });
-            $('.guardar-pregunta').on('click', function(e){
+            li.find('.add-respuesta').on('click', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                $.ajax({
+                    url:   $(this).attr('href')
+                }).done(function(data) {
+                    li.find('.respuesta-pregunta').html(data);
+                    var num = parseInt($('.enunciado-pregunta .opciones .num').text());
+                    li.find('.enunciado-pregunta .opciones .num').text(++num);
+                    checkRespuestasPregunta(li.find('.respuesta-pregunta'));
+                }).fail(function( jqXHR, textStatus ) {
+                    console.log("Request failed: "+textStatus);
+                }).always(function() {
+                    ajustarContentAjax();
+                    ajustarPlaceholder();
+                    addHoja();
+                });
+            });
+            li.find('.borrar-pregunta').on('click', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).parents('.template-item-pregunta').remove();
+                addHoja();
+            });
+            li.find('.guardar-pregunta').on('click', function(e){
                 e.preventDefault();
                 e.stopPropagation();
                 $('.enunciado-pregunta').removeClass('editando');
                 $(this).parents('form').find('input[type=submit]').click();
+            });
+            checkRespuestasPregunta(rtas);
+            li.find('.opciones-respuesta .borrar').on('click',function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('borrar');
+            });
+            li.find('.opciones-respuesta .duplicar').on('click',function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('duplicar');
+            });
+            li.find('.opciones-respuesta .configurar').on('click',function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('configurar');
+            });
+            li.find('.text-muted.opciones a').on('click', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                $.ajax({
+                    url:   $(this).attr('href')
+                }).done(function(data) {
+                    li.find('.respuesta-pregunta').html(data);
+                    checkRespuestasPregunta(li.find('.respuesta-pregunta'));
+                }).fail(function( jqXHR, textStatus ) {
+                    console.log("Request failed: "+textStatus);
+                }).always(function() {
+                    ajustarPlaceholder();
+                    addHoja();
+                });
             });
         }
         function activarShowHideOpcionesPreguntaPagina(li){
@@ -317,20 +458,24 @@
         }
         function showOpcionesPreguntaPagina(este){
             if($(este).find('.opciones-pregunta-pagina').length){
+                hideOpcionesPreguntaPagina($('.enunciado-pregunta'));
                 $(este).find('.opciones-pregunta-pagina').stop().css({
                     display: 'block'
                 }).animate({
                     'opacity': 1
-                }).position({
-                    of:         $(este).parents('.template-item-pregunta'),
-                    my:         "left top",
-                    at:         "right-5 top",
-                    collision:  "fit fit"
                 });
+                posicionOpcionesPreguntaPagina(este.find('.opciones-pregunta-pagina'));
             }
         }
         function hideOpcionesPreguntaPagina(este){
-            if(!$(este).hasClass('editando')){
+            $('.enunciado-pregunta').not('.editando').find('.opciones-pregunta-pagina').stop().animate({
+                'opacity': 0
+            }, function(){
+                $(this).css({
+                    display: 'none'
+                });
+            });
+            if(typeof este !== 'undefined' && !$(este).hasClass('editando')){
                 $(este).find('.opciones-pregunta-pagina').stop().animate({
                     'opacity': 0
                 }, function(){
@@ -340,8 +485,34 @@
                 });
             }
         }
-        function checkFormPregunta(){
-            $('.drop_pregunta form').on('submit', function(e){
+        function checkRespuestasPregunta(rta){
+            rta.find('form.edit-inline').on('submit', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                var este = $(this).parent();
+                $.ajax({
+                    url:   $(this).attr('action'),
+                    data:   $(this).serialize(),
+                    method: $(this).attr('method')
+                }).done(function(data) {
+                    $(este).replaceWith(data);
+                }).fail(function( jqXHR, textStatus ) {
+                    console.log("Request failed: "+textStatus);
+                }).always(function() {
+                    ajustarContentAjax();
+                    ajustarPlaceholder();
+                    ajustarMargenes();
+                });
+                return false;
+            });
+            rta.find('a.btn.guardar').on('click',function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).parents('.opciones-respuesta').siblings('form').submit();
+            });
+        }
+        function checkFormPregunta_(form, id){
+            $(form+' .enunciado-pregunta form').on('submit', function(e){
                 e.preventDefault();
                 e.stopPropagation();
                 var este = $(this).parents('.template-item-pregunta');
@@ -350,7 +521,7 @@
                     data:   $(this).serialize(),
                     method: $(this).attr('method')
                 }).done(function(data) {
-                    ajustarPreguntaFormato(template, data, este);
+                    ajustarPreguntaFormato_(template, data, este, id);
                 }).fail(function( jqXHR, textStatus ) {
                     console.log("Request failed: "+textStatus);
                 }).always(function() {
@@ -358,6 +529,58 @@
                     ajustarPlaceholder();
                     ajustarMargenes();
                 });
+            });
+        }
+        function posicionOpcionesPreguntaPagina(este){
+            $(este).position({
+                of:         $(este).parents('.template-item-pregunta'),
+                my:         "left top",
+                at:         "right-5 top",
+                collision:  "fit fit"
+            });
+        }
+        function addHoja(){
+            $(".contenido-pagina .drop_pregunta").each(function(){
+                var hoja = $(this).parents('.hoja-cont'),
+                    contenido = $(this).parents('.contenido-pagina'),
+                    top = parseFloat(hoja.css('padding-top').toString().replace('px',''))+parseFloat(hoja.css('margin-top').toString().replace('px','')),
+                    bottom = parseFloat(hoja.css('padding-bottom').toString().replace('px',''))+parseFloat(hoja.css('margin-bottom').toString().replace('px',''));
+                if(contenido.height() <= $(this).height()){
+                    var pagina = 1,
+                        salto = top+bottom+50+(hoja.height()-contenido.height()),
+                        height = 0;
+                    $(this).find('li').each(function(i){
+                        var top_ = parseFloat($(this).css('padding-top').toString().replace('px',''))+parseFloat($(this).css('margin-top').toString().replace('px','')),
+                            bottom_ = parseFloat($(this).css('padding-bottom').toString().replace('px',''))+parseFloat($(this).css('margin-bottom').toString().replace('px','')),
+                            height_ = $(this).height()+top_+bottom_,
+                            h = contenido.height()+(height_);
+                        if($('.enunciado-pregunta.editando').length){
+                            h = contenido.height();
+                            salto += 3;
+                        }
+                        if(height >= h){
+                            $(this).css({
+                                'margin-top': salto
+                            });
+                            $(this).addClass('salto-pagina')
+                            $(this).prev().addClass('antes-salto-pagina')
+                            //$(this).before('<div class="page-break"></div>')
+                            height = 0;
+                            pagina++;
+                        }else{
+                            $(this).removeClass('salto-pagina')
+                            $(this).removeAttr('style');
+                        }
+                        height += height_;
+                    });
+                    if(paginas*contenido.height() < $(this).height()){
+                        var hoja2 = hoja.clone();
+                        hoja2.find('.contenido-pagina .drop_pregunta').remove();
+                        hoja.parent().append(hoja2);
+                        paginas++;
+                    }
+                }
+                ajustarMargenes();
             });
         }
     </script>

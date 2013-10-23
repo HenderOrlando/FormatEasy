@@ -93,5 +93,5 @@
     </div>
 </form>
 <div class="hoja-cont">
-    {{ entity.PlantillaFormato.codigo | raw }}
+    {{ entity.PlantillaFormato.codigo | replace({'%encabezado-pagina%': '<ol class="encabezado-drop-pregunta"></ol>', '%pie%': '<ol class="pie-drop-pregunta"></ol>'}) | raw }}
 </div>

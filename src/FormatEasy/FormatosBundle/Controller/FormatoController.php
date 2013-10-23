@@ -166,6 +166,39 @@ class FormatoController extends Controller
     /**
      * Displays a form to edit an existing Formato entity.
      *
+     * @Route("/Diseñar/{id}/", name="formato_disenarFormato")
+     * @Method("GET")
+     * @Template("FormatEasyFormatosBundle:Formato:edit.html.twig")
+     */
+    public function disenaFormatoAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('FormatEasyFormatosBundle:Formato')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Formato entity.');
+        }
+
+        $editForm = $this->createEditForm($entity);
+        $deleteForm = $this->createDeleteForm($id);
+
+        $datos = array(
+            'entity'            => $entity,
+            'plantillaFormato'  => $entity->getPlantillaFormato(),
+            'edit_form'         => $editForm->createView(),
+            'delete_form'       => $deleteForm->createView(),
+            'preguntas'         => $entity->getPreguntas()
+        );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyFormatosBundle:Formato:_edit.html.twig', $datos);
+        }
+        
+        return $datos;
+    }
+    /**
+     * Displays a form to edit an existing Formato entity.
+     *
      * @Route("/{id}/edit", name="formato__edit")
      * @Method("GET")
      * @Template()
@@ -186,9 +219,9 @@ class FormatoController extends Controller
         $datos = array(
             'entity'            => $entity,
             'plantillaFormato'  => $entity->getPlantillaFormato(),
-            'plantillaPregunta' => $entity->getPlantillaPreguntas(),
             'edit_form'         => $editForm->createView(),
             'delete_form'       => $deleteForm->createView(),
+            'preguntas'         => $entity->getPreguntas()
         );
         if($request->isXmlHttpRequest()){
             return $this->render('FormatEasyFormatosBundle:Formato:_edit.html.twig', $datos);
