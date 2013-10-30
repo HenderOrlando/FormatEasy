@@ -4,40 +4,36 @@
     <ul class="nav navbar-nav">
         {# <li class="active"><a href="#">Regular link</a></li> #}
         <li>
-            <a id="menu-usuario" role="button" data-toggle="dropdown" class="link-mmenu" href="{{ path('formatos_menu_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
+            {#<a id="menu-usurios" role="button" class="link-mmenu" href="{{ path('usuarios_menu_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="front">
+                Usuarios
+            </a>#}
+            <a id="menu-usurios" role="button" href="{{ path('usuario_menu_de_usuario') }}">
+                Usuarios
+            </a>
+        </li>
+        <li>
+            {#<a id="menu-formatos" role="button" class="link-mmenu" href="{{ path('formatos_menu_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
                 Formatos
-                {#<b class="caret"></b>#}
+            </a>#}
+            <a id="menu-usurios" role="button" href="{{ path('formatos_menu_de_usuario') }}">
+                Formatos
             </a>
         </li>
         <li>
-            <a id="menu-usuario" role="button" data-toggle="dropdown" class="link-mmenu" href="{{ path('plantillas_menu_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
+            {#<a id="menu-plantillas" role="button" class="link-mmenu" href="{{ path('plantillas_menu_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
                 Plantillas
-                {#<b class="caret"></b>#}
+            </a>#}
+            <a id="menu-usurios" role="button" href="{{ path('plantillas_menu_de_usuario') }}">
+                Plantillas
             </a>
         </li>
         <li>
-            <a id="menu-usuario" role="button" data-toggle="dropdown" class="link-mmenu" href="{{ path('usuario_edit_datos_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
+            {#<a id="menu-usuario" role="button" class="link-mmenu" href="{{ path('usuario_edit_datos_de_usuario') }}" data-preventTabbing="false" data-menu-position="top" data-menu-zposition="back">
                 {{ app.user.username | title }}
-                {#<b class="caret"></b>#}
+            </a>#}
+            <a id="menu-usurios" role="button" href="{{ path('usuario_edit_datos_de_usuario') }}">
+                {{ app.user.username | title }}
             </a>
-            {#<ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="menu-usuario">
-                <li>
-                  <a href="{{ path('fos_user_change_password') }}" class="link-mmenu" data-preventTabbing="false" data-menu-position="top" role="menuitem" tabindex="-1">
-                      {{ 'change_password.submit'|trans }}
-                  </a>
-                </li>
-                <li>
-                  <a href="{{ path('fos_user_profile_edit') }}"  class="link-mmenu" data-preventTabbing="false" data-menu-position="top" role="menuitem" tabindex="-1">
-                      {{ 'profile.edit.submit'|trans }}
-                  </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                  <a href="{{ path('fos_user_security_logout') }}" role="menuitem" tabindex="-1">
-                      {{ 'layout.logout'|trans }}
-                  </a>
-                </li>
-            </ul>#}
         </li>
         <li>
             <a href="{{ path('fos_user_security_logout') }}" role="menuitem" tabindex="-1">

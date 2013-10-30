@@ -157,9 +157,21 @@ class Pregunta extends \FormatEasy\CommonBundle\Entity\Objeto
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getRespuestas()
+    public function getRespuestas($etiqueta = null)
     {
-        return $this->respuestas;
+        $return = $this->respuestas;
+        if(!is_null($etiqueta)){
+            if(is_string($etiqueta)){
+                $return = array();
+                foreach($this->respuestas as $r){
+                    $etiquetas = $r->getTextEtiquetas(FALSE);
+                    if(($etiqueta === 'Opciones') || (!empty($etiquetas) && in_array($etiqueta, $etiquetas->getValue()))){
+                        $return[$r->getId()] = $r;
+                    }
+                }
+            }
+        }
+        return $return;
     }
     /**
      * Get respuestas

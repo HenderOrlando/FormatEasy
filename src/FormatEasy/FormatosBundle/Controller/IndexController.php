@@ -19,9 +19,9 @@ class IndexController extends Controller
      */
     public function editPlantillasUsuarioAction(Request $request)
     {
-        if(!$request->isXmlHttpRequest()){
-            throw $this->createNotFoundException('The product does not exist');
-        }
+//        if(!$request->isXmlHttpRequest()){
+//            throw $this->createNotFoundException('The product does not exist');
+//        }
         return array();
     }
 }

@@ -23,6 +23,139 @@ use FormatEasy\PlantillasBundle\Entity\PlantillaRespuesta;
 class PreguntaFormatoController extends Controller
 {
     /**
+     * alinear Pregunta.
+     *
+     * @Route("/Alinear/{pregunta}/{alinea}/", name="preguntaFormato_alinear")
+     * @ParamConverter("pregunta", class="FormatEasyFormatosBundle:PreguntaFormato", options={"id" = "id"})
+     * @Template()
+     */
+    public function alinearPreguntaAction(PreguntaFormato $pf, Request $request){
+        $em = $this->getDoctrine()->getManager();
+        $alinea = $request->get('alinea', 'Izquierda');
+        $datos = $this->setStyle($em, array('Alinear', $alinea), $pf, 'Alinear');
+        return JsonResponse::create($datos);
+    }
+    /**
+     * ancho Pregunta.
+     *
+     * @Route("/Ancho/{pregunta}/{ancho}/", name="preguntaFormato_ancho")
+     * @ParamConverter("pregunta", class="FormatEasyFormatosBundle:PreguntaFormato", options={"id" = "id"})
+     * @Template()
+     */
+    public function anchoPreguntaAction(PreguntaFormato $pf, Request $request){
+        $em = $this->getDoctrine()->getManager();
+        $ancho = $request->get('ancho', '1');
+        $datos = $this->setStyle($em, 'Ancho-'.$ancho, $pf, 'Ancho');
+        return JsonResponse::create($datos);
+    }
+    /**
+     * columnas Pregunta.
+     *
+     * @Route("/Columnas/{columnas}/{pregunta}/", name="preguntaFormato_columnas")
+     * @ParamConverter("pregunta", class="FormatEasyFormatosBundle:PreguntaFormato", options={"id" = "id"})
+     * @Template()
+     */
+    public function columnasPreguntaAction(PreguntaFormato $pf, Request $request){
+        $em = $this->getDoctrine()->getManager();
+        $columna = $request->get('columnas', '2');
+        $datos = $this->setStyle($em, 'Columnas-'.$columna, $pf, 'Columnas');
+        return JsonResponse::create($datos);
+    }
+    /**
+     * vista Pregunta.
+     *
+     * @Route("/Vista/{vista}/{pregunta}/", name="preguntaFormato_vista")
+     * @ParamConverter("pregunta", class="FormatEasyFormatosBundle:PreguntaFormato", options={"id" = "id"})
+     * @Template()
+     */
+    public function vistaPreguntaAction(PreguntaFormato $pf, Request $request){
+        $em = $this->getDoctrine()->getManager();
+        $vista = $request->get('vista', 'Bloque');
+        $datos = $this->setStyle($em, 'En-'.$vista, $pf, 'Vista');
+        return JsonResponse::create($datos);
+    }
+    private function setStyle($em, $style, PreguntaFormato $pf, $tipo = false){
+        $etiqueta = null;
+        if(is_array($style)){
+            $etiqueta = $em->getRepository('FormatEasyCommonBundle:Etiqueta')->getOneEtiqueta($style);
+        }
+        elseif(is_string($style)){
+            $etiqueta = $em->getRepository('FormatEasyCommonBundle:Etiqueta')->findOneBy(array('canonical' => $style));
+        }
+        $datos = array(
+            'style' =>  $style,
+            'error' => true,
+            'msg'   => ''
+        );
+        if($etiqueta){
+            if(!is_null($pf->getGrupo())){
+                $grupo = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->findBy(array('grupo' => $pf->getGrupo(), 'formato' => $pf->getFormato()));
+                foreach($grupo as $p){
+                    $this->validaEtiquetas($p, $em, $etiqueta, $tipo);
+                }
+            }else{
+                $this->validaEtiquetas($pf, $em, $etiqueta, $tipo);
+            }
+            $em->flush();
+            $datos['error'] = false;
+            $datos['etiqueta'] = $etiqueta->getCanonical();
+        }
+        return $datos;
+    }
+    private function validaEtiquetas(PreguntaFormato $pf, $em, $etiqueta, $tipo = false){
+        $et = false;
+        if($tipo)
+            $et = $pf->getEtiqueta($tipo);
+        if($et){
+            $pf->removeEtiqueta($et);
+        }
+        $pf->addEtiqueta($etiqueta);
+        $em->persist($pf);
+    }
+    /**
+     * Add Pregunta.
+     *
+     * @Route("/Etiqueta/{accion}/{formato}/{etiqueta}/{posicion}/", name="preguntaFormato__agregarEtiquetas")
+     * @Route("/Etiqueta/{accion}/{formato}/{etiqueta}/", name="preguntaFormato__agregarEtiquetas")
+     * @Route("/Etiqueta/{accion}/{formato}/", name="preguntaFormato__agregarEtiquetas")
+     * @ParamConverter("formato", class="FormatEasyFormatosBundle:Formato", options={"canonical" = "formato", "repository_method" = "findOneByCanonical"})
+     * @Template()
+     */
+    public function agrupaPreguntaAction(Formato $formato, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $orden = $request->get('posicion', -1);
+        $accion = $request->get('accion', -1);
+        $etiquetas = $request->get('etiqueta', false);
+        $pregunta = $request->get('pregunta', false);
+        if($pregunta){
+            $pregunta = $em->getRepository('FormatEasyFormatosBundle:Pregunta')->findOneByCanonical(str_replace($formato->getCanonical().'-', '', $pregunta));
+        }
+        if($etiquetas){
+            $etiqueta_ = explode(' ', $etiquetas);
+            $etiqueta = $em->getRepository('FormatEasyCommonBundle:Etiqueta')->getOneByWithEtiquetas(array('canonical' => "'".$etiqueta_[1]."'"),array('diseño'));
+            $pf = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->findOneBy(array('pregunta' => $pregunta, 'formato' => $formato));
+            $pf->addEtiqueta($etiqueta);
+//            $num_grupos = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->getNumGrupos($pregunta,$formato);
+//            var_dump($num_grupos);
+//            die;
+            $em->persist($pf);
+            $em->flush();
+            return JsonResponse::create(array(
+                'msg' =>  '',
+                'error' =>  false,
+            ));
+        }
+        return JsonResponse::create(array(
+            'orden'     =>  $orden,
+            'accion'    =>  $accion,
+            'formato'   =>  $formato?$formato:'No Formato',
+            'etiqueta'  =>  $etiqueta?$etiqueta:$request->get('etiqueta', false),
+            'preguntaFormato'  =>  $pf?$pf:'No Pregunta Formato',
+            'pregunta'  =>  $pregunta?$pregunta:$request->get('pregunta', false),
+        ));
+    }
+    /**
      * Add Pregunta.
      *
      * @Route("/Agregar/{formato}/{respuesta}/", name="preguntaFormato__addPregunta")
@@ -42,6 +175,14 @@ class PreguntaFormatoController extends Controller
         if($orden >= 0){
             $entity->setOrden($orden+1);
             $orden_ = true;
+        }
+        if(in_array('Diseno', $respuesta->getTextEtiquetas(false))){
+            return $this->render('FormatEasyFormatosBundle:PreguntaFormato:_formPreguntaFormatoDiseño.html.twig', array(
+                'pp' => $formato->getPlantillaPreguntas(),
+                'pr' => $respuesta,
+                'f' => $formato,
+                'pf' => $entity,
+            ));
         }
         $form = $this->getForm($entity, array(
                 'form_pregunta' => new PreguntaType(array(
@@ -199,6 +340,67 @@ class PreguntaFormatoController extends Controller
     }
     
     /**
+     * Edit Diseño Pregunta Formato.
+     *
+     * @Route("/Diseño/{id}/", name="preguntaFormato__verDiseñoPreguntaFormato")
+     * @ParamConverter("entity", class="FormatEasyFormatosBundle:PreguntaFormato", options={"id" = "id", "repository_method" = "findOneById"})
+     * @Template()
+     */
+    public function editDisenoPreguntaFormatoAction(PreguntaFormato $entity, Request $request)
+    {
+        $modify = false;
+        if(!$entity->getNombre()){
+            $modify = true;
+            $entity->setNombre($entity->getPregunta()->getNombre());
+        }
+        if(!$entity->getDescripcion()){
+            $modify = true;
+            $entity->setDescripcion($entity->getPregunta()->getDescripcion());
+        }
+        if($modify){
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($entity);
+            $em->flush();
+        }
+        $respuesta = $entity->getPlantillaRespuesta();
+        $formato = $entity->getFormato();
+        $orden_ = true;
+        $form = $this->getForm($entity, array(
+                'form_pregunta' => new PreguntaType(array(
+                    'plantilla' => $respuesta,
+                    'em'        => $this->getDoctrine()->getManager()
+                )),
+                'plantilla'     => $respuesta,
+                'formato'       => $formato,
+                'orden'         => $orden_,
+                'em'            => $this->getDoctrine()->getManager()
+            ), array(
+                'id'            => $entity->getId(),
+                'respuesta'     => $respuesta->getCanonical(),
+                'formato'       => $formato->getCanonical(),
+            ));
+        if($request->getMethod() === 'POST' || $request->getMethod() === 'PUT'){
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $this->sortPreguntaFormato($em, $entity, -1, $entity->getOrden());
+//                $em->persist($entity);
+                $em->flush();
+
+//                return $this->redirect($this->generateUrl('preguntaFormato__show', array('id' => $entity->getId())));
+            }
+        }
+        
+        return array(
+            'form' => $form->createView(),
+            'pp' => $formato->getPlantillaPreguntas(),
+            'pf' => $entity,
+            'pr' => $respuesta,
+            'f' => $formato,
+        );
+    }
+    
+    /**
     * Creates a form .
     *
     * @param mixed $entity The entity
@@ -235,17 +437,27 @@ class PreguntaFormatoController extends Controller
      *
      * @Route("/", name="preguntaFormato_")
      * @Method("GET")
-     * @Template()
+     * @Template("FormatEasyCommonBundle:Index:menu.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entities = $em->getRepository('FormatEasyFormatosBundle:PreguntaFormato')->findAll();
-
-        return array(
-            'entities' => $entities,
+        $title = 'Preguntas de Formatos';
+        $entity = 'PreguntaFormato';
+        $bundle = 'Formatos';
+        $route = strtolower($entity).'_';
+        $limit = 10;
+        
+        $paginacion = $this->get('formateasy.util')->getPaginacion($entity, $bundle, $route, $limit);
+        
+        $datos = array(
+            'paginas' => $paginacion['pag'],
+            'form_filtro' => $paginacion['form_filter']->createView(),
+            'title' => $title,
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyCommonBundle:Index:_menu.html.twig', $datos);
+        }
+        return $datos;
     }
     /**
      * Creates a new PreguntaFormato entity.

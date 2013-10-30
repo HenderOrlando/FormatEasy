@@ -1,25 +1,10 @@
-<div class="form-respuesta">
+<div class="form-respuesta ">
     {{ form_start(form,{'attr': {'class': 'form-inline', 'role':'form'} }) }}
-        {% if 'texto' in (pr.canonical | lower) or 'fecha' in (pr.canonical | lower) or 'hora' in (pr.canonical | lower) or 'numero' in (pr.canonical | lower) %}
         <div class="form-group">
             {{ form_label(form[nombre], nombre|humanize, { 'attr': {'class': 'control-label'} }) }}
             {{ form_errors(form[nombre]) }}
             {{ form_widget(form[nombre], { 'attr': {'class': 'form-control'} }) }}
         </div>
-        {% else %}
-            <span class="">{{ p.nombre }}</span>
-            <span class="text-muted pull-right opciones">
-                <span class="num">{{ p.respuestas | length }}</span> 
-                <a href="{{ url('respuestas_pregunta', {'pregunta':p.canonical}) }}" class="text">Opciones</a>
-            </span>
-            <div class="form-group">
-                <span>
-                    {{ form_label(form[nombre], nombre|humanize, { 'attr': {'class': 'control-label'} }) }}
-                </span>
-                {{ form_errors(form[nombre]) }}
-                {{ form_widget(form[nombre], { 'attr': {'class': 'form-control'} }) }}
-            </div>
-        {% endif %}
         {{ form_rest(form) }}
     {{ form_end(form) }}
 </div>

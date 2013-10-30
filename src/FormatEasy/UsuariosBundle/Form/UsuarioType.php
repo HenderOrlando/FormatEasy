@@ -16,11 +16,7 @@ class UsuarioType extends AbstractType
     {
         $builder
             ->add('nombre')
-            ->add('canonical')
             ->add('descripcion')
-            ->add('fechaCreado')
-            ->add('etiquetas')
-            ->add('Roles')
         ;
     }
     

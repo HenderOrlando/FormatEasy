@@ -25,6 +25,7 @@ class FormatoType extends AbstractType
             ->add('margen_inf')
             ->add('margen_izq')
             ->add('margen_der')
+            ->add('usuarios')
         ;
     }
     

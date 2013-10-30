@@ -24,7 +24,7 @@ class PreguntaController extends Controller
      * Form para responder la Pregunta.
      *
      * @Route("/Responder/{pregunta}/en/{formato}/", name="pregunta__responderPregunta")
-     * @Route("/Responder/{pregunta}/en/{formato}/{disabled}-Deshabilitado/", name="pregunta__responderPregunta_deshabilitado", defaults={"disabled" = "Si"})
+     * @Route("/Responder/{pregunta}/en/{formato}/{disabled}-Deshabilitado/", name="pregunta__responderPregunta_deshabilitado", defaults={"disabled" = "No"})
      * @ParamConverter("pregunta", class="FormatEasyFormatosBundle:Pregunta", options={"canonical" = "pregunta", "repository_method" = "findOneByCanonical"})
      * @ParamConverter("formato", class="FormatEasyFormatosBundle:Formato", options={"canonical" = "formato", "repository_method" = "findOneByCanonical"})
      * @Template("FormatEasyFormatosBundle:Pregunta:_formResponderPregunta.html.twig")
@@ -49,15 +49,16 @@ class PreguntaController extends Controller
         if(!$pr){
             $pr = $pregunta->getPlantilla();
         }
-        if(stripos($canonical, 'texto') !== false || stripos($canonical, 'fecha') !== false || stripos($canonical, 'hora') !== false || stripos($canonical, 'numero') !== false){
+        if(stripos($pr->getWidget(), 'choice') === false && stripos($pr->getWidget(), 'checkbox') === false && stripos($pr->getWidget(), 'radio') === false){
             $form->add($nombre, $pr->getWidget());
         }else{
-            $opts = array();
+            $opts[-1] = 'Agregar';
             foreach($pregunta->getRespuestas() as $respuesta){
                 $opts[$respuesta->getId()] = $respuesta->getNombre();
             }
             $form->add($nombre, $pr->getWidget(), array(
-                'choices'   =>  $opts
+                'choices'   =>  $opts,
+                'empty_value' => 'Elije una '.$nombre
             ));
         }
         $disabled = $this->getRequest()->get('disabled', false);
@@ -66,14 +67,14 @@ class PreguntaController extends Controller
             'pregunta'     =>  $pregunta->getCanonical(),
             'formato'     =>  $formato->getCanonical(),
         )));
-        $form = $form->getForm();
+        $form_ = $form->getForm();
         return array(
             'p'     =>  $pregunta,
             'f'     =>  $formato,
             'nombre'=>  $nombre,
             'pf'    =>  $pf,
             'pr'    =>  $pr,
-            'form'  =>  $form->createView(),
+            'form'  =>  $form_->createView(),
         );
     }
     
@@ -81,22 +82,26 @@ class PreguntaController extends Controller
      * Lists all Pregunta entities.
      *
      * @Route("/", name="pregunta_")
-     * @Method("GET")
-     * @Template()
+     * @Template("FormatEasyCommonBundle:Index:menu.html.twig")
      */
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entities = $em->getRepository('FormatEasyFormatosBundle:Pregunta')->findAll();
-
+        $title = 'Preguntas';
+        $entity = 'Pregunta';
+        $bundle = 'Formatos';
+        $route = strtolower($entity).'_';
+        $limit = 10;
+        
+        $paginacion = $this->get('formateasy.util')->getPaginacion($entity, $bundle, $route, $limit);
+        
         $datos = array(
-            'entities' => $entities,
+            'paginas' => $paginacion['pag'],
+            'form_filtro' => $paginacion['form_filter']->createView(),
+            'title' => $title,
         );
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyFormatosBundle:Pregunta:_index.html.twig', $datos);
+            return $this->render('FormatEasyCommonBundle:Index:_menu.html.twig', $datos);
         }
-        
         return $datos;
     }
     /**

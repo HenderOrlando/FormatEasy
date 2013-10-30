@@ -16,10 +16,14 @@
             {% if 'choice' in pr.widget or 'radio' in pr.widget or 'checkbox' in pr.widget  or 'lista' in pr.canonical |lower  or 'tabla' in pr.canonical |lower %}
                 <span class="text-muted pull-right opciones">
                     <span class="num">{{ pf.pregunta.respuestas | length }}</span> 
-                    <a href="{{ url('respuestas_pregunta', {'pregunta':pf.pregunta.canonical}) }}" class="text-muted">{{ 'tabla' in pr.canonical |lower? 'Columna(s)': 'Opcion(es)' }}</a>
+                    {% set etiqueta = 'Opciones' %}
+                    {% if 'tabla' in pr.canonical |lower %}
+                        {% set etiqueta = 'Columna(s)' %}
+                    {% endif %}
+                    <a href="{{ url('respuestas_pregunta', {'pregunta':pf.pregunta.canonical, 'etiqueta': (etiqueta | replace({'(':'',')':''}) )}) }}" class="text-muted">{{ etiqueta }}</a>
                     {% if 'tabla' in pr.canonical |lower %}
                         y <span class="num-fila">{{ pf.pregunta.respuestas | length }}</span> 
-                        <a href="{{ url('respuestas_pregunta', {'pregunta':pf.pregunta.canonical}) }}" class="text-muted">Fila(s)</a>
+                        <a href="{{ url('respuestas_pregunta', {'pregunta':pf.pregunta.canonical, 'etiqueta': 'Filas' }) }}" class="text-muted">Fila(s)</a>
                     {% endif %}
                 </span>
             {% endif %}
@@ -35,7 +39,7 @@
                 <a href="#" class="btn btn-sm btn-default tooltip_ duplicar-pregunta" data-title="Duplicar" data-placement="right" data-toggle="tooltip" title="Duplicar"><span class="glyphicon glyphicon-plus-sign"></span></a>
                 <a href="#" class="btn btn-sm btn-default tooltip_ borrar-pregunta" data-title="Borrar" data-placement="right" data-toggle="tooltip" title="Borrar"><span class="glyphicon glyphicon-trash"></span></a>
                 <a href="#" class="btn btn-sm btn-default tooltip_ configure-pregunta" data-title="Configurar" data-placement="right" data-toggle="tooltip" title="Configurar"><span class="glyphicon glyphicon-wrench"></span></a>
-                {% if pf is defined and ('choice' in pr.widget or 'radio' in pr.widget or 'checkbox' in pr.widget) %}
+                {% if pf is defined and ('choice' in pr.widget or 'radio' in pr.widget or 'checkbox' in pr.widget or 'lista' in pf.plantillaRespuesta.canonical|lower) %}
                     <a href="{{ url('respuesta__addRespuesta',{'pregunta':pf.pregunta.canonical}) }}" class="btn btn-sm btn-default tooltip_ add-respuesta" data-title="Agregar Respuesta" data-placement="right" data-toggle="tooltip" title="Agregar Respuesta"><span class="glyphicon glyphicon-plus"></span></a>
                 {% endif %}
                 <a href="#" class="btn btn-sm btn-default tooltip_ editar-pregunta border-radius-r" data-title="Abrir Edición" data-placement="right" data-toggle="tooltip" title="Abrir Edición"><span class="glyphicon glyphicon-pencil"></span></a>
@@ -47,7 +51,7 @@
         {% endif %}
         <div class="container">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-8">
                     {% if form.pregunta.nombre is defined %}
                         {{ form_label(form.pregunta.nombre, 'Enunciado', { 'attr': {'class': 'control-label'} }) }}
                         {{ form_errors(form.pregunta.nombre) }}
@@ -56,6 +60,17 @@
                         {{ form_label(form.nombre, 'Enunciado', { 'attr': {'class': 'control-label'} }) }}
                         {{ form_errors(form.nombre) }}
                         {{ form_widget(form.nombre, { 'attr': {'class': 'form-control'} }) }}
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    {% if form.pregunta.grupo is defined %}
+                        {{ form_label(form.pregunta.grupo, 'Grupo', { 'attr': {'class': 'control-label'} }) }}
+                        {{ form_errors(form.pregunta.grupo) }}
+                        {{ form_widget(form.pregunta.grupo, { 'attr': {'class': 'form-control'} }) }}
+                    {% else %}
+                        {{ form_label(form.grupo, 'Grupo', { 'attr': {'class': 'control-label'} }) }}
+                        {{ form_errors(form.grupo) }}
+                        {{ form_widget(form.grupo, { 'attr': {'class': 'form-control'} }) }}
                     {% endif %}
                 </div>
             </div>
@@ -100,5 +115,7 @@
         </div>
     {% endif %}
 {% endif %#}
+<div class="plantilla-aplica">
 {{ pp.codigo | replace({'%respuesta%': ''}) | raw}}
+</div>
 <div class="clear clearfix clear-fix"></div>

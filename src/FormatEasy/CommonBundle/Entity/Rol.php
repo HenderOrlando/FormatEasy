@@ -24,9 +24,9 @@ class Rol extends \FormatEasy\CommonBundle\Entity\Objeto
     private $role;
 
     /** 
-     * @ORM\ManyToMany(targetEntity="FormatEasy\UsuariosBundle\Entity\Usuario", mappedBy="Roles")
+     * @ORM\ManyToMany(targetEntity="FormatEasy\UsuariosBundle\Entity\Usuario", mappedBy="roles")
      */
-    private $Usuarios;
+    private $usuarios;
     
     /**
      * Constructor
@@ -68,7 +68,7 @@ class Rol extends \FormatEasy\CommonBundle\Entity\Objeto
      */
     public function addUsuario(\FormatEasy\UsuariosBundle\Entity\Usuario $Usuarios)
     {
-        $this->Usuarios[] = $Usuarios;
+        $this->usuarios[] = $Usuarios;
     
         return $this;
     }
@@ -80,7 +80,7 @@ class Rol extends \FormatEasy\CommonBundle\Entity\Objeto
      */
     public function removeUsuario(\FormatEasy\UsuariosBundle\Entity\Usuario $Usuarios)
     {
-        $this->Usuarios->removeElement($Usuarios);
+        $this->usuarios->removeElement($Usuarios);
     }
 
     /**
@@ -90,6 +90,6 @@ class Rol extends \FormatEasy\CommonBundle\Entity\Objeto
      */
     public function getUsuarios()
     {
-        return $this->Usuarios;
+        return $this->usuarios;
     }
 }

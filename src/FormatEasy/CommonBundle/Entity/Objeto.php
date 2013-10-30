@@ -192,16 +192,67 @@ class Objeto
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getEtiquetas()
+    public function getEtiquetas($etiquetas = array())
     {
+        if(is_array($etiquetas) && !empty($etiquetas) && count($this->etiquetas) > 0){
+            $array = array();
+            foreach($this->etiquetas as $et){
+                foreach ($etiquetas as $e){
+                    if(strpos($et->getNombre(), $e) !== false || strpos($et->getCanonical(), $e) !== false)
+                        $array[$et->getId()] = $et;
+                }
+            }
+            return $array;
+        }
         return $this->etiquetas;
     }
 
     public function getTextEtiquetas($separador = ' '){
         $e = array();
-        foreach($this->getEtiquetas() as $et)
-            $e[$et->getId()] = $et->getCanonical();
+        if(count($this->getEtiquetas()) > 0)
+            foreach($this->getEtiquetas() as $et)
+                $e[$et->getId()] = $et->getCanonical();
         return is_bool($separador)?$e:implode($separador, $e);
+    }
+    
+    public function getTextEtiquetasSi($separador = ' ', $si = array(), $no = false){
+        $e = array();
+        if(count($this->getEtiquetas()) > 0)
+            foreach($this->getEtiquetas() as $et){
+                if(is_array($si)){
+                    foreach($si as $name)
+                        if((strpos($et->getCanonical(), $name) !== false && !$no) || (strpos($et->getCanonical(), $name) === false && $no)){
+                            $e[$et->getId()] = $et->getCanonical();
+                        }
+                }
+            }
+        return is_bool($separador)?$e:implode($separador, $e);
+    }
+    
+    public function getEtiqueta($etiqueta){
+        if(is_string($etiqueta) && count($this->getEtiquetas()) > 0)
+            foreach($this->getEtiquetas() as $et){
+                if(strpos ($et->getCanonical(), $etiqueta) !== false)
+                    return $et;
+            }
+        return NULL;
+    }
+    
+    public function hasEtiqueta($etiqueta, $object = false){
+        $return = false;
+        if(is_string($etiqueta) && count($this->getEtiquetas()) > 0)
+            foreach($this->getEtiquetas() as $et){
+                if(strpos ($et->getCanonical(), $etiqueta) !== false){
+                    if($object)
+                        $return = $et;
+                    else
+                        $return = true;
+                    break;
+                }
+            }
+        if($object && !$return)
+            $return = null;
+        return $return;
     }
     
     public function __toString() {

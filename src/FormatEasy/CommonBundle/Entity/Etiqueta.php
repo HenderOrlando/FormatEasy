@@ -64,4 +64,19 @@ class Etiqueta extends \FormatEasy\CommonBundle\Entity\Objeto
     {
         return $this->objetos;
     }
+        
+    public function __toString() {
+        return $this->getNombre();
+    }
+    
+    public function json($json = true){
+        $datos = array(
+            'id'                => $this->getId(),
+            'nombre'            => $this->getNombre(),
+            'descripcion'       => $this->getDescripcion(),
+        );
+        if($json)
+            return json_encode($datos);
+        return $datos;
+    }
 }

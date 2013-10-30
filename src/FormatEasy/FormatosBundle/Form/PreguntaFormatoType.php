@@ -50,6 +50,7 @@ class PreguntaFormatoType extends AbstractType
         }else{
             $builder->add('orden');
         }
+        $builder->add('grupo');
     }
 
     /**

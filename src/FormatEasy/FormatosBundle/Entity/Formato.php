@@ -68,6 +68,11 @@ class Formato extends \FormatEasy\CommonBundle\Entity\Objeto
      */
     private $unidadMargen;
     
+    /** 
+     * @ORM\ManyToMany(targetEntity="FormatEasy\UsuariosBundle\Entity\Usuario", mappedBy="formatos")
+     */
+    private $usuarios;
+    
     /**
      * Constructor
      */
@@ -78,8 +83,8 @@ class Formato extends \FormatEasy\CommonBundle\Entity\Objeto
         $this->preguntas = new \Doctrine\Common\Collections\ArrayCollection();
         $this->margen_der = 2.5;
         $this->margen_inf = 2.5;
-        $this->margen_izq = 4;
-        $this->margen_sup = 4;
+        $this->margen_izq = 3.5;
+        $this->margen_sup = 3.5;
         $this->unidadMargen = 'cm';
     }
     
@@ -307,6 +312,39 @@ class Formato extends \FormatEasy\CommonBundle\Entity\Objeto
     public function getUnidadMargen()
     {
         return $this->unidadMargen;
+    }
+
+    /**
+     * Add Usuarios
+     *
+     * @param \FormatEasy\UsuariosBundle\Entity\Usuario $Usuarios
+     * @return Rol
+     */
+    public function addUsuario(\FormatEasy\UsuariosBundle\Entity\Usuario $Usuarios)
+    {
+        $this->usuarios[] = $Usuarios;
+    
+        return $this;
+    }
+
+    /**
+     * Remove Usuarios
+     *
+     * @param \FormatEasy\UsuariosBundle\Entity\Usuario $Usuarios
+     */
+    public function removeUsuario(\FormatEasy\UsuariosBundle\Entity\Usuario $Usuarios)
+    {
+        $this->usuarios->removeElement($Usuarios);
+    }
+
+    /**
+     * Get Usuarios
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getUsuarios()
+    {
+        return $this->usuarios;
     }
     
     public function __toString() {

@@ -26,14 +26,35 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
     private $respuestasPreguntasFormatos;
 
     /** 
-     * @ORM\ManyToMany(targetEntity="FormatEasy\CommonBundle\Entity\Rol", inversedBy="Usuarios")
+     * @ORM\ManyToMany(targetEntity="FormatEasy\CommonBundle\Entity\Rol", inversedBy="usuarios")
      * @ORM\JoinTable(
      *     name="rol_usuario", 
      *     joinColumns={@ORM\JoinColumn(name="id_usuario", referencedColumnName="id", nullable=false)}, 
      *     inverseJoinColumns={@ORM\JoinColumn(name="id_rol", referencedColumnName="id", nullable=false)}
      * )
      */
-    private $Roles;
+    private $roles;
+
+    /** 
+     * @ORM\ManyToMany(targetEntity="FormatEasy\FormatosBundle\Entity\Formato", inversedBy="usuarios")
+     * @ORM\JoinTable(
+     *     name="formato_usuario", 
+     *     joinColumns={@ORM\JoinColumn(name="id_usuario", referencedColumnName="id", nullable=false)}, 
+     *     inverseJoinColumns={@ORM\JoinColumn(name="id_formato", referencedColumnName="id", nullable=false)}
+     * )
+     */
+    private $formatos;
+    
+    /** 
+     * @ORM\Column(type="integer", nullable=false, name="doc_id")
+     */
+    private $docId;
+    
+    /** 
+     * @ORM\Column(type="integer", nullable=false, name="tipo_doc_id")
+     */
+    private $tipoDocId;
+    
     /**
      * Constructor
      */
@@ -85,7 +106,7 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
      */
     public function addRole(\FormatEasy\CommonBundle\Entity\Rol $Roles)
     {
-        $this->Roles[] = $Roles;
+        $this->roles[] = $Roles;
     
         return $this;
     }
@@ -97,7 +118,7 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
      */
     public function removeRole(\FormatEasy\CommonBundle\Entity\Rol $Roles)
     {
-        $this->Roles->removeElement($Roles);
+        $this->roles->removeElement($Roles);
     }
 
     /**
@@ -107,6 +128,78 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
      */
     public function getRoles()
     {
-        return $this->Roles;
+        return $this->roles;
+    }
+
+    /**
+     * Add Formatos
+     *
+     * @param \FormatEasy\FormatosBundle\Entity\Formato $Formatos
+     * @return Usuario
+     */
+    public function addFormato(\FormatEasy\FormatosBundle\Entity\Formato $Formatos)
+    {
+        $this->formatos[] = $Formatos;
+    
+        return $this;
+    }
+
+    /**
+     * Remove Formatos
+     *
+     * @param \FormatEasy\FormatosBundle\Entity\Formato $Formatos
+     */
+    public function removeFormato(\FormatEasy\FormatosBundle\Entity\Formato $Formatos)
+    {
+        $this->formatos->removeElement($Formatos);
+    }
+
+    /**
+     * Get Formatos
+     *
+     * @return \Doctrine\Formatos\Collections\Collection 
+     */
+    public function getFormatos()
+    {
+        return $this->formatos;
+    }
+    
+    /**
+     * Get DocId
+     *
+     * @return Integer
+     */
+    public function getDocId()
+    {
+        return $this->docId;
+    }
+    
+    /**
+     * Set DocId
+     *
+     * @return Integer
+     */
+    public function setDocId()
+    {
+        return $this->docId;
+    }
+    /**
+     * Get DocId
+     *
+     * @return Integer
+     */
+    public function getTipoDocId()
+    {
+        return $this->tipoDocId;
+    }
+    
+    /**
+     * Set DocId
+     *
+     * @return Integer
+     */
+    public function setTipoDocId()
+    {
+        return $this->tipoDocId;
     }
 }

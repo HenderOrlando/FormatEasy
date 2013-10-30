@@ -1,0 +1,12 @@
+
+<div class="enunciado {{ pf is not defined or (pf is defined and pf.id is empty)?'editando':'' }}">
+    <div class="text-success">"{{ pr.nombre }}"</div>
+    <ul class="content-group-preguntas {{ pf.plantillaRespuesta.canonical | title }}">
+            
+        </ul>
+</div>
+
+<div class="plantilla-aplica">
+{{ pp.codigo | replace({'%respuesta%': ''}) | raw}}
+</div>
+<div class="clear clearfix clear-fix"></div>

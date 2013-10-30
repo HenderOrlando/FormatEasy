@@ -1,4 +1,7 @@
 {# empty Twig template #}
+{% if respuestas is not empty %}
+<span class="text-success">{{ etiqueta }}</span>
+{% endif %}
 {% for r in respuestas %}
     {% render(controller('FormatEasyFormatosBundle:Respuesta:editRespuesta', {'id': r.id})) %}
     <div class="clear clearfix" ></div>

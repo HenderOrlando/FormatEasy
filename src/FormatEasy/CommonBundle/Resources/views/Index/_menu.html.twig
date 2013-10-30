@@ -1,0 +1,66 @@
+{#
+    String      title   Titulo de la tabla
+    Collection  head    Cabeza de la tabla
+#}
+{% extends 'FormatEasyCommonBundle:Index:_menuSuperior.html.twig' %}
+
+{% block menu_action %}
+    {% include 'FormatEasyCommonBundle:Index:botones.html.twig' with {
+        'buttonset': 'horizontal',
+        'class': 'text-right',
+        'sizing': 'grande',
+        'botones'  : [
+            {
+                'url'   : '',
+                'label' : 'Agregar',
+                'type'  : 'primary',
+            },
+        ],
+    } %}
+{% endblock %}
+
+{% block menu_search %}
+    <div class="btn-group form-buscar">
+        {{ form_start(form_filtro) }}
+            <div class="input-group input-group-lg">
+                {{ form_widget(form_filtro.filtro) }}
+                {{ form_widget(form_filtro.Buscar) }}
+            </div>
+            {{ form_rest(form_filtro) }}
+        {{ form_end(form_filtro) }}
+    </div>
+{% endblock %}
+{% block menu_title %}
+    <h3>{{ title is defined?title: '' }}</h3>
+{% endblock %}
+{% block menu_content %}
+    <div>
+        {% set head = head is defined?head: {
+                    fil:[
+                        {
+                            col:[
+                                {
+                                    'dato'    :   'Id',
+                                },
+                                {
+                                    'dato'    :   'Nombre',
+                                },
+                                {
+                                    'dato'    :   'Descripcion',
+                                },
+                                {
+                                    'dato'    :   'Fecha Creado',
+                                },
+                            ]
+                        },
+                    ]
+                } %}
+        {% include 'FormatEasyCommonBundle:Index:_tabla.html.twig' with {
+            tabla: {
+                class:      'table-hover table-striped table-bordered',
+                paginas:    paginas,
+                head: head,
+            }
+        } %}
+    </div>
+{% endblock %}

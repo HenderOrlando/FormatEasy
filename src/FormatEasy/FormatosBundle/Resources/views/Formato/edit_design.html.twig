@@ -1,13 +1,97 @@
 {% extends '::base_bootstrap.html.twig' %}
 
+{% set f = entity %}
+{% set pp = f.plantillaPreguntas %}
+
 {% block body -%}
-    {% include "FormatEasyFormatosBundle:Formato:_edit.html.twig" %}
-    <ul class="content-plantilla">
-        {% for pf in entity.preguntas %}
-            {% if 'Formato' in pf.plantillaRespuesta.getTextEtiquetas %}
-            <li>
-            {% render(controller('FormatEasyFormatosBundle:PreguntaFormato:editPreguntaFormato', {'id': pf.id})) %}
-            </li>
+    {% include "FormatEasyFormatosBundle:Formato:_edit_design.html.twig" %}
+<ul class="content-plantilla ">
+        {% for pf1 in p %}
+            {% if pf1.preguntas is defined %}
+                {% set first = pf1.preguntas|first %}
+                {#<li>
+                    <h1>{{ first.getTextEtiquetas }}</h1>
+                </li>#}
+                <li class="template-item-pregunta {{ first.getTextEtiquetas }}">
+                    <div class="options-design">
+                        <div class="row">
+                            <div class="btn-group">
+                                <a href="{{ url('preguntaFormato_alinear', {'alinea': 'Izquierda', 'pregunta': first.id}) }}" class="btn btn-sm btn-default tooltip_ align" data-title="Alinear a la Izquierda" data-placement="top" data-toggle="tooltip" title="Alinear a la Izquierda">
+                                    <span class="glyphicon glyphicon-align-left"></span>
+                                </a>
+                                <a href="{{ url('preguntaFormato_alinear', {'alinea': 'Centro', 'pregunta': first.id}) }}" class="btn btn-sm btn-default tooltip_ align" data-title="Alinear al Centro" data-placement="top" data-toggle="tooltip" title="Alinear al Centro">
+                                    <span class="glyphicon glyphicon-align-center"></span>
+                                </a>
+                                <a href="{{ url('preguntaFormato_alinear', {'alinea': 'Derecha', 'pregunta': first.id}) }}" class="btn btn-sm btn-default tooltip_ align" data-title="Alinear a la Derecha" data-placement="top" data-toggle="tooltip" title="Alinear a la Derecha">
+                                    <span class="glyphicon glyphicon-align-right"></span>
+                                </a>
+                                <div class="btn-group dropup">
+                                    <button type="button" class="btn btn-sm btn-default" data-toggle="dropdown">
+                                      Cols. <span class="glyphicon glyphicon-collapse-up"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="{{ url('preguntaFormato_columnas', {'columnas': '6', 'pregunta': first.id}) }}">6 Columnas</a></li>
+                                        <li><a href="{{ url('preguntaFormato_columnas', {'columnas': '5', 'pregunta': first.id}) }}">5 Columnas</a></li>
+                                        <li><a href="{{ url('preguntaFormato_columnas', {'columnas': '4', 'pregunta': first.id}) }}">4 Columnas</a></li>
+                                        <li><a href="{{ url('preguntaFormato_columnas', {'columnas': '3', 'pregunta': first.id}) }}">3 Columnas</a></li>
+                                        <li><a href="{{ url('preguntaFormato_columnas', {'columnas': '2', 'pregunta': first.id}) }}">2 Columnas</a></li>
+                                    </ul>
+                                </div>{#
+                                <div class="btn-group dropup">
+                                    <button type="button" class="btn btn-sm btn-default" data-toggle="dropdown">
+                                      Ancho <span class="glyphicon glyphicon-collapse-up"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '6', 'pregunta': first.id}) }}">Ancho Mínimo</a></li>
+                                        <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '5', 'pregunta': first.id}) }}">Ancho 5</a></li>
+                                        <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '4', 'pregunta': first.id}) }}">Ancho 4</a></li>
+                                        <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '3', 'pregunta': first.id}) }}">Ancho 3</a></li>
+                                        <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '2', 'pregunta': first.id}) }}">Ancho 2</a></li>
+                                        <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '1', 'pregunta': first.id}) }}">Ancho Máximo</a></li>
+                                    </ul>
+                                </div>#}
+                                <div class="btn-group dropup">
+                                    <button type="button" class="btn btn-sm btn-default" data-toggle="dropdown">
+                                      Vista <span class="glyphicon glyphicon-collapse-up"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="{{ url('preguntaFormato_vista', {'vista': 'Linea', 'pregunta': pf.id}) }}">En Línea</a></li>
+                                        <li><a href="{{ url('preguntaFormato_vista', {'vista': 'Bloque', 'pregunta': pf.id}) }}">En Bloque</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="plantilla-aplica">
+                        <div class="enunciado-pregunta">
+                            <ul class="content-group-preguntas {{ first.getTextEtiquetas }}">
+                                {% for pf in pf1.preguntas %}
+                                    <li class="template-item-pregunta {{ pf.getTextEtiquetas }}">
+                                        <div class="view-pregunta" id="{{f.canonical~'-'~pf.pregunta.canonical}}" data-pos="{{ pf is defined?pf.orden:'' }}" data-grupo="{{ pf.grupo is not empty?pf.grupo:'' }}">
+                                            {% render(controller('FormatEasyFormatosBundle:Pregunta:formResponderPregunta', {
+                                                'pregunta': pf.pregunta.canonical,
+                                                'formato': f.canonical
+                                            })) %}
+                                        </div>
+                                        <div class="clear clearfix clear-fix"></div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="respuesta-pregunta"></div>
+                    </div>
+                    <div class="clear clearfix clear-fix"></div>
+                </li>
+            {% else %}
+                <li>
+                    {% set pf = pf1 %}
+                    {% set pr = pf.plantillaRespuesta %}
+                    {% include 'FormatEasyFormatosBundle:PreguntaFormato:editDisenoPreguntaFormato.html.twig' %}
+                    <div class="plantilla-aplica  {{ pf.getTextEtiquetas }}" data-grupo="{{ pf.grupo }}">
+                        {{ pp.codigo | replace({'%respuesta%': ''}) | raw}}
+                    </div>
+                    <div class="clear clearfix clear-fix"></div>
+                </li>
             {% endif %}
         {% endfor %}
     </ul>
@@ -15,7 +99,12 @@
         {% for pf in entity.preguntas %}
             {% if 'Encabezado' in pf.plantillaRespuesta.getTextEtiquetas and 'Formato' not in pf.plantillaRespuesta.getTextEtiquetas%}
             <li>
-            {% render(controller('FormatEasyFormatosBundle:PreguntaFormato:editPreguntaFormato', {'id': pf.id})) %}
+                {% set pr = pf.plantillaRespuesta %}
+                {% include 'FormatEasyFormatosBundle:PreguntaFormato:editDisenoPreguntaFormato.html.twig' %}
+                <div class="plantilla-aplica">
+                    {{ pp.codigo | replace({'%respuesta%': ''}) | raw}}
+                </div>
+                <div class="clear clearfix clear-fix"></div>
             </li>
             {% endif %}
         {% endfor %}
@@ -24,7 +113,7 @@
         {% for pf in entity.preguntas %}
             {% if 'Pie' in pf.plantillaRespuesta.getTextEtiquetas and 'Encabezado' not in pf.plantillaRespuesta.getTextEtiquetas and 'Formato' not in pf.plantillaRespuesta.getTextEtiquetas%}
             <li>
-            {% render(controller('FormatEasyFormatosBundle:PreguntaFormato:editPreguntaFormato', {'id': pf.id})) %}
+            {% render(controller('FormatEasyFormatosBundle:PreguntaFormato:editDisenoPreguntaFormato', {'id': pf.id})) %}
             </li>
             {% endif %}
         {% endfor %}
@@ -167,12 +256,13 @@
             var menu_open_r = '#mmenu-right';
             
             $.ajax({
-                url: "{{ url('_plantillaRespuesta_buttonlist', {'formato': entity.canonical}) }}"  
+                url: "{{ url('_plantillaRespuesta_buttonlistdiseno', {'formato': entity.canonical}) }}"  
             }).done(function(data) {
                 $(menu_open_r).find('.mm-inner .mmenu-content').html(data);
                 addHoja();
+                dragItemsGroup();
                 /*********************************************/
-                dragSortPreguntas(".drop_pregunta","#button-list-plantilla-respuesta a.Formato", '.hoja-cont .content-pagina .drop_pregunta', 'Formato');
+                dragSortPreguntas(".drop_pregunta","#button-list-plantilla-respuesta a.Formato, .content-group-preguntas", '.hoja-cont .content-pagina .drop_pregunta', 'Formato');
                 /*********************************************/
                 dragSortPreguntas(".encabezado-drop-pregunta","#button-list-plantilla-respuesta a.Encabezado-Pagina", '.hoja-cont .encabezado-pagina .encabezado-drop-pregunta', 'Encabezado-Pagina');
                 /*********************************************/
@@ -190,23 +280,12 @@
                 e.stopPropagation();
             });
             $('.hoja-config').find('.btn.construct').click(function(){
-                var click_open = true;
-                if($('html').hasClass('mm-opened') && !$('html').hasClass('mm-right')){
-                    $('nav.mmenu').not(menu_open_r).on("closed.mm",function(){
-                            if(click_open){
-                                $(menu_open_r).trigger('toggle.mm');
-                                click_open = false;
-                            }
-                        }
-                    ).trigger('close.mm');
-                }else{
-                    $(menu_open_r).trigger('toggle.mm');
-                }
+                window.location = "{{ url("formato__edit", {'id':entity.id}) }}";
             });
-            $('.content-plantilla li').each(function(){
+            $('.content-plantilla > li').each(function(){
                 ajustarPreguntaFormato(template_item, $(this).html());
             }).parent().remove();
-            $('.content-encabezado li').each(function(){
+            $('.content-encabezado > li').each(function(){
                 ajustarPreguntaFormatoEncabezado(template_item, $(this).html());
                 //$('.encabezado-pagina .encabezado-drop-pregunta').html($(this).html());
             }).parent().remove();
@@ -221,9 +300,71 @@
                 });
             });
             $('.hoja-config').find('.btn.design').click(function(){
-                window.location = "{{ url("formato_disenarFormato", {'id':entity.id}) }}"
+                var click_open = true;
+                if($('html').hasClass('mm-opened') && !$('html').hasClass('mm-right')){
+                    $('nav.mmenu').not(menu_open_r).on("closed.mm",function(){
+                            if(click_open){
+                                $(menu_open_r).trigger('toggle.mm');
+                                click_open = false;
+                            }
+                        }
+                    ).trigger('close.mm');
+                }else{
+                    $(menu_open_r).trigger('toggle.mm');
+                }
             });
         });
+        function dragItemsGroup(){
+        var sort = '.content-group-preguntas';
+            $(sort).sortable({
+                connectWith: '.drop_pregunta',
+                dropOnEmpty: true,
+                scroll: false,
+                placeholder: "btn btn-warning placeholder-sort-group-pregunta",
+                helper: function(e, el){
+                    return el.clone().css({marginTop: '-47%'});
+                },
+                start: function (event, ui){
+                    pos_antes = -1;
+                    if(ui.item.find('.text-success').length && typeof ui.item.attr('href') === 'undefined'){
+                        pos_antes = ui.item.index()+1;
+                    }
+                },
+                receive: function(event, ui){
+                    $.ajax({
+                        url:   "{{ url("preguntaFormato__agregarEtiquetas", {'accion': 'Agrupar','formato':entity.canonical}) }}",
+                        data: {
+                            pregunta: ui.item.find('.view-pregunta').attr('id'), 
+                            posicion: ui.item.find('.view-pregunta').attr('data-pos'),
+                            etiqueta: ui.item.parents('.content-group-preguntas').attr('class')
+                        }
+                    }).done(function(data) {
+                        console.log(data);
+                    }).fail(function( jqXHR, textStatus ) {
+                        console.log("Request failed: "+textStatus);
+                    }).always(function() {
+                        
+                    });
+                },
+                stop: function(event, ui) {
+                    console.log('----__________----')
+                    console.log($(ui.item).attr('id'))
+                    console.log($(ui.item).attr('class'))
+                    console.log($(ui.item).attr('data-pos'))
+                    console.log('----__________----')
+                    /*$.ajax({
+                        url:   "{{ url("preguntaFormato__agregarEtiquetas", {'accion': 'Agrupar','formato':entity.canonical}) }}",
+                        data: {'pregunta': $(ui.item).attr('id'), 'pos': $(ui.item).attr('data-pos')},
+                    }).done(function(data) {
+                        
+                    }).fail(function( jqXHR, textStatus ) {
+                        console.log("Request failed: "+textStatus);
+                    }).always(function() {
+                        
+                    });*/
+                }
+            });
+        }
         function dragSortPreguntas(sort, drag, id, etiqueta){
             $( sort ).sortable({
                 connectWith: drag,
@@ -253,18 +394,10 @@
                             //if(sort === ".encabezado-drop-pregunta")
                             checkFormPregunta_(sort,id);
                             addHoja();
+                            dragItemsGroup();
                         });
                     }else{
-                        if(ui.item.find('.text-success').length){
-                            $.ajax({
-                                url:   "{{ url('preguntaFormato__ordenPreguntaFormato_') }}",
-                                data:   {pos_antes: pos_antes, pos_ahora: ui.item.index()+1, id: "{{ entity.id }}", etiqueta: etiqueta }
-                            }).done(function(data) {
-                               console.log(data);
-                            }).fail(function( jqXHR, textStatus ) {
-                                console.log("Request failed: "+textStatus);
-                            });
-                        }
+                        
                     }
                     /*Obtiene la estructura*/
                 }
@@ -317,20 +450,22 @@
             });
         }
         function ajustarPreguntaFormato(template_item, data, item){
-            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .contenido-pagina .drop_pregunta')
+            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .contenido-pagina .drop_pregunta');
         }
         function ajustarPreguntaFormatoEncabezado(template_item, data, item){
-            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .encabezado-pagina .encabezado-drop-pregunta')
+            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .encabezado-pagina .encabezado-drop-pregunta');
         }
         function ajustarPreguntaFormatoPie(template_item, data, item){
-            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .pie-pagina .pie-drop-pregunta')
+            ajustarPreguntaFormato_(template_item, data, item, '.hoja-cont .pie-pagina .pie-drop-pregunta');
         }
         function ajustarPreguntaFormato_(template_item, data, item, id){
             var li = template_item.clone();
             li.html(data);
             
             var enunciado = li.children('.enunciado');
-            enunciado.siblings('.plantilla-aplica').find('.enunciado-pregunta').addClass(enunciado.attr('class')).removeClass('enunciado').html(enunciado.html());
+            li.addClass(enunciado.attr('class')).removeClass('enunciado');
+            
+            enunciado.siblings('.plantilla-aplica').find('.enunciado-pregunta').html(enunciado.html());
             enunciado.remove();
             li.find('.enunciado-pregunta > div:first-child').prependTo(li);
             if(typeof item === 'undefined'){
@@ -512,6 +647,115 @@
             });
         }
         function checkFormPregunta_(form, id){
+            if($('select').parent().hasClass('form-control')){
+                $('select').parent().css({
+                    padding:    0
+                });
+            }
+            $('.design-formato '+form+' .template-item-pregunta input:not(:disabled), '+'.design-formato '+form+' .template-item-pregunta select:not(:disabled)').on({
+                focusin: function(){
+                    if($(this).parent().hasClass('form-control')){
+                        $(this).parent().css({
+                            border  :    'none',
+                            'box-shadow'  :    'none',
+                            padding:    0
+                        });
+                    }
+                },
+                focusout: function(){
+                    if($(this).parent().hasClass('form-control')){
+                        $(this).parent().removeAttr('style');
+                        $(this).parent().css({
+                            border  :    'none',
+                            'box-shadow'  :    'none',
+                            padding:    0
+                        });
+                    }
+                },
+                mouseenter: function(){
+                    if($(this).parent().hasClass('form-control')){
+                        $(this).parent().css({
+                            border  :    'none',
+                            'box-shadow'  :    'none',
+                            padding:    0
+                        });
+                    }
+                },
+                mouseleave: function(){
+                    if($(this).parent().hasClass('form-control')){
+                        $(this).parent().removeAttr('style');
+                        $(this).parent().css({
+                            padding:    0
+                        });
+                    }
+                }
+            });
+            $('.template-item-pregunta .options-design a').on('click', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                var este = $(this);
+                $.ajax({
+                    url:   $(this).attr('href')
+                }).done(function(data) {
+                    if(!data.error){
+                        if(data.etiqueta.indexOf('Columnas') >= 0){
+                            este.parents('.template-item-pregunta')
+                                .removeClass('Columnas-1')
+                                .removeClass('Columnas-2')
+                                .removeClass('Columnas-3')
+                                .removeClass('Columnas-4')
+                                .removeClass('Columnas-5')
+                                .removeClass('Columnas-6')
+                                .find('.content-group-preguntas')
+                                    .removeClass('Columnas-1')
+                                    .removeClass('Columnas-2')
+                                    .removeClass('Columnas-3')
+                                    .removeClass('Columnas-4')
+                                    .removeClass('Columnas-5')
+                                    .removeClass('Columnas-6');
+                        }else if(data.etiqueta.indexOf('Alinear') >= 0){
+                            este.parents('.template-item-pregunta')
+                                .removeClass('Alinear-al-Centro')
+                                .removeClass('Alinear-a-la-Izquierda')
+                                .removeClass('Alinear-a-la-Derecha')
+                                .find('.content-group-preguntas')
+                                    .removeClass('Alinear-al-Centro')
+                                    .removeClass('Alinear-a-la-Izquierda')
+                                    .removeClass('Alinear-a-la-Derecha');
+                        }else if(data.etiqueta.indexOf('Ancho') >= 0){
+                            este.parents('.template-item-pregunta')
+                                .removeClass('Ancho-1')
+                                .removeClass('Ancho-2')
+                                .removeClass('Ancho-3')
+                                .removeClass('Ancho-4')
+                                .removeClass('Ancho-5')
+                                .removeClass('Ancho-6')
+                                .find('.content-group-preguntas')
+                                    .removeClass('Ancho-1')
+                                    .removeClass('Ancho-2')
+                                    .removeClass('Ancho-3')
+                                    .removeClass('Ancho-4')
+                                    .removeClass('Ancho-5')
+                                    .removeClass('Ancho-6');
+                        }else if(data.etiqueta.indexOf('En-') >= 0){
+                            este.parents('.template-item-pregunta')
+                                .removeClass('En-Linea')
+                                .removeClass('En-Bloque')
+                                .find('.content-group-preguntas')
+                                    .removeClass('En-Linea')
+                                    .removeClass('En-Bloque');
+                        }
+                        este.parents('.template-item-pregunta').addClass(data.etiqueta);
+                        este.parents('.template-item-pregunta').find('.content-group-preguntas').addClass(data.etiqueta);
+                    }
+                    console.log(data);
+                }).fail(function( jqXHR, textStatus ) {
+                    console.log("Request failed: "+textStatus);
+                }).always(function() {
+                    ajustarPlaceholder();
+                    addHoja();
+                });
+            });
             $(form+' .enunciado-pregunta form').on('submit', function(e){
                 e.preventDefault();
                 e.stopPropagation();
@@ -544,58 +788,45 @@
                 var hoja = $(this).parents('.hoja-cont'),
                     contenido = $(this).parents('.contenido-pagina'),
                     top = parseFloat(hoja.css('padding-top').toString().replace('px',''))+parseFloat(hoja.css('margin-top').toString().replace('px','')),
-                    bottom = parseFloat(hoja.css('padding-bottom').toString().replace('px',''))+parseFloat(hoja.css('margin-bottom').toString().replace('px',''));
+                    bottom = parseFloat(hoja.css('padding-bottom').toString().replace('px',''))+parseFloat(hoja.css('margin-bottom').toString().replace('px','')),
+                    h = contenido.height()
+                    ;
                 if(contenido.height() <= $(this).height()){
                     var pagina = 1,
                         salto = top+bottom+50+(hoja.height()-contenido.height());
                     if (max_items >= 0){
-                        
+                        console.log(h);
                     }else
-                        $(this).find('li')
+                        $('.drop_pregunta li.template-item-pregunta')
                             .removeClass('salto-pagina')
                             .removeAttr('style')
                             .each(function(i){
                             var top_ = parseFloat($(this).css('padding-top').toString().replace('px',''))+parseFloat($(this).css('margin-top').toString().replace('px','')),
                                 bottom_ = parseFloat($(this).css('padding-bottom').toString().replace('px',''))+parseFloat($(this).css('margin-bottom').toString().replace('px','')),
                                 height_ = $(this).height()+top_+bottom_,
-                                h = contenido.height(),
                                 height = i*height_;
                             if(height >= h && max_items < 0){
-                                /*var salto_pag = $(this).next(), dif = height-h;
-                                if(dif > height_*3+1){
-                                    salto_pag = $(this).next().next();
-                                }else if(dif > height_*2){
-                                    salto_pag = $(this).prev();
-                                    if(dif > height_*2+1)
-                                        salto = salto+(dif-height_);
-                                    else
-                                        salto = salto+(dif+height_);
-                                }else if(dif > height_ || $(this).find('.enunciado-pregunta').hasClass('editando')){
-                                    salto_pag = $(this);
-                                    if($(this).find('.enunciado-pregunta').hasClass('editando'))
-                                        salto = salto+(dif+40);
-                                }*/
                                 if(!contenido.find('.enunciado-pregunta').hasClass('editando')){
-                                    salto = (salto+(height_*3));
+                                    salto = (salto+height_);
                                 }
-                                max_items = i-2;
-                                var salto_pag = $(this).prev().prev(), dif = height-h;
+                                max_items = i-1;
+                                var salto_pag = $(this).prev(), dif = height-h;
                                 salto_pag.css({
                                     'margin-top': salto+'px'
                                 });
-                                salto_pag.addClass('salto-pagina')
+                                salto_pag.addClass('salto-pagina');
                                 height = 0;
                                 pagina++;
                                 /*console.log($(this).find('.enunciado-pregunta').hasClass('editando'))
                                 console.log($(this).next().find('.enunciado-pregunta').hasClass('editando'))
-                                console.log($(this).prev().find('.enunciado-pregunta').hasClass('editando'))*/
+                                console.log($(this).prev().find('.enunciado-pregunta').hasClass('editando'))
                                 console.log(i)
                                 console.log(height)
                                 console.log(height_)
                                 console.log(height_*i)
                                 console.log(dif)
                                 console.log(max_items)
-                                console.log('****.*.**.**.***.****')
+                                console.log('****.*.**.**.***.****')*/
                             }
                         });
                     if(paginas*contenido.height() < $(this).height()){

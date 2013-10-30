@@ -24,42 +24,48 @@ class RespuestaController extends Controller
      * Lists all Respuesta entities.
      *
      * @Route("/", name="respuesta_")
-     * @Method("GET")
-     * @Template()
+     * @Template("FormatEasyCommonBundle:Index:menu.html.twig")
      */
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entities = $em->getRepository('FormatEasyFormatosBundle:Respuesta')->findAll();
-
+        $title = 'Respuestas';
+        $entity = 'Respuesta';
+        $bundle = 'Formatos';
+        $route = strtolower($entity).'_';
+        $limit = 10;
+        
+        $paginacion = $this->get('formateasy.util')->getPaginacion($entity, $bundle, $route, $limit);
+        
         $datos = array(
-            'entities' => $entities,
+            'paginas' => $paginacion['pag'],
+            'form_filtro' => $paginacion['form_filter']->createView(),
+            'title' => $title,
         );
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyFormatosBundle:Respuesta:_index.html.twig', $datos);
+            return $this->render('FormatEasyCommonBundle:Index:_menu.html.twig', $datos);
         }
-        
         return $datos;
     }
     /**
      * Lists all Respuesta de una pregunta.
      *
-     * @Route("/{pregunta}/Respuestas/", name="respuestas_pregunta")
+     * @Route("/Lista/{pregunta}/{etiqueta}/", name="respuestas_pregunta", defaults={"etiqueta"="Opciones"})
      * @Template()
      */
-    public function respuestasPreguntaAction($pregunta)
+    public function respuestasPreguntaAction($pregunta, $etiqueta)
     {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('FormatEasyFormatosBundle:Pregunta')->findOneByCanonical($pregunta);
+        //$etiqueta = $em->getRepository('FormatEasyFormatosBundle:Etiqueta')->findOneByCanonical($etiqueta);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Pregunta entity.');
+            throw $this->createNotFoundException('Unable to find Pregunta entity.'.$pregunta);
         }
 
         $datos = array(
-            'respuestas'      => $entity->getRespuestas()
+            'respuestas'      => $entity->getRespuestas($etiqueta),
+            'etiqueta'      => $etiqueta
         );
         
         return $this->render('FormatEasyFormatosBundle:Respuesta:_listaRespuestasPregunta.html.twig', $datos);
@@ -248,7 +254,6 @@ class RespuestaController extends Controller
      * Displays a form to edit an existing Respuesta entity.
      *
      * @Route("/Actualizar/{id}", name="respuesta__editar")
-     * @Method("GET")
      * @Template()
      */
     public function editRespuestaAction($id)

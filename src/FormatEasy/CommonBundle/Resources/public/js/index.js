@@ -254,6 +254,17 @@ function ajustarPlaceholder(){
             label.css({display: 'none'});
             $(this).prop('placeholder', label.text());
         });
+        $('select').each(function(){
+            var este = $(this), label = undefined;
+            if(este.siblings('label').length){
+                label = este.siblings('label');
+            }else{
+                label = este.parent().siblings('label');
+            }
+            if(typeof label !== 'undefined'){
+                label.css({display: 'none'});
+            }
+        });
     }else{
         $('input').focus(function() {
             var input = $(this);
@@ -299,32 +310,27 @@ function ajustarContentAjax(){
     /********* Links *********/
     
     /********* Forms *********/
-    $('.form-buscar .btn, .form-buscar input.buscar').on({
-        mouseenter: function(){
-            $(this).parent().stop()
-                    .queue( function(next){ 
-                        $(this).addClass('active');
-                        next(); 
-                      });
-        },
-        mouseleave: function(){
-            if(!$(this).parent().hasClass('focused'))
-                $(this).parent().stop().delay(500)
-                    .queue( function(next){ 
-                        $(this).removeClass('active');
-                        next(); 
-                      });
-        },
-        focusin: function(){
-            $(this).parent().addClass('active focused');
-        },
-        focusout: function(){
-            $(this).parent().removeClass('active focused');
-        }
-    });
+    
     /********* Forms *********/
     $('.tooltip_').each(function(){
         $(this).tooltip();
+    });
+    /**/
+    $('.greyscale').parents('li').on({
+        mouseenter : function(){
+            $(this).find('.greyscale').removeClass('greyscale').addClass('grey');
+        },
+        mouseleave : function(){
+            $(this).find('.grey').addClass('greyscale').removeClass('grey');
+        }
+    });
+    $('.label-encabezado').parents('li').on({
+        mouseenter : function(){
+            $(this).find('.label-encabezado').removeClass('text-muted');
+        },
+        mouseleave : function(){
+            $(this).find('.label-encabezado').addClass('text-muted');
+        }
     });
 }
 /********* Functions *********/

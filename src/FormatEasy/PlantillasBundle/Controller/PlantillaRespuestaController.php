@@ -21,7 +21,30 @@ class PlantillaRespuestaController extends Controller
     /**
      * Lists all PlantillaRespuesta entities in button.
      *
-     * @Route("/Botones/{formato}/", name="_plantillaRespuesta_buttonlist")
+     * @Route("/BotonesDiseño/{formato}/", name="_plantillarespuesta_buttonlistdiseno")
+     * @Method("GET")
+     * @Template("FormatEasyPlantillasBundle:PlantillaRespuesta:buttonList.html.twig")
+     */
+    public function buttonListDisenoAction($formato)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entities = $em->getRepository('FormatEasyPlantillasBundle:PlantillaRespuesta')->getAllWithEtiquetas(array(), array('Diseño'));
+        $formato = $em->getRepository('FormatEasyFormatosBundle:Formato')->findOneBy(array('canonical' => $formato));
+        $etiquetas = array();
+        foreach ($entities as $entity) {
+            $etiquetas[$entity->getId()] = $entity->getTextEtiquetas();
+        }
+        return array(
+            'entities' => $entities,
+            'formato'  => $formato,
+            'etiquetas'  => $etiquetas,
+        );
+    }
+    /**
+     * Lists all PlantillaRespuesta entities in button.
+     *
+     * @Route("/Botones/{formato}/", name="_plantillarespuesta_buttonlist")
      * @Method("GET")
      * @Template()
      */
@@ -44,24 +67,33 @@ class PlantillaRespuestaController extends Controller
     /**
      * Lists all PlantillaRespuesta entities.
      *
-     * @Route("/", name="plantillaRespuesta_")
-     * @Method("GET")
-     * @Template()
+     * @Route("/", name="plantillarespuesta_")
+     * @Template("FormatEasyCommonBundle:Index:menu.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entities = $em->getRepository('FormatEasyPlantillasBundle:PlantillaRespuesta')->findAll();
-
-        return array(
-            'entities' => $entities,
+        $title = 'Plantillas de Respuesta';
+        $entity = 'PlantillaRespuesta';
+        $bundle = 'Plantillas';
+        $route = strtolower($entity).'_';
+        $limit = 10;
+        
+        $paginacion = $this->get('formateasy.util')->getPaginacion($entity, $bundle, $route, $limit);
+        
+        $datos = array(
+            'paginas' => $paginacion['pag'],
+            'form_filtro' => $paginacion['form_filter']->createView(),
+            'title' => $title,
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyCommonBundle:Index:_menu.html.twig', $datos);
+        }
+        return $datos;
     }
     /**
      * Creates a new PlantillaRespuesta entity.
      *
-     * @Route("/", name="plantillaRespuesta__create")
+     * @Route("/", name="plantillarespuesta__create")
      * @Method("POST")
      * @Template("FormatEasyPlantillasBundle:PlantillaRespuesta:new.html.twig")
      */
@@ -76,7 +108,7 @@ class PlantillaRespuestaController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('plantillaRespuesta__show', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl('plantillarespuesta__show', array('id' => $entity->getId())));
         }
 
         return array(
@@ -95,7 +127,7 @@ class PlantillaRespuestaController extends Controller
     private function createCreateForm(PlantillaRespuesta $entity)
     {
         $form = $this->createForm(new PlantillaRespuestaType(), $entity, array(
-            'action' => $this->generateUrl('plantillaRespuesta__create'),
+            'action' => $this->generateUrl('plantillarespuesta__create'),
             'method' => 'POST',
         ));
 
@@ -107,7 +139,7 @@ class PlantillaRespuestaController extends Controller
     /**
      * Displays a form to create a new PlantillaRespuesta entity.
      *
-     * @Route("/new", name="plantillaRespuesta__new")
+     * @Route("/new", name="plantillarespuesta__new")
      * @Method("GET")
      * @Template()
      */
@@ -125,7 +157,7 @@ class PlantillaRespuestaController extends Controller
     /**
      * Finds and displays a PlantillaRespuesta entity.
      *
-     * @Route("/{id}", name="plantillaRespuesta__show")
+     * @Route("/{id}", name="plantillarespuesta__show")
      * @Method("GET")
      * @Template()
      */
@@ -150,7 +182,7 @@ class PlantillaRespuestaController extends Controller
     /**
      * Displays a form to edit an existing PlantillaRespuesta entity.
      *
-     * @Route("/{id}/edit", name="plantillaRespuesta__edit")
+     * @Route("/{id}/edit", name="plantillarespuesta__edit")
      * @Method("GET")
      * @Template()
      */
@@ -184,7 +216,7 @@ class PlantillaRespuestaController extends Controller
     private function createEditForm(PlantillaRespuesta $entity)
     {
         $form = $this->createForm(new PlantillaRespuestaType(), $entity, array(
-            'action' => $this->generateUrl('plantillaRespuesta__update', array('id' => $entity->getId())),
+            'action' => $this->generateUrl('plantillarespuesta__update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
@@ -195,7 +227,7 @@ class PlantillaRespuestaController extends Controller
     /**
      * Edits an existing PlantillaRespuesta entity.
      *
-     * @Route("/{id}", name="plantillaRespuesta__update")
+     * @Route("/{id}", name="plantillarespuesta__update")
      * @Method("PUT")
      * @Template("FormatEasyPlantillasBundle:PlantillaRespuesta:edit.html.twig")
      */
@@ -216,7 +248,7 @@ class PlantillaRespuestaController extends Controller
         if ($editForm->isValid()) {
             $em->flush();
 
-            return $this->redirect($this->generateUrl('plantillaRespuesta__edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('plantillarespuesta__edit', array('id' => $id)));
         }
 
         return array(
@@ -228,7 +260,7 @@ class PlantillaRespuestaController extends Controller
     /**
      * Deletes a PlantillaRespuesta entity.
      *
-     * @Route("/{id}", name="plantillaRespuesta__delete")
+     * @Route("/{id}", name="plantillarespuesta__delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, $id)
@@ -248,7 +280,7 @@ class PlantillaRespuestaController extends Controller
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('plantillaRespuesta_'));
+        return $this->redirect($this->generateUrl('plantillarespuesta_'));
     }
 
     /**
@@ -261,7 +293,7 @@ class PlantillaRespuestaController extends Controller
     private function createDeleteForm($id)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('plantillaRespuesta__delete', array('id' => $id)))
+            ->setAction($this->generateUrl('plantillarespuesta__delete', array('id' => $id)))
             ->setMethod('DELETE')
             ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()

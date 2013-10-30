@@ -1,0 +1,88 @@
+{% if grupo is defined %}
+
+{% else %}
+<div class="enunciado {{ pf is not defined or (pf is defined and pf.id is empty)?'editando':'' }} {{pf is defined and pf.id is not empty?pf.getTextEtiquetas:''}} ">
+{% if 'Formato' in pr.getTextEtiquetas %}
+    {% if pf.grupo is not null and 'Grupo-En-Linea' in pf.getTextEtiquetas or 'En-Linea' in pf.getTextEtiquetas %}
+        {% set action = 'preguntaFormato__verPreguntaFormato' %}
+        {% set datos_action = {'id': pf.id} %}
+        <div class="view-pregunta" id="{{f.canonical~'-'~pf.pregunta.canonical}}" data-pos="{{ pf is defined?pf.orden:'' }}" data-grupo="{{ pf.grupo is not empty?pf.grupo:'' }}">
+            {% render(controller('FormatEasyFormatosBundle:Pregunta:formResponderPregunta', {
+                'pregunta': pf.pregunta.canonical,
+                'formato': f.canonical
+            })) %}
+        </div>
+    {% elseif pf is defined and pf.id is not empty %}
+        {% set action = 'preguntaFormato__verPreguntaFormato' %}
+        {% set datos_action = {'id': pf.id} %}
+        <div class="view-pregunta" id="{{f.canonical~'-'~pf.pregunta.canonical}}" data-pos="{{ pf is defined?pf.orden:'' }}">
+            <div class="options-design">
+                <div class="row">
+                    <div class="btn-group">
+                        <a href="{{ url('preguntaFormato_alinear', {'alinea': 'Izquierda', 'pregunta': pf.id}) }}" class="btn btn-sm btn-default tooltip_ align" data-title="Alinear a la Izquierda" data-placement="top" data-toggle="tooltip" title="Alinear a la Izquierda">
+                            <span class="glyphicon glyphicon-align-left"></span>
+                        </a>
+                        <a href="{{ url('preguntaFormato_alinear', {'alinea': 'Centro', 'pregunta': pf.id}) }}" class="btn btn-sm btn-default tooltip_ align" data-title="Alinear al Centro" data-placement="top" data-toggle="tooltip" title="Alinear al Centro">
+                            <span class="glyphicon glyphicon-align-center"></span>
+                        </a>
+                        <a href="{{ url('preguntaFormato_alinear', {'alinea': 'Derecha', 'pregunta': pf.id}) }}" class="btn btn-sm btn-default tooltip_ align" data-title="Alinear a la Derecha" data-placement="top" data-toggle="tooltip" title="Alinear a la Derecha">
+                            <span class="glyphicon glyphicon-align-right"></span>
+                        </a>
+                        {#<div class="btn-group dropup">
+                            <button type="button" class="btn btn-sm btn-default" data-toggle="dropdown">
+                              Cols. <span class="glyphicon glyphicon-collapse-up"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">6 Columnas</a></li>
+                                <li><a href="#">5 Columnas</a></li>
+                                <li><a href="#">4 Columnas</a></li>
+                                <li><a href="#">3 Columnas</a></li>
+                                <li><a href="#">2 Columnas</a></li>
+                            </ul>
+                        </div>#}
+                        <div class="btn-group dropup">
+                            <button type="button" class="btn btn-sm btn-default" data-toggle="dropdown">
+                              Ancho <span class="glyphicon glyphicon-collapse-up"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '6', 'pregunta': pf.id}) }}">Mínimo</a></li>
+                                <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '5', 'pregunta': pf.id}) }}">5</a></li>
+                                <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '4', 'pregunta': pf.id}) }}">4</a></li>
+                                <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '3', 'pregunta': pf.id}) }}">3</a></li>
+                                <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '2', 'pregunta': pf.id}) }}">2</a></li>
+                                <li><a href="{{ url('preguntaFormato_ancho', {'ancho': '1', 'pregunta': pf.id}) }}">Máximo</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group dropup">
+                            <button type="button" class="btn btn-sm btn-default" data-toggle="dropdown">
+                              Vista <span class="glyphicon glyphicon-collapse-up"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ url('preguntaFormato_vista', {'vista': 'Linea', 'pregunta': pf.id}) }}">En Línea</a></li>
+                                <li><a href="{{ url('preguntaFormato_vista', {'vista': 'Bloque', 'pregunta': pf.id}) }}">En Bloque</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% render(controller('FormatEasyFormatosBundle:Pregunta:formResponderPregunta', {
+                'pregunta': pf.pregunta.canonical,
+                'formato': f.canonical
+            })) %}
+        </div>
+    {% else %}
+        <div>Pregunta tipo "{{ pr.nombre }}"</div>
+        {% set datos_action = {'respuesta': pr.canonical, 'formato': f.canonical} %}
+    {% endif %}
+{% elseif 'Encabezado' in pf.plantillaRespuesta.getTextEtiquetas %}
+    <div class="view-pregunta" data-pos="{{ pf is defined?pf.orden:'' }}">
+        {% set nombre_label = pf.nombre is null or pf.nombre is empty?pf.pregunta.nombre:pf.nombre %}
+        {% if 'logo' in nombre_label | humanize | lower %}
+            <img class="greyscale" src="{{ asset('bundles/formateasycommon/images/escudo_policia_nacional.png') }}" />
+        {% else %}
+            <span class="text-muted label-encabezado">{{ nombre_label }}</span>
+        {% endif %}
+    </div>
+{% endif %}
+</div>
+{% endif %}

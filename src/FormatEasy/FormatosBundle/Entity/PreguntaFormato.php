@@ -22,6 +22,11 @@ class PreguntaFormato extends \FormatEasy\CommonBundle\Entity\Objeto
      * @ORM\Column(type="smallint", nullable=false, name="orden")
      */
     private $orden;
+    
+    /** 
+     * @ORM\Column(type="smallint", nullable=true, name="num_grupo")
+     */
+    private $grupo;
 
     /** 
      * @ORM\ManyToOne(targetEntity="FormatEasy\FormatosBundle\Entity\Formato", inversedBy="preguntas")
@@ -50,6 +55,7 @@ class PreguntaFormato extends \FormatEasy\CommonBundle\Entity\Objeto
     public function __construct()
     {
         parent::__construct();
+        $this->grupo = null;
     }
 
     /**
@@ -73,6 +79,29 @@ class PreguntaFormato extends \FormatEasy\CommonBundle\Entity\Objeto
     public function getOrden()
     {
         return $this->orden;
+    }
+
+    /**
+     * Set orden
+     *
+     * @param integer $grupo
+     * @return PreguntaFormato
+     */
+public function setGrupo($grupo)
+    {
+        $this->grupo = $grupo;
+    
+        return $this;
+    }
+
+    /**
+     * Get grupo
+     *
+     * @return integer 
+     */
+    public function getGrupo()
+    {
+        return $this->grupo;
     }
 
     /**
@@ -168,6 +197,13 @@ class PreguntaFormato extends \FormatEasy\CommonBundle\Entity\Objeto
     public function getCanonical() {
         if(parent::getCanonical() === '')
             return $this->getPregunta ()->getCanonical ();
+    }
+    /**/
+    public function __toString() {
+        $return = $this->getNombre();
+        if(!is_string($return))
+            $return = $this->getPregunta()->getNombre(). ' '.$this->getFormato()->getNombre();
+        return $return;
     }
 
     public function json($json = true){

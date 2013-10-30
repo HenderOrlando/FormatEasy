@@ -22,22 +22,26 @@ class HojaController extends Controller
      * Lists all Hoja entities.
      *
      * @Route("/", name="hoja_")
-     * @Method("GET")
-     * @Template()
+     * @Template("FormatEasyCommonBundle:Index:menu.html.twig")
      */
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entities = $em->getRepository('FormatEasyPlantillasBundle:Hoja')->findAll();
-
+        $title = 'Hojas';
+        $entity = 'Hoja';
+        $bundle = 'Plantillas';
+        $route = strtolower($entity).'_';
+        $limit = 10;
+        
+        $paginacion = $this->get('formateasy.util')->getPaginacion($entity, $bundle, $route, $limit);
+        
         $datos = array(
-            'entities' => $entities,
+            'paginas' => $paginacion['pag'],
+            'form_filtro' => $paginacion['form_filter']->createView(),
+            'title' => $title,
         );
         if($request->isXmlHttpRequest()){
-            return $this->render('FormatEasyPlantillasBundle:Hoja:_index.html.twig', $datos);
+            return $this->render('FormatEasyCommonBundle:Index:_menu.html.twig', $datos);
         }
-        
         return $datos;
     }
     /**

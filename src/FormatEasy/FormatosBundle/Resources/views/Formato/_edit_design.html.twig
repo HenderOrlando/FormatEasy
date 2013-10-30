@@ -42,54 +42,11 @@
                 {{ form_errors(edit_form.descripcion) }}
                 {{ form_widget(edit_form.descripcion, {'attr': {'class': 'form-control'}}) }}
             </div>
-            <div>
-                <h3>
-                    Agregar Usuarios
-                </h3>
-            </div>
-            <div class="form-group">
-                {{ form_label(edit_form.usuarios, 'Título del formato') }}
-                {{ form_errors(edit_form.usuarios) }}
-                {{ form_widget(edit_form.usuarios, {'attr': {'class': 'form-control'}}) }}
-            </div>
             <div class="text-center">
                 <input type="submit" value="Guardar" class="btn btn-lg btn-primary"/>
                 <input type="button" value="Borrar" class="btn btn-lg btn-danger delete"/>
             </div>
         </div>
-    </div>
-    <div class="hoja-sup">
-        <div class="margen">
-            {{ form_label(edit_form.margen_sup, 'Márgen Superior') }}
-            {{ form_errors(edit_form.margen_sup) }}
-            {{ form_widget(edit_form.margen_sup) }}
-        </div>
-    </div>
-    <div class="hoja-izq">
-        <div class="margen">
-            {{ form_label(edit_form.margen_izq, 'Márgen Izquierdo') }}
-            {{ form_errors(edit_form.margen_izq) }}
-            {{ form_widget(edit_form.margen_izq) }}
-        </div>
-    </div>
-    <div class="hoja-der">
-        <div class="margen">
-            {{ form_label(edit_form.margen_der, 'Márgen derecho') }}
-            {{ form_errors(edit_form.margen_der) }}
-            {{ form_widget(edit_form.margen_der) }}
-        </div>
-    </div>
-    <div class="hoja-inf">
-        <div class="margen">
-            {{ form_label(edit_form.margen_inf, 'Márgen Inferior') }}
-            {{ form_errors(edit_form.margen_inf) }}
-            {{ form_widget(edit_form.margen_inf) }}
-        </div>
-    </div>
-    <div id="unidad">
-        {{ form_label(edit_form.unidadMargen, 'Unidad del Márgen (mm, cm)') }}
-        {{ form_errors(edit_form.unidadMargen) }}
-        {{ form_widget(edit_form.unidadMargen) }}
     </div>
     {#<div>
         {{ form_label(edit_form.etiquetas) }}
@@ -102,6 +59,6 @@
         {{ form_widget(edit_form._token) }}
     </div>
 </form>
-<div class="hoja-cont">
+<div class="hoja-cont design-formato">
     {{ entity.PlantillaFormato.codigo | replace({'%encabezado-pagina%': '<ol class="encabezado-drop-pregunta"></ol>', '%pie%': '<ol class="pie-drop-pregunta"></ol>'}) | raw }}
 </div>

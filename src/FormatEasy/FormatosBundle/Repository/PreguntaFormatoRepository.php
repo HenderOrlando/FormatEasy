@@ -1,6 +1,8 @@
 <?php
 namespace FormatEasy\FormatosBundle\Repository;
 use Doctrine\ORM\EntityRepository;
+use FormatEasy\FormatosBundle\Entity\Pregunta;
+use FormatEasy\FormatosBundle\Entity\Formato;
 
 class PreguntaFormatoRepository extends EntityRepository
 {
@@ -37,6 +39,10 @@ class PreguntaFormatoRepository extends EntityRepository
     }
     
     public function getOneByWithEtiquetas($var, $etiquetas){
+        return $this->getAllByWithEtiquetas($var, $etiquetas);
+    }
+    
+    public function getAllByWithEtiquetas($var, $etiquetas){
         $q = $this->createQueryBuilder('pf')
 //                ->from('FormatEasyFormatosBundle:PreguntaFormato', 'p')
 //                ->select('pf.id, pf.orden, pf.nombre, pf.canonical')
@@ -56,6 +62,18 @@ class PreguntaFormatoRepository extends EntityRepository
                 'sql' => $q->getQuery ()->getSQL (),
                 'result' => $e,
             );
-        return $e[0];
+        return $e;
+    }
+    
+    public function getNumGrupos(Pregunta $p = null, Formato $f = null){
+        $num = -1;
+        if(!is_null($f) && !is_null($p)){
+            $num = $this->getEntityManager()
+            ->createQuery(
+                'SELECT count(DISTINCT pf.grupo) FROM FormatEasyFormatosBundle:PreguntaFormato pf WHERE pf.grupo IS NOT NULL'
+            )
+            ->getSingleScalarResult();
+        }
+        return $num;
     }
 }

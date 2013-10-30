@@ -23,34 +23,55 @@ class UsuarioController extends Controller
      *
      * @Route("/Editar-Cuenta/", name="usuario_edit_datos_de_usuario")
      * @Method("GET")
-     * @Template("FormatEasyUsuariosBundle:Usuario:_editCuenta.html.twig")
+     * @Template("FormatEasyUsuariosBundle:Usuario:editCuenta.html.twig")
      */
     public function editCuentaUsuarioAction(Request $request)
     {
-        if(!$request->isXmlHttpRequest() || !$this->getUser()){
-            throw $this->createNotFoundException('The product does not exist');
-        }
+//        if(!$request->isXmlHttpRequest() || !$this->getUser()){
+//            throw $this->createNotFoundException('The product does not exist');
+//        }
         if(is_null($this->getUser()->getUsuario())){
             return array('new' => true);
         }
+        if($request->isXmlHttpRequest())
+            return $this->render ('FormatEasyUsuariosBundle:Usuario:editCuenta.html.twig', array('new' => false));
         return array('new' => false);
+    }
+
+    /**
+     * Lists all Usuario entities.
+     *
+     * @Route("/", name="usuario_menu_de_usuario")
+     * @Template("FormatEasyCommonBundle:Index:menu.html.twig")
+     */
+    public function menuUsuarioAction(Request $request)
+    {
+        
     }
     /**
      * Lists all Usuario entities.
      *
      * @Route("/", name="usuario_")
-     * @Method("GET")
-     * @Template()
+     * @Template("FormatEasyCommonBundle:Index:menu.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entities = $em->getRepository('FormatEasyUsuariosBundle:Usuario')->findAll();
-
-        return array(
-            'entities' => $entities,
+        $entity = 'Usuario';
+        $bundle = 'Usuarios';
+        $route = strtolower($entity).'_';
+        $limit = 10;
+        
+        $paginacion = $this->get('formateasy.util')->getPaginacion($entity, $bundle, $route, $limit);
+        
+        $datos = array(
+            'paginas' => $paginacion['pag'],
+            'form_filtro' => $paginacion['form_filter']->createView(),
+            'title' => $title,
         );
+        if($request->isXmlHttpRequest()){
+            return $this->render('FormatEasyCommonBundle:Index:_menu.html.twig', $datos);
+        }
+        return $datos;
     }
     /**
      * Creates a new Usuario entity.
