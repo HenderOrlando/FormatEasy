@@ -11,16 +11,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormFactory;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\ORM\Query;
+use Symfony\Component\Form\Form;
 use Doctrine\ORM\EntityManager;
 
 class IndexController extends Controller implements PaginatorAwareInterface
 {
-    protected $em_, $request_, $formFactory_, $paginator_, $router_;
-    public function __construct($em = null, $formFactory = null, $router = null, $request = null, $paginator = null) {
+    protected $em_, $request_, $formFactory_, $paginator_, $router_, $response_;
+    public function __construct($em = null, $formFactory = null, $router = null, $request = null, $paginator = null, $response = null) {
 //        if(!is_null($em))
             $this->em_ = $em;
 //        if(!is_null($request))
             $this->request_ = $request;
+//        if(!is_null($response))
+            $this->response_ = $request;
 //        if(!is_null($formFactory))
             $this->formFactory_ = $formFactory;
 //        if(!is_null($paginator))
@@ -28,24 +33,48 @@ class IndexController extends Controller implements PaginatorAwareInterface
 //        if(!is_null($router))
             $this->router_ = $router;
     }
+    
     public function setRequest(Request $request = null)
     {
         $this->request_ = $request;
         return $this;
     }
-    public function getRequest_()
+    public function getRequest()
     {
-        return $this->request_;
+        $request = null;
+        if(is_null($this->request_))
+            $request = parent::getRequest ();
+        else
+            $request = $this->request_;
+            
+        return $request;
     }
+    
+    public function setResponse(Response $response = null)
+    {
+        $this->response_ = $response;
+        return $this;
+    }
+    public function getResponse_()
+    {
+        return $this->response_;
+    }
+    
     public function setEntityManager(EntityManager $em = null)
     {
         $this->em_ = $em;
         return $this;
     }
-    public function getEntityManager_()
+    public function getEntityManager()
     {
-        return $this->em_;
+        $em = null;
+        if(is_null($this->em_))
+            $em = $this->getDoctrine ()->getEntityManager ();
+        else
+            $em = $this->em_;
+        return $em;
     }
+    
     public function setPaginator(\Knp\Component\Pager\Paginator $paginator) {
         $this->paginator_ = $paginator;
         return $this;
@@ -54,37 +83,24 @@ class IndexController extends Controller implements PaginatorAwareInterface
     {
         return $this->paginator_;
     }
-    public function setRouter(Router $paginator) {
-        $this->paginator_ = $paginator;
+    
+    public function setRouter(Router $router) {
+        $this->router_ = $router;
         return $this;
     }
     public function getRouter_()
     {
-        return $this->paginator_;
+        return $this->router_;
     }
-    public function setFormFactory(FormFactory $em = null)
+    
+    public function setFormFactory(FormFactory $formFactory = null)
     {
-        $this->em_ = $em;
+        $this->formFactory_ = $formFactory;
         return $this;
     }
     public function getFormFactory_()
     {
-        return $this->em_;
-    }
-    /**
-     * Generates a URL from the given parameters.
-     *
-     * @param string         $route         The name of the route
-     * @param mixed          $parameters    An array of parameters
-     * @param Boolean|string $referenceType The type of reference (one of the constants in UrlGeneratorInterface)
-     *
-     * @return string The generated URL
-     *
-     * @see UrlGeneratorInterface
-     */
-    public function generateUrl_($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH)
-    {
-        return $this->router_->generate($route, $parameters, $referenceType);
+        return $this->formFactory_;
     }
     /**
      * Creates and returns a form builder instance
@@ -94,9 +110,14 @@ class IndexController extends Controller implements PaginatorAwareInterface
      *
      * @return FormBuilder
      */
-    public function createFormBuilder_($data = null, array $options = array())
+    public function createFormBuilder($data = null, array $options = array())
     {
-        return $this->formFactory_->createBuilder('form', $data, $options);
+        $form = null;
+        if(!is_null($this->formFactory_))
+            $form = $this->getFormFactory_()->createBuilder('form', $data, $options);
+        else
+            $form = parent::createFormBuilder( $data, $options);
+        return $form;
     }
     /**
      * Creates and returns a Form instance from the type of the form.
@@ -107,9 +128,15 @@ class IndexController extends Controller implements PaginatorAwareInterface
      *
      * @return Form
      */
-    public function createForm_($type = 'form', $data = null, array $options = array())
+    public function createForm($type = 'form', $data = null, array $options = array())
     {
-        return $this->formFactory_->create($type, $data, $options);
+        $form = null;
+        if(!is_null($this->formFactory_))
+            $form = $this->getFormFactory_()->create($type, $data, $options);
+        else
+            $form = parent::createForm($type, $data, $options);
+        return $form;
+        return ;
     }
     
     /**
@@ -122,7 +149,6 @@ class IndexController extends Controller implements PaginatorAwareInterface
      */
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
         $locale = $request->getLocale();
         $request->setLocale($request->getPreferredLanguage());
         
@@ -131,6 +157,55 @@ class IndexController extends Controller implements PaginatorAwareInterface
         return array();
     }
     
+    /**
+     * get form filter
+     * 
+     * Crea un formulario de búsqueda.
+     *
+     * @param   Array      $defaultData Arreglo con datos base
+     * @param   Request    $request     Entity Manager
+     *
+     * @return  Form|FormBuilder  formulario
+     */
+    public function getFormFilter(array $defaultData, $route = null, $formBuilder = false,Request $request = null){
+        if(is_null($request))
+            $request = $this->getRequest ();
+        $opts = array('attr' => array(
+                'id' => 'fitro', 
+                'role' => 'form', 
+                'class' => 'form-inline form-buscar text-center'
+            ));
+        $form = $this->createFormBuilder(
+                $defaultData,
+                $opts
+            )
+            ->setMethod('POST')
+            ->add('filtro', 'text', 
+                    array(
+                        'required' => false, 
+                        'label' =>false,
+                        'attr' => array('class' => 'form-control input-lg'),
+                    )
+                )
+            ->add('Buscar', 'submit',
+                    array(
+                        'label'=> ' Buscar',
+                        'attr' => array('class' => 'btn btn-success btn-lg input-group-addon glyphicon glyphicon-search')
+                    )
+                );
+        
+        if(is_bool($formBuilder) && !$formBuilder){
+            if(!is_null($route) && !empty($route)){
+                $r = $this->generateUrl($route);
+                $form->setAction($r);
+            }
+            $form = $form->getForm();
+            if(!is_null($request)){
+                $form->handleRequest($request);
+            }
+        }
+         return $form;
+    }
     /**
      * get paginacion
      * 
@@ -145,80 +220,141 @@ class IndexController extends Controller implements PaginatorAwareInterface
      *
      * @return  array   Arreglo con 2 variables, la paginación "pag", y el formulario "form_filter"
      */
-    public function getPaginacion($entity, $bundle, $route, $limit, $em = null, $request = null){
+    public function getPaginacion($entity, $bundle, $limit = 5, $route = null,Query $qb = null,EntityManager $em = null,Request $request = null){
         if(is_null($em))
             $em = $this->em_;
         if(is_null($request))
-            $request = $this->request_;
+            $request = $this->getRequest();
         $data = array();
         $defaultData = array();
-        if(!is_null($this->router_))
-            $r = $this->generateUrl_($route);
-        else
-            $r = $this->generateUrl($route);
-        if(!is_null($this->formFactory_))
-            $form = $this->createFormBuilder_(
-                $defaultData,
-                array('attr' => array('id' => 'fitro', 'role' => 'form', 'class' => 'form-inline form-buscar'))
-                );
-        else
-        $form = $this->createFormBuilder(//createFormBuilder
-                $defaultData,
-                array('attr' => array('id' => 'fitro', 'role' => 'form', 'class' => 'form-inline form-buscar'))
-                );
-        $form = $form
-            ->setAction($r)
-            ->setMethod('POST')
-            ->add('filtro', 'text', 
-                    array(
-                        'required' => false, 
-                        'label' =>false,
-                        'attr' => array('class' => 'form-control input-lg'),
-                    )
-                )
-            ->add('Buscar', 'submit',
-                    array(
-                        'attr' => array('class' => 'btn btn-success btn-lg input-group-addon')
-                    )
-                )
-            ->getForm();
-         $form->handleRequest($request);
-
-         if ($form->isValid()) {
-            $data = $form->getData();
-         }
-         $qb = $em->createQueryBuilder();
-         $qb->select('a');
-         $qb->from('FormatEasy'.$bundle.'Bundle:'.$entity, 'a');
-
-         if (array_key_exists("filtro", $data))
-         {
-             $data['filtro'] = trim($data['filtro']);
-             if (strlen($data['filtro'])>0)
-             {
-                 $qb
-                    ->orWhere($qb->expr()->like("a.nombre", "?1"))
-                    ->orWhere($qb->expr()->like("a.canonical", "?1"))
-                    ->orWhere($qb->expr()->like("a.descripcion", "?1"))
-                    ->setParameter(1,"%".$data['filtro']."%");
-             }
-         }
-
-         $q = $qb->getQuery();
+        
+        if(is_null($qb) && !is_null($route)){
+           $form = $this->getFormFilter($defaultData, $route);
+           if ($form->isValid()) {
+              $data = $form->getData();
+           }
+           $qb = $em->createQueryBuilder();
+           $qb->select('a');
+           $qb->from('FormatEasy'.$bundle.'Bundle:'.$entity, 'a');
+            
+           if (array_key_exists("filtro", $data)){
+               $data['filtro'] = trim($data['filtro']);
+               if (strlen($data['filtro'])>0)
+               {
+                    $qb
+                       ->orWhere($qb->expr()->like("a.nombre", "?1"))
+                       ->orWhere($qb->expr()->like("a.canonical", "?1"))
+                       ->orWhere($qb->expr()->like("a.descripcion", "?1"))
+                       ->setParameter(1,"%".$data['filtro']."%")
+                       ->getQuery();
+               }
+           }
+        }else{
+            $form = null;
+        }
          
         if(!is_null($this->paginator_))
             $paginator  = $this->paginator_;
         else
             $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $q,
+            $qb,
             $request->query->get('pagina', 1),
             $limit
         );
-        $pagination->setUsedRoute($route);
+        if(!is_null($route) && !empty($route))
+            $pagination->setUsedRoute($route);
         return array(
             'pag'           => $pagination,
             'form_filter'   => $form
         );
+    }
+    
+    /**
+     * Creates a form to delete a entity by id.
+     *
+     * @param mixed $id The entity id
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    public function createDeleteForm($id, $url, $label = 'Borrar')
+    {
+        $opts = array('attr' => array(
+                'id' => 'fitro', 
+                'role' => 'form', 
+                'class' => 'form-inline'
+            ));
+        $form = $this->createFormBuilder(
+            array(),
+            $opts
+        );
+        return $form
+            ->setAction($this->generateUrl($url, array('id' => $id)))
+            ->setMethod('DELETE')
+            ->add('submit', 'submit', array('label' => $label))
+            ->getForm()
+        ;
+    }
+    
+    /**
+    * Creates a form to create a entity.
+    *
+    * @param Entity $entity The entity
+    *
+    * @return \Symfony\Component\Form\Form The form
+    */
+    public function createCreateForm($entity, $label = null, $url = null)
+    {
+        $form = $this->createFormEntity($entity, $label, 'POST', 'new', $url);
+        return $form;
+    }
+    
+    /**
+    * Creates a form to edit a entity.
+    *
+    * @param mixed $entity The entity
+    *
+    * @return \Symfony\Component\Form\Form The form
+    */
+    public function createEditForm($entity, $label = null, $url = null)
+    {
+        $form = $this->createFormEntity($entity, $label, 'PUT', 'edit', $url);
+        return $form;
+    }
+    /**
+    * Creates a form Entity
+    *
+    * @param mixed $entity The entity
+    *
+    * @return \Symfony\Component\Form\Form The form
+    */
+    public function createFormEntity($entity, $label = null, $method = 'GET', $sufijo = '', $url = null)
+    {
+        $className = get_class($entity);
+        $typeName = $className.'Type';
+        if(is_null($url) || empty($url))
+            $url = strtolower($className).'__'.strtolower ($sufijo);
+        
+        $url = $this->generateUrl($url, array('id' => $entity->getId()));
+        
+        $form = $this->createForm(new $typeName(), $entity, array(
+            'action' => $url,
+            'method' => $method,
+        ));
+
+        if(is_null($label) || empty($label))
+            $label = 'Enviar';
+        
+        $form->add('submit', 'submit', array('label' => $label));
+
+        return $form;
+    }
+    
+    public function generateUrl($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH) {
+        if(!is_null($this->router_))
+            $route = $this->getRouter_()->generate($route, $parameters, $referenceType);
+        else
+            $route = parent::generateUrl($route, $parameters, $referenceType);
+        return $route;
     }
 }

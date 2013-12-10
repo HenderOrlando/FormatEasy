@@ -3,6 +3,7 @@
 namespace FormatEasy\UsuariosBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use FormatEasy\CommonBundle\Controller\IndexController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -41,12 +42,77 @@ class UsuarioController extends Controller
     /**
      * Lists all Usuario entities.
      *
-     * @Route("/", name="usuario_menu_de_usuario")
-     * @Template("FormatEasyCommonBundle:Index:menu.html.twig")
+     * @Route("/Asignar-Formato/", name="usuario_menu_de_usuario")
+     * @Template()
      */
     public function menuUsuarioAction(Request $request)
     {
+        $title = 'Usuarios';
+        $entity = 'Usuario';
+        $bundle = 'Usuarios';
+        $route = strtolower($entity).'_';
+        $limit = 10;
+        $feu = $this->getFormatEasyUtils();
         
+        $form = $feu->getFormFilter(array(), $route);
+        
+        $data = array();
+        if ($form->isValid()) {
+           $data = $form->getData();
+        }
+        
+        $qb = $this->getDoctrine()->getEntityManager()->createQueryBuilder();
+        $qb->select('a')
+           ->from('FormatEasy'.$bundle.'Bundle:'.$entity, 'a');
+        if (array_key_exists("filtro", $data)){
+            $data['filtro'] = trim($data['filtro']);
+            if (strlen($data['filtro'])>0){
+                   $qb
+                      ->orWhere($qb->expr()->like("a.nombre", "?1"))
+                      ->orWhere($qb->expr()->like("a.docId", "?1"))
+                      ->setParameter(1,"%".$data['filtro']."%");      
+            }
+        }
+        $qb = $qb->getQuery();
+        $paginacion = $feu->getPaginacion($entity, $bundle, $limit, $route, $qb);
+        $paginacion['form_filter'] = $form;
+        $botones = array(
+            array(
+                'url'   => $this->generateUrl('usuario__new'),
+                'type'  => 'primary',
+                'label' => '<span class="glyphicon glyphicon-plus" ></span> Agregar',
+                'class' => 'link-modal',
+            ),
+        );
+        $head = array(
+            'fil'=>array(
+                array(
+                    'col'=>array(
+                        array(
+                            'dato'    =>   'Nombre',
+                        ),
+                        array(
+                            'dato'    =>   'Doc Id',
+                        ),
+                    )
+                ),
+            )
+        );
+        $datos_usuarios = array(
+            'paginas'       =>  $paginacion['pag'],
+            'form_filtro'   =>  $paginacion['form_filter']->createView(),
+            'title'         =>  $title,
+            'head'          =>  $head,
+            'botones'       =>  $botones,
+        );
+        
+        $datos = array(
+            'usuarios'  => $datos_usuarios,
+        );
+        if($request->isXmlHttpRequest() || $request->get('ajax',false)){
+            return $this->render("FormatEasyUsuariosBundle:Usuario:_menuUsuario.html.twig", $datos);
+        }
+        return $datos;
     }
     /**
      * Lists all Usuario entities.
@@ -56,19 +122,88 @@ class UsuarioController extends Controller
      */
     public function indexAction(Request $request)
     {
+        $title = 'Usuarios';
         $entity = 'Usuario';
         $bundle = 'Usuarios';
         $route = strtolower($entity).'_';
         $limit = 10;
+        $feu = $this->getFormatEasyUtils();
         
-        $paginacion = $this->get('formateasy.util')->getPaginacion($entity, $bundle, $route, $limit);
-        
-        $datos = array(
-            'paginas' => $paginacion['pag'],
-            'form_filtro' => $paginacion['form_filter']->createView(),
-            'title' => $title,
+//        $form = $feu->getFormFilter(array(), $route);
+//        
+//        $data = array();
+//        if ($form->isValid()) {
+//           $data = $form->getData();
+//        }
+//        
+        $qb = null;
+//        $qb = $this->getDoctrine()->getEntityManager()->createQueryBuilder();
+//        $qb->select('a')
+//           ->from('FormatEasy'.$bundle.'Bundle:'.$entity, 'a');
+//        if (array_key_exists("filtro", $data)){
+//            $data['filtro'] = trim($data['filtro']);
+//            if (strlen($data['filtro'])>0){
+//                   $qb
+//                      ->orWhere($qb->expr()->like("a.widget", "?1"))
+//                      ->orWhere($qb->expr()->like("a.fechaCreado", "?1"))
+//                      ->setParameter(1,"%".$data['filtro']."%");      
+//            }
+//        }
+//        $qb = $qb->getQuery();
+        $paginacion = $feu->getPaginacion($entity, $bundle, $limit, $route, $qb);
+//        $paginacion['form_filter'] = $form;
+        $botones = array(
+            array(
+                'url'   => $this->generateUrl('usuario__new'),
+                'type'  => 'primary',
+                'label' => '<span class="glyphicon glyphicon-plus" ></span> Agregar',
+            ),
         );
-        if($request->isXmlHttpRequest()){
+        $head = array(
+            'fil'=>array(
+                array(
+                    'col'=>array(
+                        array(
+                            'dato'    =>   'Nombre',
+                        ),
+                        array(
+                            'dato'    =>   'Descripcion',
+                        ),
+                        array(
+                            'dato'    =>   'Doc Id',
+                        ),
+                        array(
+                            'dato'    =>   'Tipo Doc Id',
+                        ),
+                        array(
+                            'dato'    =>   'Acciones',
+                            'acciones'=>    array(
+                                array(
+                                    'url'   => 'usuario__edit',
+                                    'data_url'=> array('id'),
+                                    'type'  => 'default',
+                                    'label' => '<span class="glyphicon glyphicon-pencil" ></span> Editar',
+                                ),
+                                array(
+                                    'url'   => 'usuario__delete',
+                                    'data_url'=> array('id'),
+                                    'type'  => 'danger',
+                                    'label' => '<span class="glyphicon glyphicon-trash" ></span> Borrar',
+                                ),
+                            )
+                        ),
+                    )
+                ),
+            )
+        );
+        $datos = array(
+            'paginas'       =>  $paginacion['pag'],
+            'form_filtro'   =>  $paginacion['form_filter']->createView(),
+            'title'         =>  $title,
+            'head'          =>  $head,
+            'botones'       =>  $botones,
+        );
+        if($request->isXmlHttpRequest() || $request->get('ajax',false)){
             return $this->render('FormatEasyCommonBundle:Index:_menu.html.twig', $datos);
         }
         return $datos;
@@ -76,25 +211,32 @@ class UsuarioController extends Controller
     /**
      * Creates a new Usuario entity.
      *
-     * @Route("/", name="usuario__create")
-     * @Method("POST")
+     * @Route("/Crear/{id}", name="usuario__create_")
+     * @Route("/Crear/", name="usuario__create")
      * @Template("FormatEasyUsuariosBundle:Usuario:new.html.twig")
      */
     public function createAction(Request $request)
     {
         $entity = new Usuario();
-        $form = $this->createCreateForm($entity);
+        $data = array('id' => $request->get('id', -1));
+        $form = $this->createCreateForm($entity, $data);
+        
         $form->handleRequest($request);
-
+        
         if ($form->isValid()) {
+            
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
-            $this->getUser()->setUsuario($entity);
-            $em->persist($this->getUser());
-            $em->flush();
+            if($request->get('id', -1) == $this->getUser()->getId()){
+                $this->getUser()->setUsuario($entity);
+                $em->persist($this->getUser());
+                $em->flush();
+            }else{
+                
+            }
 
-            return $this->redirect($this->generateUrl('usuario__show', array('id' => $entity->getId())));
+            return $this->redirect($this->getRequest()->server->get('HTTP_REFERER'));
         }
 
         return array(
@@ -110,12 +252,13 @@ class UsuarioController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Usuario $entity)
+    private function createCreateForm(Usuario $entity, $datos = array())
     {
         $form = $this->createForm(new UsuarioType(), $entity, array(
-            'action' => $this->generateUrl('usuario__create'),
+            'action' => $this->generateUrl('usuario__create', $datos),
             'method' => 'POST',
         ));
+        
 
         $form->add('submit', 'submit', array('label' => 'Create'));
 
@@ -129,15 +272,20 @@ class UsuarioController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
         $entity = new Usuario();
-        $form   = $this->createCreateForm($entity);
-
-        return array(
+        $data = array('id' => $request->get('id', -1));
+        $form   = $this->createCreateForm($entity, $data);
+        
+        $datos = array(
             'entity' => $entity,
             'form'   => $form->createView(),
         );
+        if($request->isXmlHttpRequest() || $request->get('ajax',false)){
+            return $this->render("FormatEasyUsuariosBundle:Usuario:_new.html.twig", $datos);
+        }
+        return $datos;
     }
 
     /**
@@ -172,7 +320,7 @@ class UsuarioController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
+    public function editAction($id, Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -224,8 +372,7 @@ class UsuarioController extends Controller
     /**
      * Edits an existing Usuario entity.
      *
-     * @Route("/{id}", name="usuario__update")
-     * @Method("PUT")
+     * @Route("/Actualiza/{id}", name="usuario__update")
      * @Template("FormatEasyUsuariosBundle:Usuario:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
@@ -238,6 +385,7 @@ class UsuarioController extends Controller
             throw $this->createNotFoundException('Unable to find Usuario entity.');
         }
 
+        
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
@@ -295,5 +443,78 @@ class UsuarioController extends Controller
             ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    /**
+     * @return \FormatEasy\CommonBundle\Controller\IndexController Utilidades de FormatEasy
+     */
+    public function getFormatEasyUtils() {
+        return $this->get('formateasy.util');
+    }
+    /**
+     * get Pagination
+     * 
+     * @param \FormatEasy\CommonBundle\Controller\IndexController $feu Clase de Utilidades
+     * @param String    $route     Ruta
+     * @param String    $bundle    Nombre del Bundle
+     * @param String    $entity    Nombre del Entity
+     * @param String    $limit     Limite
+     * @param Array     $campos    Arreglo de campos con la siguiente estructura:
+     *                              array(
+     *                                  array('nombre'  => 'Nombre del Campo.',
+     *                                      'operacion' => 'Operación del Filtro.',
+     *                                      'valor'     => array(
+     *                                              'campo'     =>  'Nombre de campo.',
+     *                                              'tipo'      =>  'Tipo de campo. text, email, integer, money, number, date, datetime, time, checkbox, radio',
+     *                                              'options'   =>  'Opciones del tipo de campo'
+     *                                      )
+     *                                  )
+     *                              )
+     * 
+     * @return array Arreglo con el paginator y el formulario
+     */
+    private function getPagination(IndexController $feu, $route, $bundle, $entity, $limit, $campos = null, $campos_en_form = false) {
+        $form = $feu->getFormFilter(array(), $route, $campos_en_form);
+        if($campos_en_form && is_array($campos) && !empty($campos)){
+            foreach($campos as $campo){
+                $valor = $campo['valor'];
+                $options = $valor['options'];
+                $options['required'] = false;
+                $form->add($valor['campo'], $valor['tipo'], $options);
+            }
+        }
+        $data = array();
+        if ($form->isValid()) {
+           $data = $form->getData();
+        }
+        
+        $qb = $this->getDoctrine()->getEntityManager()->createQueryBuilder();
+        $qb->select('a')
+           ->from('FormatEasy'.$bundle.'Bundle:'.$entity, 'a');
+        if (array_key_exists("filtro", $data)){
+            $data['filtro'] = trim($data['filtro']);
+            if (strlen($data['filtro'])>0){
+                if(!is_null($campos) && !empty($campos) && is_array($campos)){
+                    foreach($campos as $campo){
+                        if($campos_en_form && isset($data[$campo['valor']['campo']]) && is_string($data[$campo['valor']['campo']])){
+                            $campo_ = $data[$campo['valor']['campo']];
+                        }else{
+                            $campo_ = $data['filtro'];
+                        }
+                        if(strtolower($campo['operacion']) == 'like')
+                            $campo_ = "'%".$campo_."%'";
+                        $qb->orWhere("a.".$campo['nombre'].' '.$campo['operacion'].' '.$campo_);
+                    }
+                    
+                }
+                else
+                   $qb
+                      ->orWhere($qb->expr()->like("a.nombre", "?1"))
+                      ->orWhere($qb->expr()->like("a.descripcion", "?1"))
+                      ->setParameter(1,"%".$data['filtro']."%");
+            }
+        }
+        $paginacion = $feu->getPaginacion($entity, $bundle, $limit, $route, $qb->getQuery());
+        $paginacion['form_filter'] = $form;
+        return $paginacion;
     }
 }

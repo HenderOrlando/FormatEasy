@@ -1,66 +1,112 @@
 {#
-    String      title   Titulo de la tabla
-    Collection  head    Cabeza de la tabla
+    String      title       Titulo de la tabla
+    String      class       Clase de estilos de la tabla
+    String      url_tabla   Ruta que apunta a otra plantilla para renderizar el contenido
+    Collection  botones     Botones para el action
+    Collection  head        Cabeza de la tabla
+    Collection  body        Cuerpo o contenido de la tabla
+    Collection  foot        Pie de la tabla
+    Paginator   paginas     Paginator para renderizar como contenido de la tabla
+    Entities    objetos     Objetos para renderizar como contenido de la tabla
 #}
 {% extends 'FormatEasyCommonBundle:Index:_menuSuperior.html.twig' %}
 
 {% block menu_action %}
+    {% if botones is not defined %}
+        {% set botones = botones is defined?botones: [] %}
+    {% endif %}
     {% include 'FormatEasyCommonBundle:Index:botones.html.twig' with {
         'buttonset': 'horizontal',
-        'class': 'text-right',
         'sizing': 'grande',
-        'botones'  : [
-            {
-                'url'   : '',
-                'label' : 'Agregar',
-                'type'  : 'primary',
-            },
-        ],
+        'botones'  : botones,
     } %}
 {% endblock %}
 
 {% block menu_search %}
-    <div class="btn-group form-buscar">
-        {{ form_start(form_filtro) }}
-            <div class="input-group input-group-lg">
-                {{ form_widget(form_filtro.filtro) }}
-                {{ form_widget(form_filtro.Buscar) }}
-            </div>
-            {{ form_rest(form_filtro) }}
-        {{ form_end(form_filtro) }}
-    </div>
+    {% if form_filtro is defined %}
+        <div class="btn-group form-buscar">
+            {{ form_start(form_filtro) }}
+                {% if form_filtro.filtro is defined %}
+                <div class="input-group input-group-lg">
+                    {{ form_widget(form_filtro.filtro) }}
+                    {{ form_widget(form_filtro.Buscar) }}
+                </div>
+                {{ form_rest(form_filtro) }}
+                {% else %}
+                <table>
+                    <tfoot>
+                        <tr><td>{{ form_widget(form_filtro.Buscar) }}</td></tr>
+                    </tfoot>
+                    <tbody>
+                        <tr><td>{{ form_rest(form_filtro) }}</td></tr>
+                    </tbody>
+                </table>
+                {% endif %}
+            {{ form_end(form_filtro) }}
+        </div>
+    {% endif %}
 {% endblock %}
 {% block menu_title %}
     <h3>{{ title is defined?title: '' }}</h3>
 {% endblock %}
 {% block menu_content %}
     <div>
-        {% set head = head is defined?head: {
-                    fil:[
-                        {
-                            col:[
-                                {
-                                    'dato'    :   'Id',
-                                },
-                                {
-                                    'dato'    :   'Nombre',
-                                },
-                                {
-                                    'dato'    :   'Descripcion',
-                                },
-                                {
-                                    'dato'    :   'Fecha Creado',
-                                },
-                            ]
-                        },
-                    ]
-                } %}
-        {% include 'FormatEasyCommonBundle:Index:_tabla.html.twig' with {
-            tabla: {
-                class:      'table-hover table-striped table-bordered',
-                paginas:    paginas,
-                head: head,
-            }
-        } %}
+        {% if head is not defined %}
+            {% set head = head is defined?head: {
+                fil:[
+                    {
+                        col:[
+                            {
+                                'dato'    :   'Id',
+                            },
+                            {
+                                'dato'    :   'Nombre',
+                            },
+                            {
+                                'dato'    :   'Descripcion',
+                            },
+                            {
+                                'dato'    :   'Fecha Creado',
+                            },
+                        ]
+                    },
+                ]
+            } %}
+        {% endif %}
+            
+        {% if class is not defined %}
+            {% set class = 'table-hover table-striped table-bordered' %}
+        {% endif %}
+            
+        {% if url_tabla is not defined %}
+            {% set url_tabla = 'FormatEasyCommonBundle:Index:_tabla.html.twig' %}
+        {% endif %}
+            
+        {% if paginas is defined %}
+            {% include url_tabla with {
+                tabla: {
+                    class:      class,
+                    paginas:    paginas,
+                    head:       head,
+                }
+            } %}
+        {% elseif objetos is defined %}
+            {% include url_tabla with {
+                tabla: {
+                    class:      class,
+                    objetos:    objetos,
+                    head:       head,
+                }
+            } %}
+        {% else %}
+            {% include url_tabla with {
+                tabla: {
+                    class:      class,
+                    body:       body is defined?body:[],
+                    foot:       foot is defined?foot:[],
+                    head:       head,
+                }
+            } %}
+        {% endif %}
     </div>
 {% endblock %}

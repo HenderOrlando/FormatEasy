@@ -18,13 +18,14 @@ Ejemplo:
     String      class   Class del boton.
     Collection  list    Colección de botones a renderizar. Cada botón debe tener:
                         {
-                            String  url     Url del boton.
-                            String  label   Label del boton.
-                            String  class   Class del boton.
-                            String  list    Lista de botones.
-                            String  type    Tipo del boton. Primary, Success, Info, Warning, Danger
-                            String  sizing  Tamaño del botón. Grande ; Normal ; Mediano ; Pequeño
-                            String  view    Cómo se verá el botón. Block, Disabled
+                            String  url         Url del boton.
+                            String  data_url    Datos auxiliares necesarios para la url
+                            String  label       Label del boton.
+                            String  class       Class del boton.
+                            String  list        Lista de botones.
+                            String  type        Tipo del boton. Primary, Success, Info, Warning, Danger
+                            String  sizing      Tamaño del botón. Grande ; Normal ; Mediano ; Pequeño
+                            String  view        Cómo se verá el botón. Block, Disabled
                         }
     String      type    Tipo del boton. Primary, Success, Info, Warning, Danger, Default, Link
     String      sizing  Tamaño del botón. Grande ; Normal ; Mediano ; Pequeño
@@ -57,17 +58,36 @@ Ejemplo:
 <div class="btn-group">
 {% endif %}
     {% if url is defined and url is not empty %}
-        <a href="{{ url }}" class="{{ btn ~ ' ' ~ size_button ~ ' ' ~ (view  is defined and 'block' in view|lower?view_button:'') ~ ' ' ~ class_button }}" {{ view is defined and 'disable' in view|lower?view_button:'' }}>
-            {{ label_button }}
-        </a>
+        {% if procesar_url is defined and procesar_url is not empty %}
+            {% set datos_url = {} %}
+            {% for data_ in data_url %}
+                {% set attr_ = data_|lower|split(' ') %}
+                {% set attr = '' %}
+                {% for attr__ in attr_ %}
+                    {% if not loop.first %}
+                        {% set attr = attr ~ attr__|title %}
+                    {% else %}
+                        {% set attr = attr ~ attr__ %}
+                    {% endif %}
+                {% endfor %}
+                {% set datos_url = datos_url|merge({(''~data_):attribute(objeto_btn,attr)}) %}
+            {% endfor %}
+            <a href="{{ url(url, datos_url) }}" class="{{ btn ~ ' ' ~ size_button ~ ' ' ~ (view  is defined and 'block' in view|lower?view_button:'') ~ ' ' ~ class }}" {{ view is defined and 'disable' in view|lower?view_button:'' }}>
+                {{ label_button | raw }}
+            </a>
+        {% else %}
+            <a href="{{ url }}" class="{{ btn ~ ' ' ~ size_button ~ ' ' ~ (view  is defined and 'block' in view|lower?view_button:'') ~ ' ' ~ class }}" {{ view is defined and 'disable' in view|lower?view_button:'' }}>
+                {{ label_button | raw }}
+            </a>
+        {% endif %}
         {% if list is defined and list is not empty %}
-            <button type="button" class="{{ btn ~ ' ' ~ size_button ~ ' ' ~ (view  is defined and 'block' in view|lower?view_button:'') ~ ' ' ~ class_button }} dropdown-toggle" {{ view is defined and 'disable' in view|lower?view_button:'' }} data-toggle="dropdown">
+            <button type="button" class="{{ btn ~ ' ' ~ size_button ~ ' ' ~ (view  is defined and 'block' in view|lower?view_button:'') ~ ' ' ~ class }} dropdown-toggle" {{ view is defined and 'disable' in view|lower?view_button:'' }} data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
         {% endif %}
     {% else %}
-        <button class="{{ btn ~ ' ' ~ size_button ~ ' ' ~ (view is defined and 'block' in view|lower?view_button:'') ~ ' ' ~ (list is defined and list is not empty?'dropdown-toggle':'') ~ ' ' ~ class_button }}" {{view is defined and 'disable' in view|lower?view_button:'' }} {{ list is defined and list is not empty?'data-toggle="dropdown"':'' }}>
-            {{ label }}
+        <button class="{{ btn ~ ' ' ~ size_button ~ ' ' ~ (view is defined and 'block' in view|lower?view_button:'') ~ ' ' ~ (list is defined and list is not empty?'dropdown-toggle':'') ~ ' ' ~ class }}" {{view is defined and 'disable' in view|lower?view_button:'' }} {{ list is defined and list is not empty?'data-toggle="dropdown"':'' }}>
+            {{ label_button | raw }}
             {{list is defined and list is not empty?'<span class="caret"></span>':''}}
         </button>
     {% endif %}

@@ -75,11 +75,31 @@ $(document).ready(function(){
         $.ajax({
           url: este.prop('href')  
         }).done(function(data) {
-            
+            if(typeof data.body !== 'undefined' || typeof data.foot !== 'undefined' || typeof data.title !== 'undefined'){
+                if(typeof data.title !== 'undefined')
+                    $('#modal-link').find('.modal-title').html(data.title);
+                if(typeof data.foot !== 'undefined')
+                    $('#modal-link').find('.modal-footer').html(data.foot);
+                if(typeof data.body !== 'undefined')
+                    $('#modal-link').find('.modal-body').html(data.foot);
+            }
+            else{
+                var titulo = este.text();
+                if($(data).find('.title').length > 0)
+                    titulo = $(data).find('.title');
+                else if($(data).find('h1').length > 0)
+                    titulo = $(data).find('h1').first().text();
+                $('#modal-link').find('.modal-body').html(data);
+                $('#modal-link').find('.modal-title').html(titulo);
+                console.log($(data).find('h1').length);
+                console.log($(data).find('title').length);
+            }
+            $('#modal-link').modal();
         }).fail(function( jqXHR, textStatus ) {
             console.log("Request failed: "+textStatus);
         }).always(function() {
             ajustarContentAjax();
+            ajustarPlaceholder();
         });
     });
     /********* Link Modal *********/
@@ -245,6 +265,9 @@ $(document).ready(function(){
 });
 /********* Functions *********/
 function ajustarPlaceholder(){
+    if(Modernizr.fontface){
+        $('.glyphicon').text('');
+    }
     if(Modernizr.input.placeholder){
         $('input, textarea').not(':checkbox').not(':radio').each(function(){
             var label = $(this).parent('label');
@@ -310,7 +333,14 @@ function ajustarContentAjax(){
     /********* Links *********/
     
     /********* Forms *********/
-    
+    $('input,textarea').addClass('form-control');
+    $('button, input:submit, input:reset').addClass('btn');
+    $(':submit').each(function(){
+        if($(this).text().toLowerCase() !== 'delete' && $(this).text().toLowerCase() !== 'borrar')
+            $(this).addClass('btn-success');
+        else
+            $(this).addClass('btn-danger');
+    });
     /********* Forms *********/
     $('.tooltip_').each(function(){
         $(this).tooltip();

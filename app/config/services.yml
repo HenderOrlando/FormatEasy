@@ -1,13 +1,9 @@
 services:
-  request_injector:
-    class: FormatEasy\CommonBundle\Controller\RequestInjector
-    public: false
-    arguments: ['@service_container']
-    
   formateasy.util:
     class:      "FormatEasy\CommonBundle\Controller\IndexController"
     arguments:  [@doctrine.orm.entity_manager, @form.factory, @router]
     calls:
           - [setRequest, ['@?request=']]
+          - [setResponse, ['@?response=']]
     tags: 
           - { name: knp_paginator.injectable, paginator: knp_paginator }

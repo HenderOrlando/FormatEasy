@@ -10,7 +10,7 @@ use FormatEasy\PlantillasBundle\Form\DataTransformer\PlantillaRespuestaToIdTrans
 class PreguntaType extends AbstractType
 {
     private $opciones = array();
-    public function __construct(array $options)
+    public function __construct(array $options = array())
     {
         $this->opciones = $options;
     }
@@ -36,13 +36,17 @@ class PreguntaType extends AbstractType
         }elseif(isset($this->opciones['em'])){
             $entityManager = $this->opciones['em'];
         }
-        $transformer_plantillaRespuesta = new PlantillaRespuestaToIdTransformer($entityManager);
-        $builder
-            ->add($builder->create('plantilla', 'hidden', array(
-                'data' => $plantilla,
-                'data_class' => null
-            ))
-            ->addModelTransformer($transformer_plantillaRespuesta));
+        if(is_null($plantilla)){
+            $builder->add('plantilla');
+        }else{
+            $transformer_plantillaRespuesta = new PlantillaRespuestaToIdTransformer($entityManager);
+            $builder
+                ->add($builder->create('plantilla', 'hidden', array(
+                    'data' => $plantilla,
+                    'data_class' => null
+                ))
+                ->addModelTransformer($transformer_plantillaRespuesta));
+        }
     }
     
     /**

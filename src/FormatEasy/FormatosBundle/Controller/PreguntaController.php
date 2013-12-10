@@ -91,15 +91,80 @@ class PreguntaController extends Controller
         $bundle = 'Formatos';
         $route = strtolower($entity).'_';
         $limit = 10;
+        $feu = $this->getFormatEasyUtils();
         
-        $paginacion = $this->get('formateasy.util')->getPaginacion($entity, $bundle, $route, $limit);
-        
-        $datos = array(
-            'paginas' => $paginacion['pag'],
-            'form_filtro' => $paginacion['form_filter']->createView(),
-            'title' => $title,
+//        $form = $feu->getFormFilter(array(), $route);
+//        
+//        $data = array();
+//        if ($form->isValid()) {
+//           $data = $form->getData();
+//        }
+//        
+        $qb = null;
+//        $qb = $this->getDoctrine()->getEntityManager()->createQueryBuilder();
+//        $qb->select('a')
+//           ->from('FormatEasy'.$bundle.'Bundle:'.$entity, 'a');
+//        if (array_key_exists("filtro", $data)){
+//            $data['filtro'] = trim($data['filtro']);
+//            if (strlen($data['filtro'])>0){
+//                   $qb
+//                      ->orWhere($qb->expr()->like("a.widget", "?1"))
+//                      ->orWhere($qb->expr()->like("a.fechaCreado", "?1"))
+//                      ->setParameter(1,"%".$data['filtro']."%");      
+//            }
+//        }
+//        $qb = $qb->getQuery();
+        $paginacion = $feu->getPaginacion($entity, $bundle, $limit, $route, $qb);
+//        $paginacion['form_filter'] = $form;
+        $botones = array(
+            array(
+                'url'   => $this->generateUrl('pregunta__new'),
+                'type'  => 'primary',
+                'label' => '<span class="glyphicon glyphicon-plus" ></span> Agregar',
+            ),
         );
-        if($request->isXmlHttpRequest()){
+        $head = array(
+            'fil'=>array(
+                array(
+                    'col'=>array(
+                        array(
+                            'dato'    =>   'Nombre',
+                        ),
+                        array(
+                            'dato'    =>   'Descripcion',
+                        ),
+                        array(
+                            'dato'    =>   'Plantilla Respuestas',
+                        ),
+                        array(
+                            'dato'    =>   'Acciones',
+                            'acciones'=>    array(
+                                array(
+                                    'url'   => 'pregunta__edit',
+                                    'data_url'=> array('id'),
+                                    'type'  => 'default',
+                                    'label' => '<span class="glyphicon glyphicon-pencil" ></span> Editar',
+                                ),
+                                array(
+                                    'url'   => 'pregunta__delete',
+                                    'data_url'=> array('id'),
+                                    'type'  => 'danger',
+                                    'label' => '<span class="glyphicon glyphicon-trash" ></span> Borrar',
+                                ),
+                            )
+                        ),
+                    )
+                ),
+            )
+        );
+        $datos = array(
+            'paginas'       =>  $paginacion['pag'],
+            'form_filtro'   =>  $paginacion['form_filter']->createView(),
+            'title'         =>  $title,
+            'head'          =>  $head,
+            'botones'       =>  $botones,
+        );
+        if($request->isXmlHttpRequest() || $request->get('ajax',false)){
             return $this->render('FormatEasyCommonBundle:Index:_menu.html.twig', $datos);
         }
         return $datos;
@@ -347,5 +412,11 @@ class PreguntaController extends Controller
             ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    /**
+     * @return \FormatEasy\CommonBundle\Controller\IndexController Utilidades de FormatEasy
+     */
+    public function getFormatEasyUtils() {
+        return $this->get('formateasy.util');
     }
 }

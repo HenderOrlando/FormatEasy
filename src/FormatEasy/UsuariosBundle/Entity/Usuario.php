@@ -18,6 +18,16 @@ use Doctrine\ORM\Mapping AS ORM;
 class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
 {
     /** 
+     * @ORM\Column(type="string", length=100, nullable=true, name="apellido")
+     */
+    private $apellido;
+
+    /** 
+     * @ORM\Column(type="string", length=100, nullable=true, name="canonical_apellido")
+     */
+    private $canonicalApellido;
+    
+    /** 
      * @ORM\OneToMany(
      *     targetEntity="FormatEasy\FormatosBundle\Entity\UsuarioRespuestaPreguntaFormato", 
      *     mappedBy="usuario"
@@ -51,7 +61,7 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
     private $docId;
     
     /** 
-     * @ORM\Column(type="integer", nullable=false, name="tipo_doc_id")
+     * @ORM\Column(type="integer", nullable=true, name="tipo_doc_id")
      */
     private $tipoDocId;
     
@@ -63,6 +73,53 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
         parent::__construct();
         $this->respuestasPreguntasFormatos = new \Doctrine\Common\Collections\ArrayCollection();
         $this->Roles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Set apellido
+     *
+     * @param string $apellido
+     * @return Objeto
+     */
+    public function setApellido($apellido)
+    {
+        $this->apellido = $apellido;
+        $this->canonicalApellido = $this->replaceAccents($apellido);
+    
+        return $this;
+    }
+
+    /**
+     * Get apellido
+     *
+     * @return string 
+     */
+    public function getApellido()
+    {
+        return $this->apellido;
+    }
+    
+    /**
+     * Set canonicalApellido
+     *
+     * @param string $canonicalApellido
+     * @return Objeto
+     */
+    public function setCanonicalApellido($canonicalApellido)
+    {
+        $this->canonicalApellido = $canonicalApellido;
+    
+        return $this;
+    }
+
+    /**
+     * Get canonicalApellido
+     *
+     * @return string 
+     */
+    public function getCanonicalApellido()
+    {
+        return $this->canonicalApellido;
     }
     
     /**
@@ -177,11 +234,13 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
     /**
      * Set DocId
      *
-     * @return Integer
+     * @param integer $apellido
+     * @return Objeto
      */
-    public function setDocId()
+    public function setDocId($docId)
     {
-        return $this->docId;
+        $this->docId = $docId;
+        return $this;
     }
     /**
      * Get DocId
@@ -196,10 +255,12 @@ class Usuario extends \FormatEasy\CommonBundle\Entity\Objeto
     /**
      * Set DocId
      *
-     * @return Integer
+     * @param integer $apellido
+     * @return Objeto
      */
-    public function setTipoDocId()
+    public function setTipoDocId($tipoDocId)
     {
-        return $this->tipoDocId;
+        $this->tipoDocId = $tipoDocId;
+        return $this;
     }
 }

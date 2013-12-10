@@ -212,6 +212,16 @@ class Pregunta extends \FormatEasy\CommonBundle\Entity\Objeto
         return $this->plantilla;
     }
     
+    /**
+     * Get plantilla Respuestas
+     *
+     * @return \FormatEasy\PlantillasBundle\Entity\PlantillaRespuesta 
+     */
+    public function getPlantillaRespuestas()
+    {
+        return $this->plantilla;
+    }
+    
     public function __toString() {
         return $this->getNombre();
     }

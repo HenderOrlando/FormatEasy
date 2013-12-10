@@ -4,8 +4,8 @@
         {% render(controller('FormatEasyFosUsuarioBundle:ChangePassword:changePassword', {'ajax': 1})) %}
     </div>
     <div class="col-xs-6 col-sm-4 col-md-4">
-        {% if(new) %}
-            {% render(controller('FormatEasyUsuariosBundle:Usuario:new', {'ajax': 1 })) %}
+        {% if app.user.usuario.id is not defined %}
+            {% render(controller('FormatEasyUsuariosBundle:Usuario:new', {'ajax': 1, 'id': app.user.id })) %}
         {% else %}
             {% render(controller('FormatEasyUsuariosBundle:Usuario:edit', {'ajax': 1, 'id': app.user.usuario.id})) %}
         {% endif %}

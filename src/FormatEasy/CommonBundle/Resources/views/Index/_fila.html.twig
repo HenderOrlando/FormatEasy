@@ -40,7 +40,11 @@
                     {% set attr = attr ~ attr__ %}
                 {% endif %}
             {% endfor %}
+            
             <th {{ col.class is defined and col.class is not empty?'class=' ~ col.class ~ '':'' }} {{ col.rows is defined and col.rows is not empty?'rowspan=' ~ col.rows:''}} {{ col.cols is defined and col.cols is not empty?'colspan=' ~ col.cols:''}}>
+            {% if 'accion' in col.dato %}
+                {{ col.dato }}
+            {% else %}
                 {{ knp_pagination_sortable(nav, col.dato, 'a.' ~ (col.dato|lower|replace({' ':'_'}))) }}
                 {% if nav.isSorted('a.' ~ attr) %}
                     {% if 'asc' in app.request.query.get('direccion') %}
@@ -49,6 +53,7 @@
                         <span class="glyphicon glyphicon-arrow-up"></span>
                     {% endif %}
                 {% endif %}
+            {% endif %}
             </th>
         {% endfor %}
         </tr>
@@ -59,21 +64,31 @@
     {% for obj in objetos %}
         <tr>
             {% for fila in head %}
-                {% for col in fila.col %}    
+                {% for col in fila.col %}
                     <td>
-                        {% set attr_ = col.dato|lower|split(' ') %}
-                        {% set attr = '' %}
-                        {% for attr__ in attr_ %}
-                            {% if not loop.first %}
-                                {% set attr = attr ~ attr__|title %}
-                            {% else %}
-                                {% set attr = attr ~ attr__ %}
-                            {% endif %}
-                        {% endfor %}
-                        {% if 'fecha' in col.dato|lower %}
-                            {{ attribute(obj,attr)|date("Y-m-d H:i:s") }}
+                        {% if col.acciones is defined %}
+                            {% include 'FormatEasyCommonBundle:Index:botones.html.twig' with {
+                                'buttonset'     :   'vertical',
+                                'botones'       :   col.acciones is defined and col.acciones is not empty? col.acciones:[],
+                                'sizing'        :   'pequeño',
+                                'procesar_url'  :   'true',
+                                'objeto'        :   obj,
+                            } %}
                         {% else %}
-                            {{ attribute(obj,attr) }}
+                            {% set attr_ = col.dato|lower|split(' ') %}
+                            {% set attr = '' %}
+                            {% for attr__ in attr_ %}
+                                {% if not loop.first %}
+                                    {% set attr = attr ~ attr__|title %}
+                                {% else %}
+                                    {% set attr = attr ~ attr__ %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if 'fecha' in col.dato|lower %}
+                                {{ attribute(obj,attr)|date("Y-m-d H:i:s") }}
+                            {% else %}
+                                {{ attribute(obj,attr) }}
+                            {% endif %}
                         {% endif %}
                     </td>
                 {% endfor %}

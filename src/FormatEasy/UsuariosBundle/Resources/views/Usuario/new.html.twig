@@ -2,4 +2,11 @@
 
 {% block body -%}
     {% include "FormatEasyUsuariosBundle:Usuario:_new.html.twig" %}
+<ul class="record_actions">
+    <li>
+        <a href="{{ path('usuario_') }}">
+            Back to the list
+        </a>
+    </li>
+</ul>
 {% endblock %}

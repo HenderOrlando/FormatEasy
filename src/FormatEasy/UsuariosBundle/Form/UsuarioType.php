@@ -16,6 +16,10 @@ class UsuarioType extends AbstractType
     {
         $builder
             ->add('nombre')
+            ->add('apellido')
+            ->add('docId',null, array(
+                'label' => 'Número de Documento de Identidad'
+            ))
             ->add('descripcion')
         ;
     }

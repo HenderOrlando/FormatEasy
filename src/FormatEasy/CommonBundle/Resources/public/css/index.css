@@ -32,27 +32,88 @@ body {
 .navbar-inverse .form-group label:not(.btn) {
     color: #999;
 }
-:focus, :active, :hover{
+.btn:focus,
+:focus, 
+:active, 
+:hover{
     outline: none;
+}
+td:focus,
+td:active,
+td:hover{
+    box-shadow: inset 10px 0px 20px -10px #AAA, inset -10px 0px 20px -10px #AAA;
+}
+table:focus,
+table:active,
+table:hover{
+    box-shadow: 0px 10px 30px -15px #AAA, 0px -10px 30px -20px #AAA;
+    top: 1px;
+    position: relative;
+    -webkit-transform: scale(1.008);
+    -moz-transform: scale(1.008);
+    -ms-transform: scale(1.008);
+    -o-transform: scale(1.008);
+    transform: scale(1.008);
+}
+.btn:focus,
+.btn:active,
+.btn:hover{
+    box-shadow: 0px 0px 5px 1px #AAA;
+    text-shadow: 0 0 10px #555;
+    -webkit-transform: scale(1.01);
+    -moz-transform: scale(1.02);
+    -ms-transform: scale(1.02);
+    -o-transform: scale(1.02);
+    transform: scale(1.02);
+}
+table .btn:focus,
+table .btn:active,
+table .btn:hover{
+    box-shadow: 0px 0px 5px 1px #AAA;
+    text-shadow: 0 0 10px #555;
+    -webkit-transform: none;
+    -moz-transform: none;
+    -ms-transform: none;
+    -o-transform: none;
+    transform: none;
+}
+table,
+td,
+.btn{
+    -webkit-transition-property: all;
+    -webkit-transition-duration: 0.35s;
+    -webkit-transition-timing-function: ease-in-out;
+    -moz-transition-property: all;
+    -moz-transition-duration: 0.35s;
+    -moz-transition-timing-function: ease-in-out;
+    -ms-transition-property: all;
+    -ms-transition-duration: 0.35s;
+    -ms-transition-timing-function: ease-in-out;
+    -o-transition-property: all;
+    -o-transition-duration: 0.35s;
+    -o-transition-timing-function: ease-in-out;
+    transition-property: all;
+    transition-duration: 0.35s;
+    transition-timing-function: ease-in-out;
 }
 
 /*********** Mmenu ***********/
 html #mm-blocker,
 .mm-inner{
     -webkit-transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , -webkit-transform;
-    -webkit-transition-duration: 0.35s;
+    -webkit-transition-duration: 0.45s;
     -webkit-transition-timing-function: ease-out;
     -moz-transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , -moz-transform;
-    -moz-transition-duration: 0.35s;
+    -moz-transition-duration: 0.45s;
     -moz-transition-timing-function: ease-out;
     -ms-transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , -ms-transform;
-    -ms-transition-duration: 0.35s;
+    -ms-transition-duration: 0.45s;
     -ms-transition-timing-function: ease-out;
     -o-transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , -o-transform;
-    -o-transition-duration: 0.35s;
+    -o-transition-duration: 0.45s;
     -o-transition-timing-function: ease-out;
     transition-property: width, border, padding, top, right, bottom, left, margin, border, opacity , transform;
-    transition-duration: 0.35s;
+    transition-duration: 0.45s;
     transition-timing-function: ease-out;
 }
 #mm-blocker,
@@ -780,4 +841,20 @@ input + .input-group-addon{
 th .pagination{
     margin: 0;
 }
+.form-buscar .input-group,
+.form-buscar{
+    width: 100%;
+}
+.form-buscar #form_Buscar{
+    max-width: 130px;
+    margin-top: -2px;
+}
+.btn-group, .btn-group-vertical{
+    border: none;
+}
 /*********** buscador ***********/
+/*********** Modal ***********/
+.form-control{
+    margin-bottom: 10px;
+}
+/*********** Modal ***********/

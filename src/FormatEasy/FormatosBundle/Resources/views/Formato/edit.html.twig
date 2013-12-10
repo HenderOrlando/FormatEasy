@@ -167,7 +167,7 @@
             var menu_open_r = '#mmenu-right';
             
             $.ajax({
-                url: "{{ url('_plantillaRespuesta_buttonlist', {'formato': entity.canonical}) }}"  
+                url: "{{ url('_plantillarespuesta_buttonlist', {'formato': entity.canonical}) }}"  
             }).done(function(data) {
                 $(menu_open_r).find('.mm-inner .mmenu-content').html(data);
                 addHoja();
